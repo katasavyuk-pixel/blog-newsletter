@@ -32,9 +32,21 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
+
+# content layer (Velite, Fase 1)
+/.velite
+
+# supabase local
+/supabase/.temp
+/supabase/.branches
+
+# local verification artifacts
+/.playwright-mcp
+/home-*.png
 
 # typescript
 *.tsbuildinfo
