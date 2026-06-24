@@ -2,7 +2,7 @@
 
 # CLAUDE.md — Blog + Newsletter de marca personal (IA)
 
-> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Rediseño Fase B — catálogo de widgets + explorable** (2026-06-24).
+> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Rebrand a "Kata Pro" (red/black, tema oscuro)** (2026-06-25).
 
 ## Qué es esto
 
@@ -17,7 +17,7 @@ pero la parte de pago/auth **no se construye** hasta la Fase 3.
 
 ## Estado por fases
 
-- **Fase 0 — Fundamentos y diseño** ✅ (esta). Scaffolding, design system NBI, layout, componentes base, home placeholder, clients Supabase, este archivo.
+- **Fase 0 — Fundamentos y diseño** ✅ (esta). Scaffolding, design system de marca (hoy **Kata Pro** red/black — ver Decisiones), layout, componentes base, home placeholder, clients Supabase, este archivo.
 - **Fase 1 — Blog (MVP)** ✅. Pipeline MDX (Velite), listados, página de post (TOC, share, syntax highlighting), tags, "Sobre mí", SEO (OG dinámico `next/og`, sitemap, RSS, JSON-LD BlogPosting). `post_views` (BD) NO implementado — diferido. Publicar = añadir `.mdx` → aparece en listado/sitemap/RSS automáticamente.
 - **Fase 2 — Newsletter y captación** ✅ (código, con *guards*). Form real + doble opt-in (Resend), route handlers `/api/{subscribe,confirm,unsubscribe,download}`, plantillas React Email, lead magnets (`/recursos` + descarga firmada), baja 1-clic (RFC 8058), `/gracias`, `/baja`, `/privacidad`. Migración aplicada en un proyecto Supabase EU dedicado (`kata-ivanovych-blog`, ref `udluclqhfzdgvqpoezoo`, **cuenta separada del NBI**, eu-central-1). **Doble opt-in verificado en vivo (modo test) 2026-06-24**: alta→confirmación→`confirmed`, token sha256 single-use, `consent_ip` guardada. **Pendiente para producción**: dominio real (Resend en modo test solo envía al email de la cuenta), `NEXT_PUBLIC_SITE_URL` real, deploy a Vercel con env, Turnstile, firmar DPAs, y **rotar `service_role`** (apareció en chat al configurarlo).
 - **Fase 3 — Comunidad y premium** ⬜ (no construir aún). Supabase Auth, Stripe, gating `premium`, dashboard. Tablas `profiles`, `subscriptions`.
@@ -66,8 +66,8 @@ next.config.ts · .env.example
 
 ## Decisiones de arquitectura
 
-- **Tema: SOLO claro (ley de marca NBI — nunca oscuro).** Desviación deliberada del brief (que pedía dark mode). Tokens definidos como CSS variables → arquitectura *dark-ready*: añadir un bloque `.dark` + `@custom-variant dark` sería trivial. No se instaló `next-themes` en Fase 0.
-- **Marca = NBI** (ianexora): fondo claro, navy `#16203a`, cian `#00d4ff` (cian-texto legible `#0a7187`), gradiente navy→cyan de acento, Space Grotesk. Valores AA-verificados en `globals.css`.
+- **Tema: SOLO oscuro (red/black, marca "Kata Pro" — nunca claro).** Rebrand 2026-06-25: el blog pivotó de "Atardecer Coral" (claro) a **Kata Pro** red/black para unificar con el canal de YouTube. Los tokens se redefinieron directamente en el bloque `@theme` (sin theming dual ni `next-themes`): el sitio es oscuro por defecto y todo el árbol de componentes consume tokens, así que el cambio cascadea. Backup del tema coral en la rama `backup/coral-theme` (y `coral-rebrand`).
+- **Marca = "Kata Pro" (red/black), DISTINTA de NBI — no mezclar.** Base near-black `#0A0205`, texto blanco / tenue `#C9B6B9`, acento rojo `#D7212A`, links/foco rojo brillante `#FF3A44`, verde ok `#36D399`; `shadow-card` = negro duro + glow rojo; nunca plano (glow + profundidad). SSOT visual: `~/Documents/YTvideos/lanzamiento/estilo-visual-katapro.md`. Valores AA-verificados sobre oscuro en `globals.css`. (NBI corporativo sigue siendo navy `#16203a` / cian `#00d4ff`, fondo claro — es OTRA identidad.)
 - **Content layer = Velite** (Fase 1). Compila MDX en su propio proceso esbuild antes/junto a `next build`, así el pipeline Shiki/rehype-pretty-code corre intacto bajo **Turbopack** (que no puede pasar plugins remark/rehype con funciones a través de la frontera Rust). Frontmatter validado con Zod + tipos TS autogenerados. Contentlayer descartado (abandonado). Nunca `VeliteWebpackPlugin`; wiring vía npm scripts (`run-s`) o hook dynamic-import.
 - **Newsletter = lista en Supabase, Resend solo entrega.** Estado de consentimiento (`pending`/`confirmed`/`unsubscribed`) en nuestro Postgres. Transaccional (opt-in/bienvenida) vía `emails.send`; boletín vía loop propio sobre filas `confirmed` con `resend.batch.send` (lotes de 100, ≤5 req/s, idempotente por `issue_id`, breaker por cuota). Esto hace triviales los derechos RGPD y mantiene la PII fuera de la infra US de Resend.
   - **Matiz RGPD crítico:** región `eu-west-1` controla solo desde dónde se *envía*, NO residencia de datos (account data/logs/metadata de Resend viven en US bajo SCC + DPA). **Nunca prometer "100% UE"** — mismo encuadre que el matiz Gemini/OpenRouter.
@@ -80,7 +80,7 @@ Concepto: cada post es un artefacto manipulable, no solo texto. Stack añadido: 
 - **Widgets en MDX**: cada interactivo es una isla `"use client"` registrada en `src/components/mdx/widgets/index.ts` (`widgets`) y pasada por la prop `components` de `MDXContent` en `src/app/blog/[slug]/page.tsx`. **Para añadir uno**: crear el componente en `src/components/mdx/widgets/`, exportarlo en `index.ts`, y usarlo en el `.mdx` (`<TokenizerPlayground/>`, `<Quiz/>`, `<Term id="token">…</Term>`, `<Callout>`, `<GuessReveal>`). Datos pesados precomputados en JSON colocado en `content/posts/<slug>/`.
 - **Toolkit** (`src/components/mdx/widgets/`): primitivos — `WidgetFrame` (la "lab card" que envuelve todo), `Param` (range accesible), `Quiz` (explicación por opción, sin "fallar", localStorage), `Term` (glosario `src/lib/glossary.ts`), `Callout`, `GuessReveal`. Widgets — `TokenizerPlayground`, `TemperatureSandbox` (softmax/top-p), `CostCalculator`, `HallucinationQuiz`, `PromptDiff`, `LifeOfAPrompt` (explorable scrollytelling sticky con IntersectionObserver). Todos cliente, datos pre-calculados, 0 coste API.
 - **Estado/gamificación**: `src/hooks/use-local-state.ts` (localStorage vía `useSyncExternalStore`, SSR-safe, claves `slug+widgetId`). Persistencia híbrida: localStorage ahora → Supabase Auth cuando haya tracción.
-- **Motion/a11y (reglas duras)**: `MotionProvider` (`reducedMotion="user"`) en el layout; bloque global `@media (prefers-reduced-motion: reduce)` en `globals.css`; `useReducedMotion` hook. **Cian solo acento; texto navy** (cian sobre blanco falla AA). Cada widget: operable por teclado, fallback estático, `not-prose`.
+- **Motion/a11y (reglas duras)**: `MotionProvider` (`reducedMotion="user"`) en el layout; bloque global `@media (prefers-reduced-motion: reduce)` en `globals.css`; `useReducedMotion` hook. **Rojo solo acento; texto blanco/tenue** (el rojo primario `#D7212A` no llega a AA como texto fino sobre oscuro → usa `#FF3A44`/`text-accent-ink` para links y texto rojo). Cada widget: operable por teclado, fallback estático, `not-prose`.
 - **Lectura inmersiva**: `ReadingProgress` (CSS scroll-timeline, 0 JS), `Toc` con scroll-spy (IntersectionObserver), `CopyCode` (botón sobre los bloques Shiki), cabecera de post tipo revista (frontmatter `kicker`/`dek` en `velite.config.ts`).
 - **Rollout**: Fase A ✅ (fundación + toolkit + Tokenizer + rediseño). Fase B ✅ (4 widgets + explorable insignia + 4 posts interactivos). Pendiente: Fase C (juegos + gamificación localStorage: rachas/logros + loop newsletter), Fase D (cuentas Supabase Auth + repaso espaciado). Catálogo completo en el plan y `tasks/wi7u5i5it.output`.
 
