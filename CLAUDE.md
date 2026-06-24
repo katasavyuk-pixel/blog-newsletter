@@ -2,7 +2,7 @@
 
 # CLAUDE.md — Blog + Newsletter de marca personal (IA)
 
-> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Fase 0** (2026-06-24).
+> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Fase 1** (2026-06-24).
 
 ## Qué es esto
 
@@ -18,7 +18,7 @@ pero la parte de pago/auth **no se construye** hasta la Fase 3.
 ## Estado por fases
 
 - **Fase 0 — Fundamentos y diseño** ✅ (esta). Scaffolding, design system NBI, layout, componentes base, home placeholder, clients Supabase, este archivo.
-- **Fase 1 — Blog (MVP)** ⬜. Pipeline MDX (Velite), listados, página de post, tags, "Sobre mí", SEO (OG dinámico, sitemap, RSS, JSON-LD), `post_views` opcional.
+- **Fase 1 — Blog (MVP)** ✅. Pipeline MDX (Velite), listados, página de post (TOC, share, syntax highlighting), tags, "Sobre mí", SEO (OG dinámico `next/og`, sitemap, RSS, JSON-LD BlogPosting). `post_views` (BD) NO implementado — diferido. Publicar = añadir `.mdx` → aparece en listado/sitemap/RSS automáticamente.
 - **Fase 2 — Newsletter y captación** ⬜. Form + doble opt-in (Resend), recursos/lead magnets, `/recursos`, baja 1-clic, privacidad. Tablas `subscribers`, `resources`.
 - **Fase 3 — Comunidad y premium** ⬜ (no construir aún). Supabase Auth, Stripe, gating `premium`, dashboard. Tablas `profiles`, `subscriptions`.
 - **Fase 4 (idea, §8)** 💡. Búsqueda semántica "pregúntale a mi contenido" (embeddings + pgvector). No implementar; ver al final.
