@@ -1,0 +1,26 @@
+---
+title: ¿Cuánto te cuesta de verdad usar IA?
+description: "Calcula en vivo el coste mensual de una función con IA según modelo, tokens y volumen. Verás por qué el modelo que eliges y los tokens de salida deciden tu factura."
+kicker: Práctica
+dek: "Antes de meter IA en tu producto, haz la cuenta. Mueve los mandos y mira cómo cambia la factura al mes."
+date: 2026-06-24
+tags:
+  - práctica
+  - coste
+  - interactivo
+draft: false
+premium: false
+---
+
+La pregunta que se salta casi todo el mundo antes de poner una IA en producción: **¿cuánto va a costar al mes?** La respuesta depende de cuatro cosas, y aquí las mueves tú:
+
+<CostCalculator />
+
+Dos lecciones que saltan a la vista en cuanto juegas:
+
+- **El modelo manda.** Pasar de un modelo «mini» a uno grande puede multiplicar la factura por 15–20 para la misma tarea. Empieza siempre por el más pequeño que cumpla.
+- **La salida pesa más que la entrada.** Los <Term id="token">tokens</Term> de salida suelen costar 3–4× más que los de entrada. Pedir respuestas más cortas es una de las optimizaciones de coste más fáciles.
+
+<Callout type="info" title="Ojo con los bucles">
+El coste se dispara cuando una IA llama a otra IA en bucle sin límite. Pon siempre un tope de tokens por petición y un freno por volumen antes de desplegar nada que llame a un modelo de pago.
+</Callout>
