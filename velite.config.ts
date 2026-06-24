@@ -12,6 +12,8 @@ const posts = defineCollection({
     .object({
       title: s.string().max(120),
       description: s.string().max(300),
+      kicker: s.string().max(40).optional(), // small-caps category label (magazine header)
+      dek: s.string().max(300).optional(), // standfirst / intro under the headline
       date: s.isodate(),
       updated: s.isodate().optional(),
       tags: s.array(s.string()).default([]),

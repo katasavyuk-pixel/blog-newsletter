@@ -4,7 +4,10 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { Prose } from "@/components/ui/prose";
 import { MDXContent } from "@/components/mdx/mdx-content";
+import { widgets } from "@/components/mdx/widgets";
 import { Toc } from "@/components/blog/toc";
+import { ReadingProgress } from "@/components/blog/reading-progress";
+import { CopyCode } from "@/components/blog/copy-code";
 import { ShareButtons } from "@/components/blog/share-buttons";
 import { allPosts, getPost } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
@@ -70,6 +73,7 @@ export default async function PostPage({
 
   return (
     <Container className="py-12">
+      <ReadingProgress />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -84,32 +88,35 @@ export default async function PostPage({
         >
           ← Volver al blog
         </Link>
-        <header className="mt-6">
-          {post.tags.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
-                <Link
-                  key={tag}
-                  href={`/blog/tag/${encodeURIComponent(tag)}`}
-                  className="rounded-full bg-surface px-2.5 py-1 text-xs text-accent-ink hover:bg-surface-2"
-                >
-                  #{tag}
-                </Link>
-              ))}
-            </div>
-          ) : null}
-          <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-fg text-balance sm:text-4xl">
+        <header className="mt-8">
+          <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-accent-ink">
+            {post.kicker ?? post.tags[0] ?? "Artículo"}
+          </p>
+          <h1 className="mt-3 font-display text-4xl font-bold leading-[1.05] tracking-tight text-fg text-balance sm:text-5xl">
             {post.title}
           </h1>
-          <p className="mt-4 text-lg leading-relaxed text-muted">
-            {post.description}
+          <p className="mt-5 text-lg leading-relaxed text-muted sm:text-xl">
+            {post.dek ?? post.description}
           </p>
-          <div className="mt-5 flex flex-wrap items-center gap-2 text-sm text-muted">
+          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-5 text-sm text-muted">
             <span className="font-medium text-fg">{siteConfig.author.name}</span>
             <span aria-hidden>·</span>
             <time dateTime={post.date}>{formatDate(post.date)}</time>
             <span aria-hidden>·</span>
             <span>{post.metadata.readingTime} min de lectura</span>
+            {post.tags.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5 sm:ml-auto">
+                {post.tags.map((tag) => (
+                  <Link
+                    key={tag}
+                    href={`/blog/tag/${encodeURIComponent(tag)}`}
+                    className="rounded-full bg-surface px-2.5 py-0.5 text-xs text-accent-ink hover:bg-surface-2"
+                  >
+                    #{tag}
+                  </Link>
+                ))}
+              </div>
+            ) : null}
           </div>
         </header>
       </div>
@@ -117,8 +124,9 @@ export default async function PostPage({
       <div className="mx-auto mt-10 max-w-3xl lg:grid lg:max-w-5xl lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-12">
         <div>
           <Prose>
-            <MDXContent code={post.content} />
+            <MDXContent code={post.content} components={widgets} />
           </Prose>
+          <CopyCode />
           <ShareButtons url={fullUrl} title={post.title} />
         </div>
         {showToc ? (
