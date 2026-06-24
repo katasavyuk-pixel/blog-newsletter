@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/typography";
+import { PostCard } from "@/components/blog/post-card";
+import { allPosts } from "@/lib/posts";
 import { siteConfig } from "@/config/site";
 
 export default function Home() {
+  const latest = allPosts.slice(0, 3);
+
   return (
     <>
       {/* Hero */}
@@ -38,7 +41,7 @@ export default function Home() {
         </Container>
       </section>
 
-      {/* Latest posts placeholder (wired to MDX in Fase 1) */}
+      {/* Latest posts */}
       <section>
         <Container className="border-t border-border py-16">
           <div className="flex items-end justify-between gap-4">
@@ -50,23 +53,20 @@ export default function Home() {
               Ver todos →
             </Link>
           </div>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[0, 1, 2].map((i) => (
-              <Card key={i} className="flex h-full flex-col">
-                <div className="aspect-[16/9] w-full rounded-xl bg-surface-2" />
-                <p className="mt-4 text-xs font-medium uppercase tracking-wide text-accent-ink">
-                  Próximamente
-                </p>
-                <h3 className="mt-1 font-display text-lg font-semibold text-fg">
-                  Aquí aparecerán tus artículos
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">
-                  Publica un archivo <code className="text-accent-ink">.mdx</code> y
-                  aparecerá automáticamente en el listado (Fase 1).
-                </p>
-              </Card>
-            ))}
-          </div>
+
+          {latest.length > 0 ? (
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {latest.map((post) => (
+                <PostCard key={post.slug} post={post} />
+              ))}
+            </div>
+          ) : (
+            <p className="mt-8 text-muted">
+              Aún no hay artículos publicados. Añade un{" "}
+              <code className="text-accent-ink">.mdx</code> en{" "}
+              <code className="text-accent-ink">content/posts/</code>.
+            </p>
+          )}
         </Container>
       </section>
     </>
