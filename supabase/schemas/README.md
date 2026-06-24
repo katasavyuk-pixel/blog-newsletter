@@ -1,24 +1,32 @@
-# Supabase — esquema declarativo
+# Supabase — esquema y migraciones
 
 El modelo de datos **completo** está diseñado desde el día 1 (ver `CLAUDE.md` →
-"Modelo de datos"), pero las tablas se **crean por fases**, no todas ahora:
+"Modelo de datos"); las tablas se crean por fases.
 
-| Tabla | Fase | Notas |
+| Tabla | Fase | Estado |
 |---|---|---|
-| `post_views` | Fase 1 (opcional) | Contador de vistas por slug. |
-| `subscribers` | Fase 2 | Lista de newsletter + estado de consentimiento (doble opt-in). |
-| `resources` | Fase 2 | Lead magnets / recursos gratuitos. |
-| `profiles` | Fase 3 | 1:1 con `auth.users` (premium). |
-| `subscriptions` | Fase 3 | Suscripción Stripe (premium). |
+| `subscribers` | Fase 2 | Migración escrita (`../migrations/0001_subscribers_resources.sql`) |
+| `resources` | Fase 2 | Migración escrita (idem) |
+| `post_views` | Fase 1 (opcional) | No implementado |
+| `profiles` | Fase 3 | Diseñado, no implementado |
+| `subscriptions` | Fase 3 | Diseñado, no implementado |
 
-## Workflow (cuando se empiece a crear tablas)
+## Aplicar la migración de Fase 2 (cuando exista el proyecto)
 
-1. Definir el esquema declarativo en `supabase/schemas/*.sql` (fuente de verdad).
-2. `supabase db diff -f <nombre>` genera la migración en `supabase/migrations/`.
-3. `supabase db push` la aplica al proyecto remoto (región `eu-central-1`).
-4. Commitear schema + migración.
+Requiere un proyecto Supabase en **eu-central-1** (Frankfurt). Con la CLI enlazada:
 
-`RLS ON` en las 5 tablas. Default-deny; escrituras vía servidor (`service_role`)
-o RPC `SECURITY DEFINER` (`SET search_path=''`, `REVOKE EXECUTE FROM PUBLIC` +
-`GRANT` explícito, verificado con `has_function_privilege`). Detalle por tabla
-en `CLAUDE.md`.
+```bash
+supabase db push          # aplica supabase/migrations/*.sql al proyecto remoto
+```
+
+O con el MCP de Supabase: `apply_migration` con el contenido de
+`migrations/0001_subscribers_resources.sql`.
+
+Después:
+
+1. Verificar RLS y grants: `has_function_privilege('anon', 'public.increment_download_count(uuid)', 'EXECUTE')` debe ser `false`.
+2. Confirmar el bucket `lead-magnets` como **privado**.
+3. Regenerar tipos: `supabase gen types typescript` (o MCP `generate_typescript_types`).
+
+`RLS ON` en todas. Default-deny; escrituras vía servidor (`service_role`) o RPC
+`SECURITY DEFINER`. Detalle por tabla en `CLAUDE.md`.
