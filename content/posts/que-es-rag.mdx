@@ -1,0 +1,54 @@
+---
+title: Qué es RAG y por qué importa
+description: "Retrieval-Augmented Generation explicado de forma simple, con un ejemplo mínimo de código y cuándo conviene usarlo."
+date: 2026-06-20
+tags:
+  - rag
+  - fundamentos
+  - técnico
+draft: false
+premium: false
+---
+
+**RAG** (Retrieval-Augmented Generation) es una de las técnicas más útiles para
+construir aplicaciones de IA fiables. La idea es sencilla: en lugar de confiar
+solo en lo que el modelo "recuerda", le damos contexto recuperado de tus propios
+datos antes de que responda.
+
+## El problema
+
+Un modelo de lenguaje no conoce tus documentos internos ni la información que
+cambia cada día. Si le preguntas por ellos, **se lo inventa** (alucina). RAG
+resuelve esto buscando la información relevante y pasándosela al modelo.
+
+## Cómo funciona RAG
+
+1. **Embeddings**: conviertes tus textos en vectores numéricos.
+2. **Recuperación**: ante una pregunta, buscas los fragmentos más parecidos.
+3. **Generación**: el modelo responde usando solo ese contexto recuperado.
+
+## Un ejemplo mínimo
+
+```python
+from openai import OpenAI
+
+client = OpenAI()
+
+def answer(question: str, context: str) -> str:
+    prompt = f"Responde solo con el contexto.\n\nContexto:\n{context}\n\nPregunta: {question}"
+    res = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return res.choices[0].message.content
+```
+
+El truco está en `context`: ahí va lo que recuperaste de tus datos, no todo
+internet.
+
+## Cuándo usarlo
+
+Usa RAG cuando necesites respuestas ancladas en **información específica y
+verificable** (documentación, catálogos, normativa). Si solo necesitas redacción
+genérica, quizá no haga falta. La regla de oro: **menos alucinación, más
+control**.
