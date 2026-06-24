@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/privacidad" },
 };
 
-// TODO(katamv): revisar con tu asesor y ajustar responsable, dirección y email de contacto.
-const CONTACT_EMAIL = `privacidad@${siteConfig.domain}`;
+// TODO(katamv): revisar con tu asesor el responsable y la dirección.
+const CONTACT_EMAIL = siteConfig.contactEmail;
 
 export default function PrivacyPage() {
   return (
