@@ -6,6 +6,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // Satori (next/og) has no access to our CSS tokens, so brand colors are literal here.
+// Atardecer Coral: sunset gradient (orange → magenta → wine) + cream/peach accents.
 export default function Image() {
   return new ImageResponse(
     (
@@ -18,9 +19,9 @@ export default function Image() {
           justifyContent: "center",
           gap: "28px",
           background:
-            "linear-gradient(135deg, #16203a 0%, #0c2a40 55%, #0a7187 100%)",
+            "linear-gradient(135deg, #fb923c 0%, #e11d48 55%, #7a1238 100%)",
           padding: "80px",
-          color: "#ffffff",
+          color: "#fff7f4",
           fontFamily: "sans-serif",
         }}
       >
@@ -30,7 +31,7 @@ export default function Image() {
             alignItems: "center",
             gap: "18px",
             fontSize: 30,
-            color: "#cfe0ec",
+            color: "#ffe0d2",
           }}
         >
           <div
@@ -38,7 +39,7 @@ export default function Image() {
               width: 40,
               height: 40,
               borderRadius: 12,
-              background: "linear-gradient(135deg, #16203a, #00d4ff)",
+              background: "linear-gradient(135deg, #fb7185, #7a1238)",
             }}
           />
           {siteConfig.name}
@@ -55,7 +56,7 @@ export default function Image() {
         >
           {siteConfig.tagline}
         </div>
-        <div style={{ display: "flex", fontSize: 28, color: "#00d4ff" }}>
+        <div style={{ display: "flex", fontSize: 28, color: "#ffc9b0" }}>
           Blog + newsletter sobre IA
         </div>
       </div>

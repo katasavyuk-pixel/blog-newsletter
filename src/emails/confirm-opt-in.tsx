@@ -9,13 +9,14 @@ import {
   Section,
   Text,
 } from "@react-email/components";
+import { emailColors as c } from "@/lib/email-colors";
 
-// React Email renders to inline-styled HTML, so brand colors are literal here
-// (no access to our CSS tokens).
-const main = { backgroundColor: "#f4f6fb", fontFamily: "Helvetica, Arial, sans-serif", color: "#16203a" };
-const container = { maxWidth: "480px", margin: "0 auto", padding: "32px", backgroundColor: "#ffffff", borderRadius: "16px" };
-const button = { backgroundColor: "#00d4ff", color: "#0b1220", padding: "12px 22px", borderRadius: "999px", fontWeight: 600, textDecoration: "none", display: "inline-block" };
-const muted = { color: "#515b70", fontSize: "13px", lineHeight: "1.6" };
+// React Email renders to inline-styled HTML (no access to CSS tokens).
+// Palette lives in src/lib/email-colors.ts — keep in sync with globals.css.
+const main = { backgroundColor: c.bg, fontFamily: "Helvetica, Arial, sans-serif", color: c.textMain };
+const container = { maxWidth: "480px", margin: "0 auto", padding: "32px", backgroundColor: c.card, borderRadius: "16px" };
+const button = { backgroundColor: c.buttonBg, color: c.onAccent, padding: "12px 22px", borderRadius: "999px", fontWeight: 600, textDecoration: "none", display: "inline-block" };
+const muted = { color: c.textMuted, fontSize: "13px", lineHeight: "1.6" };
 
 export function ConfirmOptInEmail({
   confirmUrl,
