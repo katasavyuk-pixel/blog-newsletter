@@ -2,32 +2,33 @@
 @plugin "@tailwindcss/typography";
 
 /*
-  NBI brand identity — LIGHT THEME ONLY (brand law: never dark).
+  Kata Ivanovych brand identity — "Atardecer Coral" — LIGHT THEME ONLY.
   All design tokens are CSS variables, so a future `.dark` block +
   `@custom-variant dark` could be added later without touching any
   component (dark-ready architecture). NEVER hardcode hex in JSX —
   always reference these tokens (bg-bg, text-fg, text-accent-ink, ...).
+  Signature look: sunset gradient (orange→coral→magenta→wine) + texture + depth.
 */
 
 @theme {
   /* Surfaces */
-  --color-bg: #ffffff;
-  --color-surface: #f4f6fb;
-  --color-surface-2: #e9eefa;
+  --color-bg: #fff7f4; /* warm cream */
+  --color-surface: #fbefec; /* gentle warm off-white (code blocks, panels) */
+  --color-surface-2: #f8e1e2; /* rosé tint */
 
   /* Text — contrast AA-verified on --color-bg */
-  --color-fg: #16203a; /* navy — body & headings (~15:1) */
-  --color-muted: #515b70; /* secondary text (~6.4:1) */
+  --color-fg: #3a1019; /* wine-charcoal — body & headings (~13:1) */
+  --color-muted: #7a4e55; /* secondary text (~5.5:1) */
 
   /* Brand accents */
-  --color-accent: #00d4ff; /* cyan — decorative / button surface (not text on white) */
-  --color-accent-strong: #0aa9ce; /* hover / darker cyan */
-  --color-accent-ink: #0a7187; /* cyan-teal for TEXT on light (~5.6:1, AA) */
-  --color-on-accent: #0b1220; /* navy text over cyan surfaces (~10:1) */
+  --color-accent: #fb7185; /* coral — decorative / button surface (not text on white) */
+  --color-accent-strong: #9f1239; /* hover / darker coral-wine */
+  --color-accent-ink: #be123c; /* coral for TEXT on light (~5.9:1, AA) */
+  --color-on-accent: #5b0e2a; /* dark wine text over coral surfaces (~5.1:1) */
 
   /* Lines & focus */
-  --color-border: #e3e8f1;
-  --color-ring: #00b4e6;
+  --color-border: #f3d9dc;
+  --color-ring: #e11d48;
 
   /* Status */
   --color-danger: #b3261e;
@@ -159,7 +160,7 @@
   }
 }
 
-/* Animated navy→cyan brand gradient (hero accents) */
+/* Animated sunset coral brand gradient (hero accents) */
 .animate-gradient-pan {
   background-size: 220% 220%;
   animation: gradient-pan 9s var(--ease-out-expo) infinite;

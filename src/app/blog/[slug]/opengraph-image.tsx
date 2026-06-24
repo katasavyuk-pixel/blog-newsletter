@@ -7,6 +7,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // Satori (next/og) has no access to our CSS tokens, so brand colors are literal here.
+// Atardecer Coral: sunset gradient (orange → magenta → wine) + cream/peach accents.
 export default async function Image({
   params,
 }: {
@@ -26,9 +27,9 @@ export default async function Image({
           flexDirection: "column",
           justifyContent: "space-between",
           background:
-            "linear-gradient(135deg, #16203a 0%, #0c2a40 55%, #0a7187 100%)",
+            "linear-gradient(135deg, #fb923c 0%, #e11d48 55%, #7a1238 100%)",
           padding: "80px",
-          color: "#ffffff",
+          color: "#fff7f4",
           fontFamily: "sans-serif",
         }}
       >
@@ -38,7 +39,7 @@ export default async function Image({
             alignItems: "center",
             gap: "18px",
             fontSize: 30,
-            color: "#cfe0ec",
+            color: "#ffe0d2",
           }}
         >
           <div
@@ -46,7 +47,7 @@ export default async function Image({
               width: 40,
               height: 40,
               borderRadius: 12,
-              background: "linear-gradient(135deg, #16203a, #00d4ff)",
+              background: "linear-gradient(135deg, #fb7185, #7a1238)",
             }}
           />
           {siteConfig.name}
@@ -68,11 +69,11 @@ export default async function Image({
             alignItems: "center",
             gap: "14px",
             fontSize: 28,
-            color: "#00d4ff",
+            color: "#ffc9b0",
           }}
         >
           <div
-            style={{ width: 12, height: 12, borderRadius: 999, background: "#00d4ff" }}
+            style={{ width: 12, height: 12, borderRadius: 999, background: "#fb7185" }}
           />
           {siteConfig.tagline}
         </div>
