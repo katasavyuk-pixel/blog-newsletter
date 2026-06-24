@@ -7,7 +7,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // Satori (next/og) has no access to our CSS tokens, so brand colors are literal here.
-// Atardecer Coral: sunset gradient (orange → magenta → wine) + cream/peach accents.
+// Kata Pro (red/black): dark red→black gradient + red pill mark + tenue labels.
 export default async function Image({
   params,
 }: {
@@ -27,9 +27,9 @@ export default async function Image({
           flexDirection: "column",
           justifyContent: "space-between",
           background:
-            "linear-gradient(135deg, #fb923c 0%, #e11d48 55%, #7a1238 100%)",
+            "linear-gradient(135deg, #4a1019 0%, #1e0509 55%, #070205 100%)",
           padding: "80px",
-          color: "#fff7f4",
+          color: "#ffffff",
           fontFamily: "sans-serif",
         }}
       >
@@ -39,7 +39,7 @@ export default async function Image({
             alignItems: "center",
             gap: "18px",
             fontSize: 30,
-            color: "#ffe0d2",
+            color: "#c9b6b9",
           }}
         >
           <div
@@ -47,7 +47,7 @@ export default async function Image({
               width: 40,
               height: 40,
               borderRadius: 12,
-              background: "linear-gradient(135deg, #fb7185, #7a1238)",
+              background: "linear-gradient(135deg, #f0323c, #8e1a22)",
             }}
           />
           {siteConfig.name}
@@ -69,11 +69,11 @@ export default async function Image({
             alignItems: "center",
             gap: "14px",
             fontSize: 28,
-            color: "#ffc9b0",
+            color: "#c9b6b9",
           }}
         >
           <div
-            style={{ width: 12, height: 12, borderRadius: 999, background: "#fb7185" }}
+            style={{ width: 12, height: 12, borderRadius: 999, background: "#d7212a" }}
           />
           {siteConfig.tagline}
         </div>

@@ -15,7 +15,7 @@ export function Prose({
   return (
     <div
       className={cn(
-        "prose prose-neutral max-w-[65ch]",
+        "prose prose-invert max-w-[65ch]",
         "prose-headings:font-display prose-headings:tracking-tight prose-headings:text-fg",
         "prose-p:text-fg prose-li:text-fg prose-strong:text-fg",
         "prose-a:text-accent-ink prose-a:no-underline hover:prose-a:underline",

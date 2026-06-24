@@ -16,7 +16,7 @@ export function Header() {
         >
           <span
             aria-hidden
-            className="h-7 w-7 rounded-lg bg-gradient-to-br from-[var(--color-fg)] to-[var(--color-accent)]"
+            className="h-7 w-7 rounded-lg bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-strong)] shadow-[0_0_12px_-2px_var(--color-accent)]"
           />
           <span className="font-display text-lg font-bold tracking-tight text-fg">
             {siteConfig.name}

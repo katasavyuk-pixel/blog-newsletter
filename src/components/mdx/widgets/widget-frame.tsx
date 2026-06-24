@@ -37,7 +37,7 @@ export function WidgetFrame({
     >
       <span
         aria-hidden
-        className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-[var(--color-fg)] via-[var(--color-accent)] to-[var(--color-fg)]"
+        className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-[var(--color-accent)] to-transparent"
       />
       <header className="flex items-center justify-between gap-3 border-b border-border bg-surface/60 px-4 py-2.5">
         <span className="font-mono text-[0.7rem] font-medium uppercase tracking-wider text-accent-ink">

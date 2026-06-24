@@ -2,39 +2,42 @@
 @plugin "@tailwindcss/typography";
 
 /*
-  Kata Ivanovych brand identity — "Atardecer Coral" — LIGHT THEME ONLY.
-  All design tokens are CSS variables, so a future `.dark` block +
-  `@custom-variant dark` could be added later without touching any
-  component (dark-ready architecture). NEVER hardcode hex in JSX —
-  always reference these tokens (bg-bg, text-fg, text-accent-ink, ...).
-  Signature look: sunset gradient (orange→coral→magenta→wine) + texture + depth.
+  Kata Pro brand identity — "red/black" — DARK THEME ONLY.
+  Pivots from "Atardecer Coral" (light) to unify with the YouTube channel.
+  All design tokens are CSS variables. NEVER hardcode hex in JSX — always
+  reference these tokens (bg-bg, text-fg, text-accent-ink, ...).
+  Signature look: near-black base + deep red glow + texture + depth. NEVER flat.
+  Contrast AA-verified vs --color-bg (#0A0205): white 20:1, muted 10.6:1,
+  accent-ink link 5.8:1, white-on-accent 5.1:1, success 10.7:1.
 */
 
 @theme {
-  /* Surfaces */
-  --color-bg: #fff7f4; /* warm cream */
-  --color-surface: #fbefec; /* gentle warm off-white (code blocks, panels) */
-  --color-surface-2: #f8e1e2; /* rosé tint */
+  /* Surfaces — near-black with deep-red tint */
+  --color-bg: #0a0205; /* near-black base */
+  --color-surface: #1a0509; /* raised panel (code blocks, cards, widget header) */
+  --color-surface-2: #2e0b12; /* deeper red tint (hover / active) */
 
   /* Text — contrast AA-verified on --color-bg */
-  --color-fg: #3a1019; /* wine-charcoal — body & headings (~13:1) */
-  --color-muted: #7a4e55; /* secondary text (~5.5:1) */
+  --color-fg: #ffffff; /* white — body & headings (~20:1) */
+  --color-muted: #c9b6b9; /* secondary text — tenue rose-grey (~10.6:1) */
 
-  /* Brand accents */
-  --color-accent: #fb7185; /* coral — decorative / button surface (not text on white) */
-  --color-accent-strong: #9f1239; /* hover / darker coral-wine */
-  --color-accent-ink: #be123c; /* coral for TEXT on light (~5.9:1, AA) */
-  --color-on-accent: #5b0e2a; /* dark wine text over coral surfaces (~5.1:1) */
+  /* Brand accents (red) */
+  --color-accent: #d7212a; /* primary red — button/pill surface, dots (not text) */
+  --color-accent-strong: #95222b; /* hover / darker red */
+  --color-accent-ink: #ff3a44; /* bright red for TEXT/links on dark (~5.8:1, AA) */
+  --color-on-accent: #ffffff; /* white text over red surfaces (~5.1:1, AA) */
 
   /* Lines & focus */
-  --color-border: #f3d9dc;
-  --color-ring: #e11d48;
+  --color-border: #4a1620; /* dark red-tinted hairline */
+  --color-ring: #ff3a44; /* bright red focus ring */
 
   /* Status */
-  --color-danger: #b3261e;
+  --color-danger: #ff6b70; /* light red — error text (distinct from links) */
+  --color-success: #36d399; /* green — ok/check (~10.7:1) */
 
-  /* Elevation (token-based, derived from --color-fg) */
-  --shadow-card: 0 1px 2px color-mix(in oklab, var(--color-fg) 6%, transparent);
+  /* Elevation — hard black shadow + red glow (depth on dark, never flat) */
+  --shadow-card: 0 6px 20px -6px rgba(0, 0, 0, 0.8),
+    0 0 28px -10px color-mix(in oklab, var(--color-accent) 40%, transparent);
 
   /* Monospace stack for code/labels */
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
@@ -114,7 +117,7 @@
   border-left: 2px solid transparent;
 }
 [data-rehype-pretty-code-figure] [data-highlighted-line] {
-  background-color: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  background-color: color-mix(in oklab, var(--color-accent) 18%, transparent);
   border-left-color: var(--color-accent);
 }
 [data-rehype-pretty-code-title] {
@@ -132,10 +135,10 @@
   border-top-right-radius: 0;
 }
 .diff.add {
-  background-color: color-mix(in oklab, #16a34a 12%, transparent);
+  background-color: color-mix(in oklab, var(--color-success) 20%, transparent);
 }
 .diff.remove {
-  background-color: color-mix(in oklab, #dc2626 12%, transparent);
+  background-color: color-mix(in oklab, var(--color-accent-ink) 18%, transparent);
 }
 
 /* --- Heading anchors (rehype-autolink-headings, behavior: wrap) --- */
@@ -214,16 +217,16 @@
   white-space: pre;
 }
 .tok-0 {
-  background-color: color-mix(in oklab, var(--color-accent) 16%, white);
+  background-color: color-mix(in oklab, var(--color-accent) 24%, var(--color-surface));
 }
 .tok-1 {
-  background-color: color-mix(in oklab, var(--color-accent) 32%, white);
+  background-color: color-mix(in oklab, var(--color-accent) 45%, var(--color-surface));
 }
 .tok-2 {
-  background-color: color-mix(in oklab, var(--color-fg) 9%, white);
+  background-color: color-mix(in oklab, var(--color-muted) 18%, var(--color-surface));
 }
 .tok-3 {
-  background-color: color-mix(in oklab, var(--color-accent-strong) 24%, white);
+  background-color: color-mix(in oklab, var(--color-accent-strong) 60%, var(--color-surface));
 }
 
 /* --- Copy-code button (injected onto rehype-pretty-code figures) --- */

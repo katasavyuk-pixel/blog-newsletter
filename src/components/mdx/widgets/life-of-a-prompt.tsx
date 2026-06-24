@@ -170,7 +170,7 @@ export function LifeOfAPrompt() {
         <div className="sticky top-16 overflow-hidden rounded-2xl border border-border bg-surface shadow-card lg:top-24">
           <span
             aria-hidden
-            className="block h-0.5 w-full bg-gradient-to-r from-[var(--color-fg)] via-[var(--color-accent)] to-[var(--color-fg)]"
+            className="block h-0.5 w-full bg-gradient-to-r from-transparent via-[var(--color-accent)] to-transparent"
           />
           <div className="p-4">
             <ol className="flex flex-wrap items-center gap-1 text-[0.65rem]">

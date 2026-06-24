@@ -16,10 +16,10 @@ export default function Home() {
       <section className="relative isolate overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
           <div
-            className="animate-gradient-pan absolute -top-1/3 left-1/2 h-[55rem] w-[55rem] -translate-x-1/2 rounded-full opacity-10 blur-3xl"
+            className="animate-gradient-pan absolute -top-1/3 left-1/2 h-[55rem] w-[55rem] -translate-x-1/2 rounded-full opacity-30 blur-3xl"
             style={{
               background:
-                "radial-gradient(circle at 30% 30%, var(--color-accent), transparent 60%), radial-gradient(circle at 70% 70%, var(--color-fg), transparent 60%)",
+                "radial-gradient(circle at 30% 30%, var(--color-accent), transparent 60%), radial-gradient(circle at 70% 70%, var(--color-accent-strong), transparent 60%)",
             }}
           />
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--color-accent)] to-transparent" />

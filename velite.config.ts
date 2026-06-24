@@ -41,8 +41,8 @@ export default defineConfig({
       [
         rehypePrettyCode,
         {
-          // Light theme only (brand law: never dark). Code surface styled in globals.css.
-          theme: "github-light",
+          // Dark theme (Kata Pro brand: red/black). Code surface styled in globals.css.
+          theme: "github-dark",
           keepBackground: false,
           transformers: [transformerNotationDiff()],
         },

@@ -83,7 +83,7 @@ export function HallucinationQuiz({
                   <span
                     className={cn(
                       "ml-auto font-mono text-xs",
-                      correct ? "text-accent-ink" : "text-danger",
+                      correct ? "text-success" : "text-danger",
                     )}
                   >
                     {correct ? "✓ acertaste" : "✗ era " + (item.fake ? "inventada" : "real")}
