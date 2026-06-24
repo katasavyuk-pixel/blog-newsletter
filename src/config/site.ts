@@ -1,40 +1,43 @@
 /**
  * Single source of truth for the site's textual identity (brief §1).
  *
- * TODO(katamv): fill these with the real values. The whole site reads from
- * here, so this is the only file you edit to set name / domain / bio / socials.
- * Kept i18n-ready: text lives in config, not hardcoded in components.
+ * The whole site reads from here — this is the only file you edit to set
+ * name / domain / bio / socials. Kept i18n-ready: text lives in config, not
+ * hardcoded in components.
+ *
+ * AJUSTA si procede: `domain`/`url` (tu dominio real) y `social` (tus perfiles).
+ * `author.bio` es un borrador neutro — personalízalo cuando quieras.
  */
 
 export type SocialLink = { label: string; href: string };
 
 export const siteConfig = {
-  /** §1 NOMBRE_MARCA */
-  name: "TODO_NOMBRE_MARCA",
-  /** §1 DOMINIO (without protocol) */
-  domain: "tudominio.com",
+  /** §1 NOMBRE_MARCA — marca personal = tu nombre. */
+  name: "Kata Ivanovych",
+  /** §1 DOMINIO (without protocol). AJUSTA con tu dominio real. */
+  domain: "kataivanovych.com",
   /** Absolute base URL — used for metadataBase / canonical / OG. */
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://tudominio.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://kataivanovych.com",
   /** §1 TAGLINE — one line: what you promise and to whom. */
   tagline: "Aprende a aplicar IA de verdad, sin humo.",
   /** Default meta description (1–2 sentences). */
   description:
-    "Blog y newsletter sobre inteligencia artificial: artículos, recursos gratuitos y formación práctica para entender y aplicar la IA.",
+    "Blog y newsletter sobre inteligencia artificial: artículos, recursos gratuitos y formación práctica para entender y aplicar la IA en tu día a día.",
   /** Primary content language. */
   locale: "es",
   /** §1 AUDIENCIA — mixed: devs + businesses + curious (leveled via tags). */
   audience: "mixta",
   author: {
     /** §1 TU_NOMBRE */
-    name: "TODO_TU_NOMBRE",
-    /** §1 TU_BIO_CORTA — 2–3 sentences for "Sobre mí" and post authorship. */
-    bio: "TODO: 2-3 frases sobre ti para la página 'Sobre mí' y la autoría de los artículos.",
+    name: "Kata Ivanovych",
+    /** §1 TU_BIO_CORTA — draft neutro, personalízalo. */
+    bio: "Ayudo a personas y equipos a entender y aplicar la inteligencia artificial sin humo. Aquí comparto artículos, recursos y formación práctica: lo que funciona, lo que no, y cómo empezar hoy.",
   },
-  /** §1 REDES — uncomment / fill with your real profiles. */
+  /** §1 REDES — descomenta y pon tus perfiles reales. */
   social: [
-    // { label: "LinkedIn", href: "https://linkedin.com/in/tu-perfil" },
-    // { label: "X", href: "https://x.com/tu-perfil" },
-    // { label: "GitHub", href: "https://github.com/tu-perfil" },
+    // { label: "LinkedIn", href: "https://linkedin.com/in/kata-ivanovych" },
+    // { label: "X", href: "https://x.com/kataivanovych" },
+    // { label: "GitHub", href: "https://github.com/kataivanovych" },
   ] as SocialLink[],
   /** Newsletter capture copy (the real form is wired in Fase 2). */
   newsletter: {
