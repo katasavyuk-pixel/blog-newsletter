@@ -2,7 +2,7 @@
 
 # CLAUDE.md — Blog + Newsletter de marca personal (IA)
 
-> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Fase 2** (2026-06-24).
+> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Rediseño Fase A — Caja de Cristal** (2026-06-24).
 
 ## Qué es esto
 
@@ -72,6 +72,17 @@ next.config.ts · .env.example
 - **Newsletter = lista en Supabase, Resend solo entrega.** Estado de consentimiento (`pending`/`confirmed`/`unsubscribed`) en nuestro Postgres. Transaccional (opt-in/bienvenida) vía `emails.send`; boletín vía loop propio sobre filas `confirmed` con `resend.batch.send` (lotes de 100, ≤5 req/s, idempotente por `issue_id`, breaker por cuota). Esto hace triviales los derechos RGPD y mantiene la PII fuera de la infra US de Resend.
   - **Matiz RGPD crítico:** región `eu-west-1` controla solo desde dónde se *envía*, NO residencia de datos (account data/logs/metadata de Resend viven en US bajo SCC + DPA). **Nunca prometer "100% UE"** — mismo encuadre que el matiz Gemini/OpenRouter.
 - **Analítica cookieless** (Umami EU / Plausible EU) → sin banner. Evitar GA4.
+
+## Capa interactiva — "Caja de Cristal" (rediseño)
+
+Concepto: cada post es un artefacto manipulable, no solo texto. Stack añadido: `motion` (animaciones), Radix Popover (glosario accesible), `gpt-tokenizer` (cliente), View Transitions (`experimental.viewTransition`), CSS scroll-driven (barra de progreso).
+
+- **Widgets en MDX**: cada interactivo es una isla `"use client"` registrada en `src/components/mdx/widgets/index.ts` (`widgets`) y pasada por la prop `components` de `MDXContent` en `src/app/blog/[slug]/page.tsx`. **Para añadir uno**: crear el componente en `src/components/mdx/widgets/`, exportarlo en `index.ts`, y usarlo en el `.mdx` (`<TokenizerPlayground/>`, `<Quiz/>`, `<Term id="token">…</Term>`, `<Callout>`, `<GuessReveal>`). Datos pesados precomputados en JSON colocado en `content/posts/<slug>/`.
+- **Toolkit** (`src/components/mdx/widgets/`): `WidgetFrame` (la "lab card" que envuelve todo), `Param` (range accesible), `Quiz` (explicación por opción, sin "fallar", localStorage), `Term` (glosario `src/lib/glossary.ts`), `Callout`, `GuessReveal`, `TokenizerPlayground`.
+- **Estado/gamificación**: `src/hooks/use-local-state.ts` (localStorage vía `useSyncExternalStore`, SSR-safe, claves `slug+widgetId`). Persistencia híbrida: localStorage ahora → Supabase Auth cuando haya tracción.
+- **Motion/a11y (reglas duras)**: `MotionProvider` (`reducedMotion="user"`) en el layout; bloque global `@media (prefers-reduced-motion: reduce)` en `globals.css`; `useReducedMotion` hook. **Cian solo acento; texto navy** (cian sobre blanco falla AA). Cada widget: operable por teclado, fallback estático, `not-prose`.
+- **Lectura inmersiva**: `ReadingProgress` (CSS scroll-timeline, 0 JS), `Toc` con scroll-spy (IntersectionObserver), `CopyCode` (botón sobre los bloques Shiki), cabecera de post tipo revista (frontmatter `kicker`/`dek` en `velite.config.ts`).
+- **Rollout**: Fase A ✅ (fundación + toolkit + Tokenizer + rediseño). Pendiente: Fase B (más widgets + explorable insignia), Fase C (juegos + gamificación localStorage + loop newsletter), Fase D (cuentas + repaso espaciado). Catálogo completo en el plan y `tasks/wi7u5i5it.output`.
 
 ## Modelo de datos (diseñado día 1, construido por fases)
 
