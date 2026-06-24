@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
     // Example: { protocol: "https", hostname: "images.tudominio.com" }
     remotePatterns: [],
   },
+  experimental: {
+    // Native View Transitions API for app-like navigation (React 19.2 <ViewTransition>).
+    viewTransition: true,
+  },
 };
 
 export default nextConfig;

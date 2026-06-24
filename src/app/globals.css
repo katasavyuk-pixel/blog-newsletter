@@ -34,6 +34,17 @@
 
   /* Elevation (token-based, derived from --color-fg) */
   --shadow-card: 0 1px 2px color-mix(in oklab, var(--color-fg) 6%, transparent);
+
+  /* Monospace stack for code/labels */
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Motion easings */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Fluid display sizes (clamp) → utilities text-display / text-hero */
+  --text-display: clamp(2.25rem, 1.4rem + 3.6vw, 4rem);
+  --text-hero: clamp(2.75rem, 1.6rem + 5vw, 5.5rem);
 }
 
 @theme inline {
@@ -135,4 +146,104 @@
   text-decoration: underline;
   text-decoration-color: var(--color-accent);
   text-underline-offset: 4px;
+}
+
+/* --- Motion foundation --- */
+@keyframes gradient-pan {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Animated navy→cyan brand gradient (hero accents) */
+.animate-gradient-pan {
+  background-size: 220% 220%;
+  animation: gradient-pan 9s var(--ease-out-expo) infinite;
+}
+
+/* Reading-progress bar driven purely by scroll position (zero JS). */
+.reading-progress {
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+@supports (animation-timeline: scroll()) {
+  .reading-progress {
+    animation: reading-progress-grow linear;
+    animation-timeline: scroll(root block);
+  }
+  @keyframes reading-progress-grow {
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+/* --- Reduced motion: neutralize all of the above globally --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-gradient-pan {
+    animation: none !important;
+  }
+  .reading-progress {
+    animation: none !important;
+    transform: scaleX(1) !important;
+  }
+}
+
+/* --- Tokenizer chips (brand-derived tints, no hardcoded hex) --- */
+.tok-chip {
+  display: inline-block;
+  border-radius: 0.35rem;
+  padding: 0.05rem 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: var(--color-fg);
+  white-space: pre;
+}
+.tok-0 {
+  background-color: color-mix(in oklab, var(--color-accent) 16%, white);
+}
+.tok-1 {
+  background-color: color-mix(in oklab, var(--color-accent) 32%, white);
+}
+.tok-2 {
+  background-color: color-mix(in oklab, var(--color-fg) 9%, white);
+}
+.tok-3 {
+  background-color: color-mix(in oklab, var(--color-accent-strong) 24%, white);
+}
+
+/* --- Copy-code button (injected onto rehype-pretty-code figures) --- */
+.copy-code-btn {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+  padding: 0.15rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+[data-rehype-pretty-code-figure]:hover .copy-code-btn,
+.copy-code-btn:focus-visible {
+  opacity: 1;
+}
+.copy-code-btn:hover {
+  color: var(--color-fg);
 }
