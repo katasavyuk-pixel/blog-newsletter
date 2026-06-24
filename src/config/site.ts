@@ -14,10 +14,10 @@ export type SocialLink = { label: string; href: string };
 export const siteConfig = {
   /** §1 NOMBRE_MARCA — marca personal = tu nombre. */
   name: "Kata Ivanovych",
-  /** §1 DOMINIO (without protocol). AJUSTA con tu dominio real. */
-  domain: "kataivanovych.com",
+  /** §1 DOMINIO (without protocol) — subdominio del dominio NBI ianexora.com. */
+  domain: "kata.ianexora.com",
   /** Absolute base URL — used for metadataBase / canonical / OG. */
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://kataivanovych.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://kata.ianexora.com",
   /** §1 TAGLINE — one line: what you promise and to whom. */
   tagline: "Aprende a aplicar IA de verdad, sin humo.",
   /** Default meta description (1–2 sentences). */
@@ -25,6 +25,8 @@ export const siteConfig = {
     "Blog y newsletter sobre inteligencia artificial: artículos, recursos gratuitos y formación práctica para entender y aplicar la IA en tu día a día.",
   /** Primary content language. */
   locale: "es",
+  /** Contact inbox for the privacy policy / data requests. TODO: confirma que es un buzón real (alias en ianexora.com). */
+  contactEmail: "privacidad@ianexora.com",
   /** §1 AUDIENCIA — mixed: devs + businesses + curious (leveled via tags). */
   audience: "mixta",
   author: {
