@@ -2,41 +2,71 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { TurnstileWidget } from "./turnstile-widget";
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+type FormState = "idle" | "loading" | "done" | "preview" | "error";
 
 /**
- * Newsletter capture UI (footer + embeddable).
- *
- * Fase 0 PLACEHOLDER: renders the full RGPD-ready form (email + explicit
- * consent + privacy link) but does NOT submit anywhere yet. The real
- * double opt-in flow (POST /api/subscribe → Resend → Supabase) lands in Fase 2.
- * `source` is captured now so Fase 2 can persist it on the subscriber row.
+ * Newsletter capture form (footer, /recursos, embeddable).
+ * Posts to /api/subscribe → double opt-in. `resource` turns it into a lead-magnet
+ * capture (source becomes `lead_magnet:<resource>`).
  */
-export function SubscribeForm({ source = "footer" }: { source?: string }) {
+export function SubscribeForm({
+  source = "footer",
+  resource,
+}: {
+  source?: string;
+  resource?: string;
+}) {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [state, setState] = useState<FormState>("idle");
   const inputId = `newsletter-email-${source}`;
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    // Placeholder only — no network call until Fase 2.
-    setSubmitted(true);
+    setState("loading");
+    const form = event.currentTarget;
+    const turnstileToken =
+      (form.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null)
+        ?.value || undefined;
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source, resource, turnstileToken }),
+      });
+      if (!res.ok) {
+        setState("error");
+        return;
+      }
+      const data = (await res.json().catch(() => ({}))) as { preview?: boolean };
+      setState(data.preview ? "preview" : "done");
+    } catch {
+      setState("error");
+    }
   }
 
-  if (submitted) {
+  if (state === "done") {
     return (
       <p className="text-sm text-accent-ink" role="status">
-        ¡Gracias! La newsletter se activa en la Fase 2 — de momento esto es una
-        previsualización del formulario.
+        ¡Casi! Revisa tu correo y confirma la suscripción (doble opt-in).
+      </p>
+    );
+  }
+
+  if (state === "preview") {
+    return (
+      <p className="text-sm text-accent-ink" role="status">
+        Formulario conectado ✓ — modo previsualización. Configura Supabase y Resend
+        para enviar el email de confirmación real.
       </p>
     );
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      data-source={source}
-      className="flex flex-col gap-3"
-    >
+    <form onSubmit={handleSubmit} data-source={source} className="flex flex-col gap-3">
       <div className="flex flex-col gap-2 sm:flex-row">
         <label htmlFor={inputId} className="sr-only">
           Correo electrónico
@@ -51,10 +81,13 @@ export function SubscribeForm({ source = "footer" }: { source?: string }) {
           placeholder="tu@email.com"
           className="h-11 w-full rounded-full border border-border bg-bg px-4 text-sm text-fg placeholder:text-muted"
         />
-        <Button type="submit" size="md">
-          Suscribirme
+        <Button type="submit" size="md" disabled={state === "loading"}>
+          {state === "loading" ? "Enviando…" : "Suscribirme"}
         </Button>
       </div>
+
+      {TURNSTILE_SITE_KEY ? <TurnstileWidget siteKey={TURNSTILE_SITE_KEY} /> : null}
+
       <label className="flex items-start gap-2 text-xs leading-relaxed text-muted">
         <input
           type="checkbox"
@@ -69,6 +102,12 @@ export function SubscribeForm({ source = "footer" }: { source?: string }) {
           . Te enviaremos un email para confirmar tu suscripción (doble opt-in).
         </span>
       </label>
+
+      {state === "error" ? (
+        <p className="text-sm text-danger" role="alert">
+          Algo falló. Inténtalo de nuevo en un momento.
+        </p>
+      ) : null}
     </form>
   );
 }
