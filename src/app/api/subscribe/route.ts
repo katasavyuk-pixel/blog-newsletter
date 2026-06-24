@@ -77,12 +77,21 @@ export async function POST(request: NextRequest) {
     `${siteConfig.url}/api/confirm?token=${token}` +
     (body.resource ? `&resource=${encodeURIComponent(body.resource)}` : "");
 
-  await getResend().emails.send({
-    from: FROM,
-    to: body.email,
-    subject: `Confirma tu suscripción a ${siteConfig.name}`,
-    react: ConfirmOptInEmail({ confirmUrl, brand: siteConfig.name }),
-  });
+  try {
+    const { error } = await getResend().emails.send({
+      from: FROM,
+      to: body.email,
+      subject: `Confirma tu suscripción a ${siteConfig.name}`,
+      react: ConfirmOptInEmail({ confirmUrl, brand: siteConfig.name }),
+    });
+    if (error) {
+      console.error("[subscribe] resend error:", error);
+      return NextResponse.json({ ok: false, error: "email_failed" }, { status: 502 });
+    }
+  } catch (err) {
+    console.error("[subscribe] resend threw:", err);
+    return NextResponse.json({ ok: false, error: "email_failed" }, { status: 502 });
+  }
 
   return ok();
 }
