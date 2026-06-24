@@ -12,8 +12,8 @@
 export type SocialLink = { label: string; href: string };
 
 export const siteConfig = {
-  /** §1 NOMBRE_MARCA — marca personal = tu nombre. */
-  name: "Kata Ivanovych",
+  /** §1 NOMBRE_MARCA — marca personal, unificada con el canal de YouTube. */
+  name: "Kata Pro",
   /** §1 DOMINIO (without protocol) — subdominio del dominio NBI ianexora.com. */
   domain: "kata.ianexora.com",
   /** Absolute base URL — used for metadataBase / canonical / OG. */
@@ -31,7 +31,7 @@ export const siteConfig = {
   audience: "mixta",
   author: {
     /** §1 TU_NOMBRE */
-    name: "Kata Ivanovych",
+    name: "Kata Pro",
     /** §1 TU_BIO_CORTA — draft neutro, personalízalo. */
     bio: "Ayudo a personas y equipos a entender y aplicar la inteligencia artificial sin humo. Aquí comparto artículos, recursos y formación práctica: lo que funciona, lo que no, y cómo empezar hoy.",
   },
