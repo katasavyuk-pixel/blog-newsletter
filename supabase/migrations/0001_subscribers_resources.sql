@@ -63,7 +63,9 @@ as $$
   update public.resources set download_count = download_count + 1 where id = p_id;
 $$;
 
-revoke execute on function public.increment_download_count(uuid) from public;
+-- Revoke from PUBLIC *and* anon/authenticated: Supabase grants EXECUTE to those
+-- roles by default, so revoking only from PUBLIC leaves them able to call it.
+revoke execute on function public.increment_download_count(uuid) from public, anon, authenticated;
 grant  execute on function public.increment_download_count(uuid) to service_role;
 
 -- ============================================================
