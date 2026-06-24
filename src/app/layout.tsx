@@ -38,6 +38,11 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
   },
+  alternates: {
+    types: {
+      "application/rss+xml": [{ url: "/feed.xml", title: `RSS · ${siteConfig.name}` }],
+    },
+  },
   robots: { index: true, follow: true },
 };
 
