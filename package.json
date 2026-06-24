@@ -16,10 +16,13 @@
     "#site/content": "./.velite/index.js"
   },
   "dependencies": {
+    "@radix-ui/react-popover": "^1.1.17",
     "@react-email/components": "^1.0.12",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.108.2",
     "feed": "^4.2.2",
+    "gpt-tokenizer": "^3.4.0",
+    "motion": "^12.41.0",
     "next": "16.2.9",
     "react": "19.2.4",
     "react-dom": "19.2.4",
