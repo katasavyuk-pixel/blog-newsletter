@@ -19,7 +19,7 @@ export function Eyebrow({
   return (
     <p
       className={cn(
-        "font-mono text-xs uppercase tracking-[0.18em]",
+        "font-display text-xs font-semibold uppercase tracking-[0.2em]",
         tone === "dark" ? "text-salmon" : "text-eyebrow",
         className,
       )}

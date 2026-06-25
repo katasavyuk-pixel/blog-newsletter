@@ -16,10 +16,10 @@ export function Header() {
         >
           <span
             aria-hidden
-            className="h-6 w-6 rounded-md bg-accent"
-            style={{ boxShadow: "0 0 18px var(--color-glow-coral)" }}
+            className="h-4 w-4 rotate-45 rounded-[3px] bg-accent"
+            style={{ boxShadow: "0 0 16px var(--color-glow-coral)" }}
           />
-          <span className="font-mono text-sm font-medium uppercase tracking-[0.18em] text-on-dark">
+          <span className="font-display text-sm font-extrabold uppercase tracking-[0.2em] chrome-text">
             {siteConfig.name}
           </span>
         </Link>

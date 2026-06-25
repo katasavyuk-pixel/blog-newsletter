@@ -41,7 +41,7 @@ export function InteractiveShowcase() {
           </div>
           <Link
             href="/blog/tag/interactivo"
-            className="font-mono text-sm text-accent-ink transition-colors hover:text-accent-strong"
+            className="font-display text-sm text-accent-ink transition-colors hover:text-accent-strong"
           >
             Todos los artículos →
           </Link>

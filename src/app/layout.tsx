@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Newsreader, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Montserrat, Anton } from "next/font/google";
 import "./globals.css";
 import { AnnouncementBar } from "@/components/home/announcement-bar";
 import { Header } from "@/components/layout/header";
@@ -7,28 +7,19 @@ import { Footer } from "@/components/layout/footer";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { siteConfig } from "@/config/site";
 
-// Display serif (headings) — Newsreader weight 500 with italic accent phrases.
-const display = Newsreader({
+// UI / body / headings — Montserrat (weight hierarchy 400–800).
+const sans = Montserrat({
   subsets: ["latin"],
-  variable: "--font-newsreader",
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
+  variable: "--font-montserrat",
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
-// Body sans — Hanken Grotesk.
-const body = Hanken_Grotesk({
+// Display punch — Anton (condensed, for the hero headline + oversized numerals).
+const punch = Anton({
   subsets: ["latin"],
-  variable: "--font-hanken",
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-// Mono labels — JetBrains Mono (eyebrows, badges, dates, wordmark).
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains",
-  weight: ["400", "500"],
+  variable: "--font-anton",
+  weight: ["400"],
   display: "swap",
 });
 
@@ -66,7 +57,7 @@ export default function RootLayout({
   return (
     <html
       lang={siteConfig.locale}
-      className={`${display.variable} ${body.variable} ${mono.variable} h-full`}
+      className={`${sans.variable} ${punch.variable} h-full`}
     >
       <body className="flex min-h-full flex-col bg-bg text-fg antialiased">
         <MotionProvider>

@@ -13,7 +13,7 @@ export function AnnouncementBar() {
     <div className="bg-dark text-on-dark-muted">
       <Container
         size="wide"
-        className="flex items-center justify-center py-2 text-center font-mono text-xs tracking-wide"
+        className="flex items-center justify-center py-2 text-center font-display text-xs tracking-wide"
       >
         <Link href={href} className="transition-colors hover:text-on-dark">
           {text} <span className="text-salmon">→</span>

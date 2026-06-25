@@ -37,15 +37,12 @@ export function BrandVisual({
       />
       <span
         aria-hidden
-        className={cn(
-          "relative font-display font-medium italic text-on-dark/90",
-          labelClassName,
-        )}
+        className={cn("relative font-punch chrome-text", labelClassName)}
       >
         {label}
       </span>
       {caption ? (
-        <span className="absolute bottom-3 left-3 rounded-xl border border-dark-border-2 bg-dark/80 px-3 py-1.5 font-mono text-xs text-salmon backdrop-blur">
+        <span className="absolute bottom-3 left-3 rounded-xl border border-dark-border-2 bg-dark/80 px-3 py-1.5 font-display text-xs font-medium uppercase tracking-wide text-salmon backdrop-blur">
           {caption}
         </span>
       ) : null}

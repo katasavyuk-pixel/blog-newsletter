@@ -39,7 +39,7 @@ export function NewsletterCta() {
           <h3 className="font-display text-2xl font-medium text-on-dark">
             Suscríbete gratis
           </h3>
-          <p className="mt-1 font-mono text-xs text-on-dark-faint">
+          <p className="mt-1 font-display text-xs text-on-dark-faint">
             Cero ruido · cancela cuando quieras
           </p>
           <div className="mt-5">
