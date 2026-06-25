@@ -89,10 +89,10 @@ export default async function PostPage({
           ← Volver al blog
         </Link>
         <header className="mt-8">
-          <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-accent-ink">
+          <p className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
             {post.kicker ?? post.tags[0] ?? "Artículo"}
           </p>
-          <h1 className="mt-3 font-display text-4xl font-bold leading-[1.05] tracking-tight text-fg text-balance sm:text-5xl">
+          <h1 className="mt-3 font-display text-4xl font-medium leading-[1.05] tracking-tight text-fg text-balance sm:text-5xl">
             {post.title}
           </h1>
           <p className="mt-5 text-lg leading-relaxed text-muted sm:text-xl">

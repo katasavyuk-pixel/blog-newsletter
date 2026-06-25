@@ -8,7 +8,7 @@ export default function BajaPage() {
   return (
     <Container className="py-24">
       <div className="mx-auto max-w-xl text-center">
-        <h1 className="font-display text-3xl font-bold text-fg">
+        <h1 className="font-display text-3xl font-medium text-fg">
           Te has dado de baja
         </h1>
         <p className="mt-3 text-muted">

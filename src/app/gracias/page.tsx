@@ -15,7 +15,7 @@ export default async function GraciasPage({
     return (
       <Container className="py-24">
         <div className="mx-auto max-w-xl text-center">
-          <h1 className="font-display text-3xl font-bold text-fg">
+          <h1 className="font-display text-3xl font-medium text-fg">
             Enlace no válido
           </h1>
           <p className="mt-3 text-muted">
@@ -39,7 +39,7 @@ export default async function GraciasPage({
         >
           ✓
         </span>
-        <h1 className="mt-5 font-display text-3xl font-bold text-fg">
+        <h1 className="mt-5 font-display text-3xl font-medium text-fg">
           ¡Suscripción confirmada!
         </h1>
         <p className="mt-3 text-muted">

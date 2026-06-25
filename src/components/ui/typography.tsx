@@ -4,13 +4,13 @@ import { cn } from "@/lib/utils";
 type HeadingLevel = 1 | 2 | 3 | 4;
 
 const headingSizes: Record<HeadingLevel, string> = {
-  1: "text-4xl sm:text-5xl font-bold",
-  2: "text-3xl sm:text-4xl font-semibold",
-  3: "text-2xl font-semibold",
-  4: "text-xl font-semibold",
+  1: "text-4xl sm:text-5xl font-medium",
+  2: "text-3xl sm:text-4xl font-medium",
+  3: "text-2xl font-medium",
+  4: "text-xl font-medium",
 };
 
-/** Display heading (Space Grotesk) with balanced wrapping and brand color. */
+/** Display heading (Newsreader serif, weight 500) with balanced wrapping. */
 export function Heading({
   level = 2,
   className,

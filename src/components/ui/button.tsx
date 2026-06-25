@@ -2,16 +2,31 @@ import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type ButtonVariant = "primary" | "secondary" | "ghost";
+type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "ghost"
+  | "outline-dark"
+  | "dark-solid"
+  | "ghost-coral";
 type ButtonSize = "sm" | "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-full font-display font-medium transition-colors disabled:pointer-events-none disabled:opacity-50";
+  "inline-flex items-center justify-center gap-2 rounded-xl font-body font-semibold transition-colors disabled:pointer-events-none disabled:opacity-50";
 
 const variants: Record<ButtonVariant, string> = {
+  // Coral surface, white label — the primary CTA on any background.
   primary: "bg-accent text-on-accent hover:bg-accent-strong",
+  // Light outline — secondary action on cream surfaces.
   secondary: "border border-border bg-surface text-fg hover:bg-surface-2",
   ghost: "text-fg hover:bg-surface",
+  // Outline action sitting on a dark espresso section.
+  "outline-dark":
+    "border border-dark-border-3 text-on-dark hover:border-outline-hover hover:bg-white/5",
+  // Solid espresso — secondary action that must read as "dark".
+  "dark-solid": "bg-dark text-on-dark hover:bg-dark-input",
+  // Translucent white — secondary action sitting on the coral CTA panel.
+  "ghost-coral": "border border-white/35 bg-white/15 text-on-accent hover:bg-white/25",
 };
 
 const sizes: Record<ButtonSize, string> = {

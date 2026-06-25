@@ -47,7 +47,16 @@ export const siteConfig = {
     description:
       "Ideas prácticas sobre IA, sin ruido. Un email cuando hay algo que merece la pena.",
     cta: "Suscribirme",
+    /** Value-prop checklist shown next to the home capture form (honest, no metrics). */
+    bullets: [
+      "Una idea práctica sobre IA que puedes aplicar, sin relleno.",
+      "Lo que funciona y lo que no, explicado en claro.",
+      "Recursos y artículos interactivos para tocar y entender.",
+    ],
   },
+  /** Top-of-site announcement bar (set to "" to hide). */
+  announcement:
+    "Nuevo: artículos interactivos sobre IA — toca, ajusta y entiende cómo funciona",
 } as const;
 
 export type SiteConfig = typeof siteConfig;

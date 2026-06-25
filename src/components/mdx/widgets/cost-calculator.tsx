@@ -25,7 +25,7 @@ function Stat({
     <div className="rounded-xl border border-border bg-surface p-3 text-center">
       <p className="text-xs text-muted">{label}</p>
       <p
-        className={`mt-0.5 font-display text-lg font-bold tabular-nums ${accent ? "text-accent-ink" : "text-fg"}`}
+        className={`mt-0.5 font-display text-lg font-medium tabular-nums ${accent ? "text-accent-ink" : "text-fg"}`}
       >
         {value}
       </p>

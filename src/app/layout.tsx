@@ -1,21 +1,34 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter } from "next/font/google";
+import { Newsreader, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { AnnouncementBar } from "@/components/home/announcement-bar";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { siteConfig } from "@/config/site";
 
-const display = Space_Grotesk({
+// Display serif (headings) — Newsreader weight 500 with italic accent phrases.
+const display = Newsreader({
   subsets: ["latin"],
-  variable: "--font-space-grotesk",
-  weight: ["500", "600", "700"],
+  variable: "--font-newsreader",
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
-const body = Inter({
+// Body sans — Hanken Grotesk.
+const body = Hanken_Grotesk({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-hanken",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+// Mono labels — JetBrains Mono (eyebrows, badges, dates, wordmark).
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -53,10 +66,11 @@ export default function RootLayout({
   return (
     <html
       lang={siteConfig.locale}
-      className={`${display.variable} ${body.variable} h-full`}
+      className={`${display.variable} ${body.variable} ${mono.variable} h-full`}
     >
       <body className="flex min-h-full flex-col bg-bg text-fg antialiased">
         <MotionProvider>
+          <AnnouncementBar />
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
