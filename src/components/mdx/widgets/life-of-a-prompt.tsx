@@ -229,7 +229,7 @@ export function LifeOfAPrompt() {
               i === active ? "border-accent" : "border-border",
             )}
           >
-            <p className="font-mono text-xs font-semibold uppercase tracking-wide text-accent-ink">
+            <p className="font-mono text-xs font-medium uppercase tracking-wide text-accent-ink">
               Paso {i + 1} · {STAGES[i].label}
             </p>
             <h3 className="mt-2 font-display text-2xl font-semibold text-fg">

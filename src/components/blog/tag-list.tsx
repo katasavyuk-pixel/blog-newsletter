@@ -17,7 +17,7 @@ export function TagList({
           className={cn(
             "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors",
             active === tag
-              ? "border-accent bg-accent text-on-accent"
+              ? "border-accent-strong bg-accent-strong text-on-accent"
               : "border-border text-muted hover:bg-surface hover:text-fg",
           )}
         >

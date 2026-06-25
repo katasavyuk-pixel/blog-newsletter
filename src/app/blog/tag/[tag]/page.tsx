@@ -37,7 +37,7 @@ export default async function TagPage({
     <Container className="py-16">
       <header className="max-w-2xl">
         <p className="text-sm font-medium text-accent-ink">Etiqueta</p>
-        <h1 className="mt-1 font-display text-4xl font-bold tracking-tight text-fg">
+        <h1 className="mt-1 font-display text-4xl font-medium tracking-tight text-fg">
           #{decoded}
         </h1>
         <p className="mt-3 text-lg text-muted">

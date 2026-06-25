@@ -14,7 +14,7 @@ export default function AboutPage() {
   return (
     <Container className="py-16">
       <div className="mx-auto max-w-2xl">
-        <h1 className="font-display text-4xl font-bold tracking-tight text-fg sm:text-5xl">
+        <h1 className="font-display text-4xl font-medium tracking-tight text-fg sm:text-5xl">
           Sobre mí
         </h1>
         <Prose className="mt-6">

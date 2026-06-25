@@ -17,7 +17,7 @@ export default async function ResourcesPage() {
   return (
     <Container className="py-16">
       <header className="max-w-2xl">
-        <h1 className="font-display text-4xl font-bold tracking-tight text-fg sm:text-5xl">
+        <h1 className="font-display text-4xl font-medium tracking-tight text-fg sm:text-5xl">
           Recursos gratuitos
         </h1>
         <p className="mt-3 text-lg leading-relaxed text-muted">

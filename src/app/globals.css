@@ -2,42 +2,69 @@
 @plugin "@tailwindcss/typography";
 
 /*
-  Kata Ivanovych brand identity — "Atardecer Coral" — LIGHT THEME ONLY.
-  All design tokens are CSS variables, so a future `.dark` block +
-  `@custom-variant dark` could be added later without touching any
-  component (dark-ready architecture). NEVER hardcode hex in JSX —
-  always reference these tokens (bg-bg, text-fg, text-accent-ink, ...).
-  Signature look: sunset gradient (orange→coral→magenta→wine) + texture + depth.
+  Kata Ivanovych brand identity — "Atardecer Coral" (espresso · coral · cream).
+  Warm light page with dark espresso sections (#15100d) lit by a pulsing coral
+  glow. All design tokens are CSS variables, so a future `.dark` block +
+  `@custom-variant dark` could be added later without touching any component.
+  NEVER hardcode hex in JSX — always reference these tokens
+  (bg-bg, text-fg, text-accent-ink, bg-dark, text-on-dark, font-mono, ...).
+  Signature look: serif display (Newsreader) + mono labels (JetBrains Mono),
+  espresso glow sections, emissive coral, editorial gold numerals.
 */
 
 @theme {
-  /* Surfaces */
-  --color-bg: #fff7f4; /* warm cream */
-  --color-surface: #fbefec; /* gentle warm off-white (code blocks, panels) */
-  --color-surface-2: #f8e1e2; /* rosé tint */
+  /* Surfaces (warm light) */
+  --color-bg: #f4eee3; /* cream — page background */
+  --color-surface: #fbf7ef; /* lightest cream — cards / code blocks / panels */
+  --color-surface-2: #eae0ce; /* oat band — section bands / card hover */
 
   /* Text — contrast AA-verified on --color-bg */
-  --color-fg: #3a1019; /* wine-charcoal — body & headings (~13:1) */
-  --color-muted: #7a4e55; /* secondary text (~5.5:1) */
+  --color-fg: #241c16; /* warm near-black — body & headings (~14.5:1) */
+  --color-muted: #6e6253; /* secondary text (~5.1:1) */
+  --color-faint: #9c8e7b; /* decorative muted on light (dates) — non-essential */
 
-  /* Brand accents */
-  --color-accent: #fb7185; /* coral — decorative / button surface (not text on white) */
-  --color-accent-strong: #9f1239; /* hover / darker coral-wine */
-  --color-accent-ink: #be123c; /* coral for TEXT on light (~5.9:1, AA) */
-  --color-on-accent: #5b0e2a; /* dark wine text over coral surfaces (~5.1:1) */
+  /* Brand accents (coral / terracotta) */
+  --color-accent: #d8442b; /* coral — SURFACE: buttons, decor, ring (not small text) */
+  --color-accent-strong: #be3621; /* hover / coral carrying small white text (~5.6:1) */
+  --color-accent-ink: #be3621; /* coral for TEXT on light (~4.9:1, AA) */
+  --color-on-accent: #ffffff; /* text over coral surfaces (bold / large) */
+  --color-coral-soft: #fce4de; /* pale pink over coral panels (large only) */
+  --color-eyebrow: #a8755a; /* terracotta eyebrow label */
+  --color-gold: #c9a06a; /* editorial oversized numerals (decorative) */
+  --color-salmon: #e8896f; /* accent + links over dark (~7.4:1) */
+
+  /* Dark espresso sections */
+  --color-dark: #15100d; /* espresso section background */
+  --color-dark-input: #100c09; /* form inputs over dark */
+  --color-dark-border: #2e241c; /* hairline over dark */
+  --color-dark-border-2: #3a2d22; /* hairline over dark (stronger) */
+  --color-dark-border-3: #4a3b2e; /* hairline over dark (strongest) */
+  --color-outline-hover: #8a7257; /* outline-on-dark hover */
+  --color-on-dark: #f4eee3; /* headings / strong text over dark (~18:1) */
+  --color-on-dark-muted: #cdbfa9; /* body text over dark (~10.5:1) */
+  --color-on-dark-faint: #9c8e7b; /* decorative text over dark */
+
+  /* Category chips (post / resource accents) */
+  --color-cat-navy: #233246;
+  --color-cat-toffee: #7a4b1e;
+  --color-cat-forest: #3b5c45;
+  --color-cat-pale-green: #dce8de;
+  --color-cat-pale-blue: #dce3ec;
+
+  /* Glow layers (referenced inline inside radial-gradients) */
+  --color-glow-coral: rgba(216, 68, 43, 0.55);
+  --color-glow-amber: rgba(226, 162, 74, 0.4);
 
   /* Lines & focus */
-  --color-border: #f3d9dc;
-  --color-ring: #e11d48;
+  --color-border: #e4daca;
+  --color-ring: #d8442b;
 
   /* Status */
   --color-danger: #b3261e;
 
   /* Elevation (token-based, derived from --color-fg) */
   --shadow-card: 0 1px 2px color-mix(in oklab, var(--color-fg) 6%, transparent);
-
-  /* Monospace stack for code/labels */
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --shadow-card-hover: 0 12px 28px color-mix(in oklab, var(--color-fg) 12%, transparent);
 
   /* Motion easings */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -49,8 +76,10 @@
 }
 
 @theme inline {
-  --font-display: var(--font-space-grotesk);
-  --font-body: var(--font-inter);
+  --font-display: var(--font-newsreader);
+  --font-body: var(--font-hanken);
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, Consolas,
+    "Liberation Mono", monospace;
 }
 
 @layer base {
@@ -68,16 +97,18 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* Display headings use the serif (Newsreader) at the design's weight 500. */
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-display), ui-serif, Georgia, serif;
     color: var(--color-fg);
-    line-height: 1.15;
-    letter-spacing: -0.02em;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
   }
 
   :focus-visible {
@@ -87,8 +118,8 @@
   }
 
   ::selection {
-    background-color: color-mix(in oklab, var(--color-accent) 28%, transparent);
-    color: var(--color-fg);
+    background-color: var(--color-accent);
+    color: #fff;
   }
 }
 
@@ -107,7 +138,7 @@
 }
 [data-rehype-pretty-code-figure] code {
   display: grid;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-family: var(--font-mono);
 }
 [data-rehype-pretty-code-figure] [data-line] {
   padding: 0 1.25rem;
@@ -125,7 +156,7 @@
   padding: 0.5rem 1.25rem;
   font-size: 0.8125rem;
   color: var(--color-muted);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
 }
 [data-rehype-pretty-code-title] + pre {
   border-top-left-radius: 0;
@@ -166,6 +197,38 @@
   animation: gradient-pan 9s var(--ease-out-expo) infinite;
 }
 
+/* Pulsing radial glow that lights every dark espresso section. */
+@keyframes glowpulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+.glow-pulse {
+  animation: glowpulse 7s var(--ease-out-expo) infinite;
+  will-change: opacity;
+}
+/* Reusable soft radial glow layer; size/position/color set inline per section. */
+.glow-layer {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  pointer-events: none;
+}
+/* Bottom fade that melts an espresso section into the next. */
+.section-fade-bottom::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 8rem;
+  background: linear-gradient(to bottom, transparent, var(--color-dark));
+  pointer-events: none;
+}
+
 /* Reading-progress bar driven purely by scroll position (zero JS). */
 .reading-progress {
   transform: scaleX(0);
@@ -195,6 +258,10 @@
   }
   .animate-gradient-pan {
     animation: none !important;
+  }
+  .glow-pulse {
+    animation: none !important;
+    opacity: 0.7 !important;
   }
   .reading-progress {
     animation: none !important;

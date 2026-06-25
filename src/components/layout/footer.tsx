@@ -3,68 +3,93 @@ import { Container } from "@/components/ui/container";
 import { SubscribeForm } from "@/components/newsletter/subscribe-form";
 import { navLinks, siteConfig } from "@/config/site";
 
-/** Footer with newsletter capture, navigation and social links. */
+/** Espresso footer: brand + newsletter capture, navigation columns, legal bar. */
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-24 border-t border-border bg-surface">
-      <Container className="grid gap-12 py-14 md:grid-cols-2">
+    <footer className="bg-dark text-on-dark-muted">
+      <Container
+        size="wide"
+        className="grid gap-12 py-16 md:grid-cols-[1.5fr_1fr_1fr]"
+      >
         <div className="max-w-sm">
-          <h2 className="font-display text-xl font-semibold text-fg">
-            {siteConfig.newsletter.title}
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted">
+          <Link
+            href="/"
+            className="flex items-center gap-2.5"
+            aria-label={`${siteConfig.name} — inicio`}
+          >
+            <span
+              aria-hidden
+              className="h-6 w-6 rounded-md bg-accent"
+              style={{ boxShadow: "0 0 18px var(--color-glow-coral)" }}
+            />
+            <span className="font-mono text-sm font-medium uppercase tracking-[0.18em] text-on-dark">
+              {siteConfig.name}
+            </span>
+          </Link>
+          <p className="mt-4 text-sm leading-relaxed text-on-dark-faint">
             {siteConfig.newsletter.description}
           </p>
           <div className="mt-5">
-            <SubscribeForm source="footer" />
+            <SubscribeForm source="footer" tone="dark" />
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-8 md:justify-items-end">
-          <nav aria-label="Secciones" className="flex flex-col gap-2.5">
-            <span className="text-xs font-semibold uppercase tracking-wide text-muted">
-              Secciones
-            </span>
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm text-fg transition-colors hover:text-accent-ink"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+        <nav aria-label="Navegación" className="flex flex-col gap-2.5">
+          <span className="font-mono text-xs uppercase tracking-[0.18em] text-on-dark-faint">
+            Navegación
+          </span>
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm text-on-dark-muted transition-colors hover:text-on-dark"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
 
-          {siteConfig.social.length > 0 && (
-            <div className="flex flex-col gap-2.5">
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted">
-                Sígueme
-              </span>
-              {siteConfig.social.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-fg transition-colors hover:text-accent-ink"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
-          )}
+        <div className="flex flex-col gap-2.5">
+          <span className="font-mono text-xs uppercase tracking-[0.18em] text-on-dark-faint">
+            Más
+          </span>
+          <a
+            href="/feed.xml"
+            className="text-sm text-on-dark-muted transition-colors hover:text-on-dark"
+          >
+            RSS
+          </a>
+          <Link
+            href="/privacidad"
+            className="text-sm text-on-dark-muted transition-colors hover:text-on-dark"
+          >
+            Privacidad
+          </Link>
+          {siteConfig.social.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-on-dark-muted transition-colors hover:text-on-dark"
+            >
+              {item.label}
+            </a>
+          ))}
         </div>
       </Container>
 
-      <div className="border-t border-border">
-        <Container className="flex flex-col gap-2 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-t border-dark-border">
+        <Container
+          size="wide"
+          className="flex flex-col gap-2 py-6 font-mono text-xs text-on-dark-faint sm:flex-row sm:items-center sm:justify-between"
+        >
           <p>
-            © {year} {siteConfig.name}. Todos los derechos reservados.
+            © {year} {siteConfig.name}.
           </p>
-          <p>Contenido sobre inteligencia artificial.</p>
+          <p>Contenido sobre inteligencia artificial — sin humo.</p>
         </Container>
       </div>
     </footer>

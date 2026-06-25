@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Nav } from "./nav";
 import { siteConfig } from "@/config/site";
 
-/** Sticky site header with brand mark, primary nav and a lead-magnet CTA. */
+/** Sticky espresso-glass header: brand mark, primary nav and a newsletter CTA. */
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur">
-      <Container className="flex h-16 items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 border-b border-dark-border bg-dark/90 text-on-dark backdrop-blur-md">
+      <Container size="wide" className="flex h-16 items-center justify-between gap-4">
         <Link
           href="/"
           className="flex items-center gap-2.5"
@@ -16,17 +16,20 @@ export function Header() {
         >
           <span
             aria-hidden
-            className="h-7 w-7 rounded-lg bg-gradient-to-br from-[var(--color-fg)] to-[var(--color-accent)]"
+            className="h-6 w-6 rounded-md bg-accent"
+            style={{ boxShadow: "0 0 18px var(--color-glow-coral)" }}
           />
-          <span className="font-display text-lg font-bold tracking-tight text-fg">
+          <span className="font-mono text-sm font-medium uppercase tracking-[0.18em] text-on-dark">
             {siteConfig.name}
           </span>
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Nav />
-          <Button href="/recursos" size="sm">
-            Recursos gratis
-          </Button>
+          <div className="hidden sm:block">
+            <Button href="/#newsletter" size="sm">
+              Suscríbete
+            </Button>
+          </div>
         </div>
       </Container>
     </header>
