@@ -21,7 +21,7 @@ export function BlogHighlights() {
           </h2>
           <Link
             href="/blog"
-            className="font-mono text-sm text-accent-ink transition-colors hover:text-accent-strong"
+            className="font-display text-sm text-accent-ink transition-colors hover:text-accent-strong"
           >
             Ir al blog →
           </Link>
@@ -36,7 +36,7 @@ export function BlogHighlights() {
                 labelClassName="px-8 text-center text-2xl not-italic sm:text-3xl"
                 className="aspect-[16/10] w-full"
               />
-              <div className="mt-5 flex items-center gap-2 font-mono text-xs">
+              <div className="mt-5 flex items-center gap-2 font-display text-xs">
                 <span className="uppercase tracking-wide text-accent-ink">
                   {featuredKicker}
                 </span>
@@ -68,12 +68,12 @@ export function BlogHighlights() {
                   >
                     <span
                       aria-hidden
-                      className="min-w-[1.75rem] font-display text-2xl font-medium italic text-gold"
+                      className="min-w-[1.75rem] font-punch text-3xl text-gold"
                     >
                       {String(i + 2).padStart(2, "0")}
                     </span>
                     <div>
-                      <div className="flex items-center gap-2 font-mono text-xs">
+                      <div className="flex items-center gap-2 font-display text-xs">
                         <span className="uppercase tracking-wide text-accent-ink">
                           {kicker}
                         </span>

@@ -6,7 +6,8 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // Satori (next/og) has no access to our CSS tokens, so brand colors are literal here.
-// "Kata Pro": espresso #15100d lit by a coral glow, cream text, coral logo mark.
+// "Kata Pro" red/black premium: cold black + a controlled deep-red halo, crimson
+// gem, chrome/silver wordmark, cold-white headline.
 export default function Image() {
   return new ImageResponse(
     (
@@ -18,11 +19,11 @@ export default function Image() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          gap: "28px",
-          background: "#15100d",
+          gap: "26px",
+          background: "#0a0b0d",
           padding: "80px",
-          color: "#f4eee3",
-          fontFamily: "serif",
+          color: "#eaecee",
+          fontFamily: "sans-serif",
         }}
       >
         <div
@@ -34,27 +35,36 @@ export default function Image() {
             height: "100%",
             display: "flex",
             backgroundImage:
-              "radial-gradient(900px 520px at 78% 12%, rgba(216,68,43,0.45), transparent 60%), radial-gradient(700px 600px at 12% 95%, rgba(226,162,74,0.22), transparent 62%)",
+              "radial-gradient(820px 480px at 80% 10%, rgba(122,22,32,0.6), transparent 60%), radial-gradient(640px 520px at 8% 96%, rgba(199,204,210,0.06), transparent 62%)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            background:
+              "radial-gradient(130% 130% at 50% 25%, transparent 55%, rgba(0,0,0,0.55) 100%)",
           }}
         />
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "18px",
-            fontSize: 30,
-            color: "#cdbfa9",
-            fontFamily: "monospace",
-            letterSpacing: "0.12em",
+            gap: "16px",
+            fontSize: 28,
+            color: "#c7ccd2",
+            letterSpacing: "0.18em",
             textTransform: "uppercase",
           }}
         >
           <div
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: 10,
-              background: "#d8442b",
+              width: 26,
+              height: 26,
+              transform: "rotate(45deg)",
+              borderRadius: 4,
+              background: "#d7212a",
             }}
           />
           {siteConfig.name}
@@ -62,16 +72,17 @@ export default function Image() {
         <div
           style={{
             display: "flex",
-            fontSize: 68,
-            fontWeight: 500,
-            lineHeight: 1.1,
+            fontSize: 72,
+            fontWeight: 800,
+            lineHeight: 1.04,
             letterSpacing: "-0.02em",
-            maxWidth: "920px",
+            textTransform: "uppercase",
+            maxWidth: "940px",
           }}
         >
           {siteConfig.tagline}
         </div>
-        <div style={{ display: "flex", fontSize: 28, color: "#e8896f" }}>
+        <div style={{ display: "flex", fontSize: 28, color: "#d7212a" }}>
           Blog + newsletter sobre IA
         </div>
       </div>

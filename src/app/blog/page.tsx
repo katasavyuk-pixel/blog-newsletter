@@ -21,7 +21,7 @@ export default function BlogIndexPage() {
   return (
     <Container className="py-16">
       <header className="max-w-2xl">
-        <p className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
+        <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
           Blog
         </p>
         <h1 className="mt-2 font-display text-4xl font-medium tracking-tight text-fg sm:text-5xl">
@@ -60,7 +60,7 @@ export default function BlogIndexPage() {
                     "radial-gradient(circle, var(--color-accent), transparent 70%)",
                 }}
               />
-              <p className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
+              <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
                 {featured.kicker ?? "Destacado"}
               </p>
               <h2 className="mt-3 max-w-3xl font-display text-3xl font-medium tracking-tight text-fg text-balance transition-colors group-hover:text-accent-ink sm:text-4xl">

@@ -24,11 +24,11 @@ export function Hero() {
           <Eyebrow tone="dark">IA explicada · interactiva · sin humo</Eyebrow>
 
           <h1
-            className="mt-5 font-display font-medium text-on-dark text-balance"
-            style={{ fontSize: "var(--text-hero)", lineHeight: 1.04 }}
+            className="mt-5 font-punch font-normal uppercase text-on-dark text-balance"
+            style={{ fontSize: "var(--text-hero)", lineHeight: 1.0 }}
           >
-            Aprende a aplicar IA{" "}
-            <em className="italic text-salmon">de verdad, sin humo.</em>
+            Aprende a aplicar IA de verdad,{" "}
+            <span className="text-accent">sin humo.</span>
           </h1>
 
           <p className="mt-6 max-w-lg text-lg leading-relaxed text-on-dark-muted">
@@ -48,7 +48,7 @@ export function Hero() {
             </Button>
           </div>
 
-          <dl className="mt-10 flex flex-wrap gap-x-8 gap-y-3 font-mono text-xs text-on-dark-faint">
+          <dl className="mt-10 flex flex-wrap gap-x-8 gap-y-3 font-display text-xs text-on-dark-faint">
             {stats.map((stat) => (
               <div key={stat.label} className="flex items-baseline gap-1.5">
                 <dt className="sr-only">{stat.label}</dt>

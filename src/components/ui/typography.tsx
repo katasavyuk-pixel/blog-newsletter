@@ -4,10 +4,10 @@ import { cn } from "@/lib/utils";
 type HeadingLevel = 1 | 2 | 3 | 4;
 
 const headingSizes: Record<HeadingLevel, string> = {
-  1: "text-4xl sm:text-5xl font-medium",
-  2: "text-3xl sm:text-4xl font-medium",
-  3: "text-2xl font-medium",
-  4: "text-xl font-medium",
+  1: "text-4xl sm:text-5xl font-bold",
+  2: "text-3xl sm:text-4xl font-bold",
+  3: "text-2xl font-bold",
+  4: "text-xl font-bold",
 };
 
 /** Display heading (Newsreader serif, weight 500) with balanced wrapping. */

@@ -24,7 +24,7 @@ export function IconChip({
     <span
       aria-hidden
       className={cn(
-        "flex h-10 w-10 items-center justify-center rounded-xl font-mono text-lg text-on-accent",
+        "flex h-10 w-10 items-center justify-center rounded-xl font-display text-lg text-on-accent",
         colors[color],
         className,
       )}

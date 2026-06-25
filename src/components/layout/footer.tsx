@@ -21,10 +21,10 @@ export function Footer() {
           >
             <span
               aria-hidden
-              className="h-6 w-6 rounded-md bg-accent"
-              style={{ boxShadow: "0 0 18px var(--color-glow-coral)" }}
+              className="h-4 w-4 rotate-45 rounded-[3px] bg-accent"
+              style={{ boxShadow: "0 0 16px var(--color-glow-coral)" }}
             />
-            <span className="font-mono text-sm font-medium uppercase tracking-[0.18em] text-on-dark">
+            <span className="font-display text-sm font-extrabold uppercase tracking-[0.2em] chrome-text">
               {siteConfig.name}
             </span>
           </Link>
@@ -37,7 +37,7 @@ export function Footer() {
         </div>
 
         <nav aria-label="Navegación" className="flex flex-col gap-2.5">
-          <span className="font-mono text-xs uppercase tracking-[0.18em] text-on-dark-faint">
+          <span className="font-display text-xs uppercase tracking-[0.18em] text-on-dark-faint">
             Navegación
           </span>
           {navLinks.map((link) => (
@@ -52,7 +52,7 @@ export function Footer() {
         </nav>
 
         <div className="flex flex-col gap-2.5">
-          <span className="font-mono text-xs uppercase tracking-[0.18em] text-on-dark-faint">
+          <span className="font-display text-xs uppercase tracking-[0.18em] text-on-dark-faint">
             Más
           </span>
           <a
@@ -84,7 +84,7 @@ export function Footer() {
       <div className="border-t border-dark-border">
         <Container
           size="wide"
-          className="flex flex-col gap-2 py-6 font-mono text-xs text-on-dark-faint sm:flex-row sm:items-center sm:justify-between"
+          className="flex flex-col gap-2 py-6 font-display text-xs text-on-dark-faint sm:flex-row sm:items-center sm:justify-between"
         >
           <p>
             © {year} {siteConfig.name}.

@@ -7,7 +7,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // Satori (next/og) has no access to our CSS tokens, so brand colors are literal here.
-// "Kata Pro": espresso #15100d lit by a coral glow, cream text, coral logo mark.
+// "Kata Pro" red/black premium: cold black + controlled deep-red halo, crimson gem.
 export default async function Image({
   params,
 }: {
@@ -27,10 +27,10 @@ export default async function Image({
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#15100d",
+          background: "#0a0b0d",
           padding: "80px",
-          color: "#f4eee3",
-          fontFamily: "serif",
+          color: "#eaecee",
+          fontFamily: "sans-serif",
         }}
       >
         <div
@@ -42,27 +42,36 @@ export default async function Image({
             height: "100%",
             display: "flex",
             backgroundImage:
-              "radial-gradient(900px 520px at 80% 10%, rgba(216,68,43,0.45), transparent 60%), radial-gradient(700px 600px at 10% 98%, rgba(226,162,74,0.2), transparent 62%)",
+              "radial-gradient(820px 480px at 82% 8%, rgba(122,22,32,0.6), transparent 60%), radial-gradient(640px 520px at 6% 98%, rgba(199,204,210,0.05), transparent 62%)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            background:
+              "radial-gradient(130% 130% at 50% 25%, transparent 55%, rgba(0,0,0,0.55) 100%)",
           }}
         />
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "18px",
-            fontSize: 30,
-            color: "#cdbfa9",
-            fontFamily: "monospace",
-            letterSpacing: "0.12em",
+            gap: "16px",
+            fontSize: 28,
+            color: "#c7ccd2",
+            letterSpacing: "0.18em",
             textTransform: "uppercase",
           }}
         >
           <div
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: 10,
-              background: "#d8442b",
+              width: 26,
+              height: 26,
+              transform: "rotate(45deg)",
+              borderRadius: 4,
+              background: "#d7212a",
             }}
           />
           {siteConfig.name}
@@ -71,8 +80,8 @@ export default async function Image({
           style={{
             display: "flex",
             fontSize: 66,
-            fontWeight: 500,
-            lineHeight: 1.1,
+            fontWeight: 800,
+            lineHeight: 1.08,
             letterSpacing: "-0.02em",
           }}
         >
@@ -84,11 +93,11 @@ export default async function Image({
             alignItems: "center",
             gap: "14px",
             fontSize: 28,
-            color: "#e8896f",
+            color: "#d7212a",
           }}
         >
           <div
-            style={{ width: 12, height: 12, borderRadius: 999, background: "#d8442b" }}
+            style={{ width: 12, height: 12, borderRadius: 999, background: "#d7212a" }}
           />
           {siteConfig.tagline}
         </div>
