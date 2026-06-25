@@ -1,17 +1,18 @@
 /**
- * Brand colors for transactional/newsletter emails — "Atardecer Coral".
+ * Brand colors for transactional/newsletter emails — "Kata Pro" (espresso · coral · cream).
  *
  * React Email renders inline styles and has no access to the CSS theme tokens in
  * globals.css, so the email palette lives here as the single source of truth.
- * Keep these in sync with the @theme block in src/app/globals.css.
+ * Keep these in sync with the @theme block in src/app/globals.css. Emails stay on
+ * the brand's LIGHT surfaces (espresso darks render unreliably across mail clients).
  */
 export const emailColors = {
-  bg: "#fff7f4", // warm cream — page background
+  bg: "#f4eee3", // warm cream — page background
   card: "#ffffff", // card surface
-  textMain: "#3a1019", // wine-charcoal — body text
-  textMuted: "#7a4e55", // secondary text
-  accent: "#be123c", // coral-ink — links / accent text (AA on light)
-  buttonBg: "#be123c", // button surface (coral-wine, cream text reads AA)
-  onAccent: "#fff7f4", // cream text over the button
-  border: "#f3d9dc",
+  textMain: "#241c16", // warm near-black — body text (AAA on cream)
+  textMuted: "#6e6253", // secondary text (AA)
+  accent: "#be3621", // coral-ink — links / accent text (AA on light)
+  buttonBg: "#be3621", // button surface (white label reads AA, ~5.6:1)
+  onAccent: "#ffffff", // text over the button
+  border: "#e4daca",
 } as const;
