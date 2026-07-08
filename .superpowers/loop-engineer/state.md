@@ -1,0 +1,11 @@
+# Loop Engineer State
+- Feature: Fase C — Juegos, gamificación y newsletter loop
+- Phase: brainstorming
+- Status: IN_PROGRESS
+- Attempt: 0
+- Outputs:
+  - spec: pending
+  - plan: pending
+  - worktree: pending
+  - branch: pending
+- Blockers: none
