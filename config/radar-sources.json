@@ -1,0 +1,67 @@
+{
+  "$comment": "Curated RSS sources for the weekly 'Radar IA' edition. Edit this file to add/remove sources — no code changes needed. axis: ia | negocio | geopolitica.",
+  "windowDays": 7,
+  "maxItemsPerSource": 10,
+  "sources": [
+    {
+      "name": "OpenAI News",
+      "url": "https://openai.com/news/rss.xml",
+      "axis": "ia",
+      "lang": "en"
+    },
+    {
+      "name": "Google DeepMind Blog",
+      "url": "https://deepmind.google/blog/rss.xml",
+      "axis": "ia",
+      "lang": "en"
+    },
+    {
+      "name": "Hugging Face Blog",
+      "url": "https://huggingface.co/blog/feed.xml",
+      "axis": "ia",
+      "lang": "en"
+    },
+    {
+      "name": "MIT Technology Review",
+      "url": "https://www.technologyreview.com/feed/",
+      "axis": "ia",
+      "lang": "en"
+    },
+    {
+      "name": "TechCrunch AI",
+      "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+      "axis": "negocio",
+      "lang": "en"
+    },
+    {
+      "name": "The Verge AI",
+      "url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml",
+      "axis": "negocio",
+      "lang": "en"
+    },
+    {
+      "name": "Ars Technica",
+      "url": "https://feeds.arstechnica.com/arstechnica/technology-lab",
+      "axis": "negocio",
+      "lang": "en"
+    },
+    {
+      "name": "Politico Europe Tech",
+      "url": "https://www.politico.eu/section/technology/feed/",
+      "axis": "geopolitica",
+      "lang": "en"
+    },
+    {
+      "name": "The Guardian AI",
+      "url": "https://www.theguardian.com/technology/artificialintelligenceai/rss",
+      "axis": "geopolitica",
+      "lang": "en"
+    },
+    {
+      "name": "Wired AI",
+      "url": "https://www.wired.com/feed/tag/ai/latest/rss",
+      "axis": "geopolitica",
+      "lang": "en"
+    }
+  ]
+}

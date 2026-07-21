@@ -1,0 +1,103 @@
+# Radar IA — weekly automated news edition.
+#
+# Every Monday: collect real headlines from curated RSS feeds (deterministic,
+# no LLM), have Claude select + analyze them, verify nothing was invented,
+# and open a PR for one-click human review. Merging publishes via Vercel.
+#
+# Required repo secret: CLAUDE_CODE_OAUTH_TOKEN (generate with `claude setup-token`).
+name: Radar IA semanal
+
+on:
+  schedule:
+    - cron: "0 5 * * 1" # Mondays 05:00 UTC (~07:00 Madrid in summer)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Collect candidates from RSS (no LLM)
+        run: node scripts/radar/collect.mjs
+
+      - name: Compute edition date
+        id: edition
+        run: echo "date=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+
+      - name: Write edition with Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Write this week's "Radar IA" edition for a Spanish-language personal
+            AI blog. Output file: content/posts/radar-${{ steps.edition.outputs.date }}.mdx
+
+            HARD RULES (a script verifies them and fails the build if broken):
+            1. Read scratch/radar-candidates.json. You may ONLY use items from
+               that file. Do not search the web, do not add items from memory.
+            2. For each chosen item, copy `title`, `url`, `source` and `axis`
+               VERBATIM from the JSON into the <RadarItem> attributes, and use
+               the item's publishedAt date (YYYY-MM-DD) as `date`.
+            3. Never invent numbers, quotes or facts not present in the item's
+               title/summary.
+
+            EDITORIAL RULES:
+            - Follow the structure of content/_templates/radar.mdx exactly
+              (frontmatter fields included; date: ${{ steps.edition.outputs.date }},
+              tags must include `radar`, draft: false).
+            - Select the 5-7 most relevant items, covering the three axes
+              (ia, negocio, geopolitica) if solid material exists for each.
+              Fewer items is better than filler.
+            - Inside each <RadarItem>, write 2-3 sentences in Spanish: what
+              happened and why it matters technically or for the industry.
+              No superlatives, no predictions, no political opinion.
+            - The <Callout> "Nota editorial" gets ONE neutral sentence
+              summarizing the week's common thread — it is a placeholder the
+              author replaces in the PR; never write opinion in his name.
+
+            Write ONLY that one .mdx file. Do not touch anything else.
+          claude_args: |
+            --max-turns 25
+            --allowedTools Read,Write,Glob
+
+      - name: Verify edition against real candidates (anti-hallucination gate)
+        run: node scripts/radar/verify-edition.mjs content/posts/radar-${{ steps.edition.outputs.date }}.mdx
+
+      - name: Build PR body from the edition
+        id: body
+        run: |
+          {
+            echo "body<<EOF"
+            echo "Edición generada automáticamente. Titulares (verificados contra los feeds):"
+            echo ""
+            grep -o 'title="[^"]*"' "content/posts/radar-${{ steps.edition.outputs.date }}.mdx" \
+              | sed 's/^title="/- /; s/"$//'
+            echo ""
+            echo "Revisa el análisis y la nota editorial; merge = publicar."
+            echo ""
+            echo "🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: radar/${{ steps.edition.outputs.date }}
+          add-paths: content/posts/
+          commit-message: "feat(radar): edición ${{ steps.edition.outputs.date }}"
+          title: "Radar IA — semana del ${{ steps.edition.outputs.date }}"
+          body: ${{ steps.body.outputs.body }}

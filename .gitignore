@@ -40,6 +40,9 @@ yarn-error.log*
 # content layer (Velite, Fase 1)
 /.velite
 
+# radar collector output (regenerated on every run, consumed by CI)
+/scratch
+
 # supabase local
 /supabase/.temp
 /supabase/.branches
