@@ -6,6 +6,7 @@ import { LifeOfAPrompt } from "./life-of-a-prompt";
 import { Param } from "./param";
 import { PromptDiff } from "./prompt-diff";
 import { Quiz } from "./quiz";
+import { RadarItem } from "./radar-item";
 import { TemperatureSandbox } from "./temperature-sandbox";
 import { Term } from "./term";
 import { TokenizerPlayground } from "./tokenizer-playground";
@@ -26,6 +27,7 @@ export const widgets = {
   Param,
   PromptDiff,
   Quiz,
+  RadarItem,
   TemperatureSandbox,
   Term,
   TokenizerPlayground,

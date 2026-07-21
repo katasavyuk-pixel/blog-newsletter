@@ -4,8 +4,11 @@ import { Container } from "@/components/ui/container";
 import { PostCard } from "@/components/blog/post-card";
 import { TagList } from "@/components/blog/tag-list";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
-import { allPosts, getAllTags } from "@/lib/posts";
+import { allPosts, getAllTags, getPostsByTag } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
+
+/** Weekly "Radar IA" editions live in their own strip, not the main grid. */
+const RADAR_TAG = "radar";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -16,7 +19,9 @@ export const metadata: Metadata = {
 
 export default function BlogIndexPage() {
   const tags = getAllTags();
-  const [featured, ...rest] = allPosts;
+  const articles = allPosts.filter((post) => !post.tags.includes(RADAR_TAG));
+  const radarEditions = getPostsByTag(RADAR_TAG).slice(0, 3);
+  const [featured, ...rest] = articles;
 
   return (
     <Container className="py-16">
@@ -74,6 +79,47 @@ export default function BlogIndexPage() {
               </div>
             </Link>
           </ScrollReveal>
+
+          {radarEditions.length > 0 ? (
+            <ScrollReveal>
+              <section
+                aria-labelledby="radar-heading"
+                className="mt-10 rounded-3xl border border-border bg-surface p-6 sm:p-8"
+              >
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <h2
+                    id="radar-heading"
+                    className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink"
+                  >
+                    Radar IA — la semana en titulares
+                  </h2>
+                  <Link
+                    href={`/blog/tag/${RADAR_TAG}`}
+                    className="text-sm text-accent-ink hover:underline"
+                  >
+                    Todas las ediciones →
+                  </Link>
+                </div>
+                <ul className="mt-4 divide-y divide-border">
+                  {radarEditions.map((post) => (
+                    <li key={post.slug}>
+                      <Link
+                        href={post.permalink}
+                        className="group flex flex-wrap items-baseline justify-between gap-2 py-3"
+                      >
+                        <span className="font-display font-medium text-fg transition-colors group-hover:text-accent-ink">
+                          {post.title}
+                        </span>
+                        <time dateTime={post.date} className="text-sm text-muted">
+                          {formatDate(post.date)}
+                        </time>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </ScrollReveal>
+          ) : null}
 
           {rest.length > 0 ? (
             <div className="mt-8 grid gap-8 sm:grid-cols-2">

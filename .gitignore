@@ -49,6 +49,7 @@ yarn-error.log*
 
 # local verification artifacts
 /.playwright-mcp
+/.playwright-cli
 /*.png
 
 # typescript
