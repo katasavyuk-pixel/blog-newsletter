@@ -89,7 +89,17 @@ export function Footer() {
           <p>
             © {year} {siteConfig.name}.
           </p>
-          <p>Contenido sobre inteligencia artificial — sin humo.</p>
+          <p className="font-mono">
+            <span aria-hidden className="text-salmon">
+              ▸{" "}
+            </span>
+            construido en público · build{" "}
+            {new Date().toLocaleDateString("es-ES", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
+          </p>
         </Container>
       </div>
     </footer>

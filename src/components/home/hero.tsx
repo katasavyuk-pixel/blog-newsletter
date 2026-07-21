@@ -2,17 +2,19 @@ import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { GlowSection } from "@/components/ui/glow-section";
-import { BrandVisual } from "@/components/ui/brand-visual";
-import { allPosts, getAllTags, getPostsByTag } from "@/lib/posts";
+import { HeroTokenizer } from "@/components/home/hero-tokenizer";
+import { allPosts, getPostsByTag } from "@/lib/posts";
 import { siteConfig } from "@/config/site";
 
-/** Dark, glowing two-column hero — tagline + CTAs on the left, brand visual on the right. */
+/** Dark, glowing two-column hero — tagline + CTAs left, a LIVE tokenizer right. */
 export function Hero() {
-  const stats = [
-    { value: allPosts.length, label: "artículos" },
-    { value: getPostsByTag("interactivo").length, label: "interactivos" },
-    { value: getAllTags().length, label: "temas" },
-  ];
+  // Lab-console status line: real numbers, frozen at build time (static page).
+  const latestRadar = getPostsByTag("radar")[0];
+  const statusLines = [
+    `${allPosts.length} artículos · ${getPostsByTag("interactivo").length} interactivos`,
+    latestRadar ? `radar: edición ${latestRadar.date.slice(0, 10)} ✓` : null,
+    "construido en público",
+  ].filter(Boolean) as string[];
 
   return (
     <GlowSection fadeBottom>
@@ -48,29 +50,27 @@ export function Hero() {
             </Button>
           </div>
 
-          <dl className="mt-10 flex flex-wrap gap-x-8 gap-y-3 font-display text-xs text-on-dark-faint">
-            {stats.map((stat) => (
-              <div key={stat.label} className="flex items-baseline gap-1.5">
-                <dt className="sr-only">{stat.label}</dt>
-                <dd className="text-on-dark">
-                  <span className="text-base">{stat.value}</span> {stat.label}
-                </dd>
-              </div>
+          <div className="mt-10 max-w-md rounded-xl border border-dark-border bg-dark-input/50 p-4 font-mono text-xs leading-relaxed text-on-dark-faint">
+            <p className="text-on-dark-muted">
+              <span className="text-salmon">$</span> kata --status
+            </p>
+            {statusLines.map((line) => (
+              <p key={line}>
+                <span aria-hidden className="text-salmon">
+                  ▸{" "}
+                </span>
+                {line}
+              </p>
             ))}
-          </dl>
+          </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-sm">
+        <div className="relative mx-auto w-full max-w-md">
           <div
             aria-hidden
             className="absolute -inset-3 rounded-3xl border border-dark-border-2"
           />
-          <BrandVisual
-            label="KI"
-            caption="IA explicada, sin humo"
-            labelClassName="text-7xl"
-            className="relative aspect-[4/5] w-full"
-          />
+          <HeroTokenizer />
         </div>
       </Container>
     </GlowSection>

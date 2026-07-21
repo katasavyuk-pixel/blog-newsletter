@@ -2,7 +2,7 @@ import Link from "next/link";
 import { navLinks } from "@/config/site";
 
 const linkBase =
-  "rounded-lg px-3 py-2 text-sm font-medium text-on-dark-muted transition-colors hover:bg-white/5 hover:text-on-dark";
+  "relative rounded-lg px-3 py-2 text-sm font-medium text-on-dark-muted transition-colors hover:text-on-dark after:absolute after:inset-x-3 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-200 hover:after:scale-x-100";
 
 /** Primary navigation: inline links on desktop, a no-JS <details> menu on mobile. */
 export function Nav() {
