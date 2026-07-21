@@ -40,10 +40,10 @@ export function InteractiveShowcase() {
             </h2>
           </div>
           <Link
-            href="/blog/tag/interactivo"
+            href="/empieza-aqui"
             className="font-display text-sm text-accent-ink transition-colors hover:text-accent-strong"
           >
-            Todos los artículos →
+            Hacer el curso en orden →
           </Link>
         </div>
 

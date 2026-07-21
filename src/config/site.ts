@@ -63,7 +63,9 @@ export type SiteConfig = typeof siteConfig;
 
 /** Primary navigation. Routes are built in their phases (Blog/Recursos → Fase 1/2). */
 export const navLinks = [
+  { label: "Noticias", href: "/blog/tag/radar" },
   { label: "Blog", href: "/blog" },
+  { label: "Curso", href: "/empieza-aqui" },
   { label: "Recursos", href: "/recursos" },
   { label: "Sobre mí", href: "/sobre-mi" },
 ] as const;

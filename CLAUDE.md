@@ -115,6 +115,26 @@ por CI con **checkpoint humano**: nada se publica sin merge de un PR.
 - Primera edición real publicada: `content/posts/radar-2026-07-21.mdx` (redactada a mano
   siguiendo el mismo pipeline, 7/7 ítems verificados por el gate).
 
+## Retención y descubrimiento (2026-07-22, del diseño "Inicio" de Claude Design)
+
+La home ya seguía el layout del diseño `Inicio.dc.html` (proyecto Claude Design
+`d90c113d-…`); esta pasada añadió lo que faltaba, traducido a los tokens rojo/negro:
+
+- **"Noticias de la semana"** en home: `src/lib/radar.ts` parsea los `<RadarItem>` de la
+  última edición radar (fs, build-time) → cards en `src/components/home/news-today.tsx`.
+- **Curso dinámico** `/empieza-aqui`: itinerario de los 6 posts interactivos en orden
+  pedagógico (`src/config/course.ts` = SSOT de slugs), progreso en localStorage
+  (`CourseList` + `CourseProgressMarker` montado en la página del post vía `COURSE_SLUGS`).
+- **"Sigue leyendo"**: `getRelatedPosts()` en `src/lib/posts.ts` (por tags compartidos,
+  excluye radar) + `RelatedPosts` al final de cada post.
+- **Franja YouTube autoactivable** en home (`youtube-strip.tsx`): posts publicados con
+  `youtubeId`; render null hasta que exista el primero. Miniaturas `i.ytimg.com`
+  whitelisted en `next.config.ts`.
+- Nav ampliada: Noticias (`/blog/tag/radar`) · Blog · Curso (`/empieza-aqui`) · Recursos · Sobre mí.
+- **Regla al implementar diseños del proyecto Claude Design**: los mocks traen datos fake
+  ("12.400+ suscriptores", "Soy Álex") — SIEMPRE sustituir por datos reales/honestos, y
+  traducir hex → tokens.
+
 ## Modelo de datos (diseñado día 1, construido por fases)
 
 `RLS ON` en todas. Default-deny; escrituras vía servidor (`service_role`) o RPC
