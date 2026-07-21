@@ -136,6 +136,12 @@ La home ya seguía el layout del diseño `Inicio.dc.html` (proyecto Claude Desig
   `youtubeId`; render null hasta que exista el primero. Miniaturas `i.ytimg.com`
   whitelisted en `next.config.ts`.
 - Nav ampliada: Noticias (`/blog/tag/radar`) · Blog · Curso (`/empieza-aqui`) · Recursos · Sobre mí.
+- **Hero VIVO (2026-07-22)**: el panel del hero es un tokenizador interactivo real
+  (`src/components/home/hero-tokenizer.tsx`, o200k on-demand) + consola `$ kata --status`
+  con datos build-time. Identidad "laboratorio": eyebrows/footers mono con `▸`, footer
+  "construido en público · build <fecha>". OJO: `ViewTransition` de React NO está en
+  react 19.2.4 estable (solo canary) — no intentar `unstable_ViewTransition`; la flag
+  `experimental.viewTransition` está activa pero sin el componente no anima client-nav.
 - **Regla al implementar diseños del proyecto Claude Design**: los mocks traen datos fake
   ("12.400+ suscriptores", "Soy Álex") — SIEMPRE sustituir por datos reales/honestos, y
   traducir hex → tokens.
