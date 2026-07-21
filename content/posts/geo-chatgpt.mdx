@@ -1,0 +1,52 @@
+---
+title: Hice que ChatGPT me conociera — el código y por qué lo monté así
+description: "Le pregunté a una IA quién soy y no tenía ni idea. El vídeo enseña cómo lo arreglé en directo. Aquí está lo que no cupo en el montaje: qué es GEO de verdad, y el límite honesto de lo que un archivo puede cambiar."
+kicker: Construcción pública
+dek: "Un tercio de la gente ya busca en una IA antes que en Google. Esto es lo que hice para que la mía me encontrara — y lo que todavía no puedo prometerte."
+date: 2026-07-21
+tags:
+  - geo
+  - visibilidad-ia
+  - construccion-publica
+draft: true
+premium: false
+youtubeId: PENDIENTE
+---
+
+<Callout type="warn" title="Borrador — pendiente del vídeo">
+Este post se publica (`draft: false`) el mismo día que sale el episodio 1 de "Construir de cero" en YouTube. Sustituye `youtubeId: PENDIENTE` por el ID real del vídeo antes de publicar, y confirma que el `.zip` del cambio está subido a `/recursos` con este mismo slug.
+</Callout>
+
+El vídeo de este episodio enseña algo incómodo: le pregunté a una IA quién soy y qué hago, y no tenía ni idea. Lo que no cabía en el montaje es qué es exactamente lo que arreglé, por qué importa, y — sobre todo — lo que ese arreglo **no** puede prometer todavía.
+
+## El problema, con datos, no con sensación
+
+No es una anécdota mía. Un tercio de la gente ya empieza su búsqueda en una IA en vez de en Google, y según Gartner, en 2028 la mitad de las búsquedas online pasarán por un asistente de IA. Esto tiene nombre técnico: **GEO**, optimización para motores generativos — lo mismo que el SEO de siempre, pero para que te encuentre una IA, no un buscador.
+
+Y aquí está la parte incómoda: casi ningún negocio pequeño ha hecho nada al respecto. Ni yo, hasta este episodio.
+
+## Qué construí, en concreto
+
+Tres piezas, todas verificables:
+
+1. **`llms.txt`** — un archivo de texto plano que describe el sitio en el formato que un LLM lee mejor. Antes de este episodio, `kata.ianexora.com/llms.txt` daba 404. Ahora existe.
+2. **Datos estructurados a nivel de sitio** (`schema.org` / JSON-LD `Person`) — ya tenía esto por cada artículo individual, pero no a nivel de "quién soy" global.
+3. **`robots.txt`** permitiendo explícitamente a los rastreadores de IA conocidos (GPTBot, PerplexityBot, ClaudeBot) — antes tampoco existía.
+
+<Callout type="tip" title="Regla práctica">
+Si tu web no tiene `llms.txt` ni `robots.txt`, pruébalo tú mismo: entra en `tudominio.com/llms.txt`. Si da 404, estás en el mismo punto de partida que yo antes de este episodio.
+</Callout>
+
+## El límite honesto — y por qué es el tema del próximo episodio
+
+Aquí está lo que no puedo prometerte: esto no cambia nada en el mismo segundo. Un asistente de IA no relee internet cada minuto — indexar contenido nuevo tarda, a veces semanas. Lo único que puedo mostrarte hoy es que el archivo existe y es técnicamente correcto (validado con un test de datos estructurados) — no que ChatGPT ya "sepa" quién soy.
+
+Eso es exactamente lo que abre el episodio 2: cómo saber si esto de verdad funcionó, y no es solo un archivo más que nadie lee.
+
+## El código
+
+<Callout type="info" title="Cómo lo consigues">
+El cambio completo (`llms.txt`, el JSON-LD de sitio y el `robots.txt`) está en [/recursos](/recursos), listo para adaptar a tu propio sitio. Requiere confirmar tu email (doble opt-in, sin spam) — así también te aviso cuando publique el episodio 2 y compruebe si esto funcionó de verdad.
+</Callout>
+
+Si lo aplicas a tu propio sitio, cuéntame qué encontraste — es exactamente el tipo de evidencia real que quiero seguir mostrando en este canal.
