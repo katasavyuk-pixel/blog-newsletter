@@ -2,7 +2,7 @@
 
 # CLAUDE.md — Blog + Newsletter de marca personal (IA)
 
-> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Rediseño "Kata Pro" — home + identidad espresso/coral global** (2026-06-25).
+> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **"Radar IA" — noticias semanales automatizadas + auto-post YouTube** (2026-07-21).
 
 ## Qué es esto
 
@@ -83,6 +83,30 @@ Concepto: cada post es un artefacto manipulable, no solo texto. Stack añadido: 
 - **Motion/a11y (reglas duras)**: `MotionProvider` (`reducedMotion="user"`) en el layout; bloque global `@media (prefers-reduced-motion: reduce)` en `globals.css`; `useReducedMotion` hook. **Coral solo superficie; texto en coral oscuro** (`--color-accent #d8442b` no pasa AA como texto pequeño → usar `--color-accent-ink #be3621`; sobre espresso, links en salmón). Cada widget: operable por teclado, fallback estático, `not-prose`.
 - **Lectura inmersiva**: `ReadingProgress` (CSS scroll-timeline, 0 JS), `Toc` con scroll-spy (IntersectionObserver), `CopyCode` (botón sobre los bloques Shiki), cabecera de post tipo revista (frontmatter `kicker`/`dek` en `velite.config.ts`).
 - **Rollout**: Fase A ✅ (fundación + toolkit + Tokenizer + rediseño). Fase B ✅ (4 widgets + explorable insignia + 4 posts interactivos). Pendiente: Fase C (juegos + gamificación localStorage: rachas/logros + loop newsletter), Fase D (cuentas Supabase Auth + repaso espaciado). Catálogo completo en el plan y `tasks/wi7u5i5it.output`.
+
+## Radar IA — noticias automatizadas (2026-07-21)
+
+Serie semanal de noticias (IA/negocio/geopolítica) dentro de `/blog` (tag `radar`), generada
+por CI con **checkpoint humano**: nada se publica sin merge de un PR.
+
+- **Pipeline en 3 pasos, anti-alucinación por diseño**: (1) `scripts/radar/collect.mjs` —
+  recolector RSS **determinista, sin LLM** (fuentes en `config/radar-sources.json`, 10 feeds,
+  ventana 7 días, dedupe, decode de entidades, strip `utm_*`) → `scratch/radar-candidates.json`
+  (gitignored); (2) **Claude Code Action** redacta la edición usando SOLO ese JSON
+  (plantilla `content/_templates/radar.mdx`, fuera del pattern de Velite); (3)
+  `scripts/radar/verify-edition.mjs` — **gate**: cada `<RadarItem>` debe coincidir verbatim
+  (url+title+source+axis) con un candidato o el workflow falla y no hay PR.
+- **Workflows**: `.github/workflows/radar-semanal.yml` (cron lunes 05:00 UTC + dispatch;
+  PR vía `peter-evans/create-pull-request`, rama `radar/<fecha>`, body con los titulares) y
+  `youtube-nuevo.yml` (cron 6h; lee RSS del canal, compara contra `youtubeId:` en
+  `content/posts/**` — idempotente sin estado —, redacta post `draft: true` por vídeo nuevo).
+- **Superficie**: widget `RadarItem` (server component, `src/components/mdx/widgets/radar-item.tsx`);
+  franja "Radar IA" en `/blog` (últimas 3 ediciones, `getPostsByTag("radar")`); las ediciones
+  se **excluyen del grid principal** para no ahogar los artículos de fondo.
+- **Config pendiente del usuario**: secret `CLAUDE_CODE_OAUTH_TOKEN` (`claude setup-token` →
+  `gh secret set`) y variable `YOUTUBE_CHANNEL_ID` (sin ella, el workflow de YouTube no corre).
+- Primera edición real publicada: `content/posts/radar-2026-07-21.mdx` (redactada a mano
+  siguiendo el mismo pipeline, 7/7 ítems verificados por el gate).
 
 ## Modelo de datos (diseñado día 1, construido por fases)
 
