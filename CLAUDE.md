@@ -103,10 +103,15 @@ por CI con **checkpoint humano**: nada se publica sin merge de un PR.
 - **Superficie**: widget `RadarItem` (server component, `src/components/mdx/widgets/radar-item.tsx`);
   franja "Radar IA" en `/blog` (últimas 3 ediciones, `getPostsByTag("radar")`); las ediciones
   se **excluyen del grid principal** para no ahogar los artículos de fondo.
-- **Config pendiente del usuario**: (1) secret `CLAUDE_CODE_OAUTH_TOKEN` (`claude setup-token` →
-  `gh secret set`); (2) variable `YOUTUBE_CHANNEL_ID` (sin ella, el workflow de YouTube no corre);
-  (3) **conectar GitHub al proyecto Vercel** `kata-ivanovych-blog` (Settings → Git) para que el
-  merge de cada PR despliegue solo — hoy el deploy sigue siendo manual por CLI.
+- **Deploy automático VIVO (2026-07-22)**: GitHub conectado al proyecto Vercel
+  `kata-ivanovych-blog` — cada push/merge a `main` despliega solo. Para desbloquearlo en plan
+  Hobby, el repo se hizo **público** (historial verificado sin secretos; autoría reescrita a
+  `Kata Ivanovych <nexoraprocesos@gmail.com>` con filter-branch + force push; backup local en
+  rama `backup-pre-rewrite`). Commits futuros: la config local del repo ya firma como Kata Ivanovych.
+- **Config pendiente del usuario**: (1) secret `CLAUDE_CODE_OAUTH_TOKEN` — correr
+  `claude setup-token` en una Terminal APARTE (es interactivo, `!` no le da TTY) y luego
+  `gh secret set CLAUDE_CODE_OAUTH_TOKEN --repo katasavyuk-pixel/blog-newsletter --body "$(pbpaste)"`;
+  (2) variable `YOUTUBE_CHANNEL_ID` (sin ella, el workflow de YouTube no corre).
 - **Gotcha Vercel (2026-07-21)**: el proyecto con el dominio es `kata-ivanovych-blog`
   (`prj_1Cx7OZXAthH1N64qhhmpDOiVjTM7`). Si `.vercel/project.json` falta, `vercel deploy` CREA
   un proyecto duplicado con el nombre del directorio y despliega al sitio equivocado (pasó 2
