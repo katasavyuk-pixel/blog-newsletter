@@ -103,8 +103,15 @@ por CI con **checkpoint humano**: nada se publica sin merge de un PR.
 - **Superficie**: widget `RadarItem` (server component, `src/components/mdx/widgets/radar-item.tsx`);
   franja "Radar IA" en `/blog` (últimas 3 ediciones, `getPostsByTag("radar")`); las ediciones
   se **excluyen del grid principal** para no ahogar los artículos de fondo.
-- **Config pendiente del usuario**: secret `CLAUDE_CODE_OAUTH_TOKEN` (`claude setup-token` →
-  `gh secret set`) y variable `YOUTUBE_CHANNEL_ID` (sin ella, el workflow de YouTube no corre).
+- **Config pendiente del usuario**: (1) secret `CLAUDE_CODE_OAUTH_TOKEN` (`claude setup-token` →
+  `gh secret set`); (2) variable `YOUTUBE_CHANNEL_ID` (sin ella, el workflow de YouTube no corre);
+  (3) **conectar GitHub al proyecto Vercel** `kata-ivanovych-blog` (Settings → Git) para que el
+  merge de cada PR despliegue solo — hoy el deploy sigue siendo manual por CLI.
+- **Gotcha Vercel (2026-07-21)**: el proyecto con el dominio es `kata-ivanovych-blog`
+  (`prj_1Cx7OZXAthH1N64qhhmpDOiVjTM7`). Si `.vercel/project.json` falta, `vercel deploy` CREA
+  un proyecto duplicado con el nombre del directorio y despliega al sitio equivocado (pasó 2
+  veces; zombis `blog-newsletter`/`blog-newsletter-main` borrados hoy). Verificar el link antes
+  de desplegar.
 - Primera edición real publicada: `content/posts/radar-2026-07-21.mdx` (redactada a mano
   siguiendo el mismo pipeline, 7/7 ítems verificados por el gate).
 
