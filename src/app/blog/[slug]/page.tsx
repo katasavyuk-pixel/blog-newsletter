@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/container";
 import { Prose } from "@/components/ui/prose";
 import { MDXContent } from "@/components/mdx/mdx-content";
 import { widgets } from "@/components/mdx/widgets";
+import { YouTubeEmbed } from "@/components/mdx/widgets/youtube-embed";
 import { Toc } from "@/components/blog/toc";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { CopyCode } from "@/components/blog/copy-code";
@@ -119,6 +120,9 @@ export default async function PostPage({
             ) : null}
           </div>
         </header>
+        {post.youtubeId ? (
+          <YouTubeEmbed id={post.youtubeId} title={post.title} />
+        ) : null}
       </div>
 
       <div className="mx-auto mt-10 max-w-3xl lg:grid lg:max-w-5xl lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-12">

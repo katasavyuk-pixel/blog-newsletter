@@ -10,6 +10,7 @@ import { TemperatureSandbox } from "./temperature-sandbox";
 import { Term } from "./term";
 import { TokenizerPlayground } from "./tokenizer-playground";
 import { WidgetFrame } from "./widget-frame";
+import { YouTubeEmbed } from "./youtube-embed";
 
 /**
  * Interactive widgets available inside MDX posts. Passed straight to
@@ -29,4 +30,5 @@ export const widgets = {
   Term,
   TokenizerPlayground,
   WidgetFrame,
+  YouTubeEmbed,
 };

@@ -18,6 +18,7 @@ const posts = defineCollection({
       updated: s.isodate().optional(),
       tags: s.array(s.string()).default([]),
       cover: s.image().optional(),
+      youtubeId: s.string().max(20).optional(), // companion YouTube video ID, if any
       draft: s.boolean().default(false),
       premium: s.boolean().default(false),
       path: s.path(),

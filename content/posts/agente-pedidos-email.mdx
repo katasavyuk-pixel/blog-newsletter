@@ -1,0 +1,52 @@
+---
+title: Construí un agente que lee pedidos por email — el código y por qué lo monté así
+description: "El vídeo enseña el agente funcionando. Aquí está lo que no cupo en el montaje: por qué elegí este flujo en vez de otro, dónde falla de verdad, y el código completo para que te lo lleves."
+kicker: Construcción pública
+dek: "De cero a un agente que lee un email y extrae los datos, en una sesión. Esto es lo que decidí por el camino — y lo que todavía no hace bien."
+date: 2026-07-21
+tags:
+  - agentes
+  - automatizacion
+  - construccion-publica
+draft: true
+premium: false
+youtubeId: PENDIENTE
+---
+
+<Callout type="warn" title="Borrador — pendiente del vídeo">
+Este post se publica (`draft: false`) el mismo día que sale el episodio 1 de "Construir de cero" en YouTube. Sustituye `youtubeId: PENDIENTE` por el ID real del vídeo antes de publicar, y confirma que el `.zip` del código está subido a `/recursos` con este mismo slug.
+</Callout>
+
+El vídeo de este episodio te enseña el agente funcionando: terminal vacía, unos minutos de construcción, y al final un email de pedido convertido en datos estructurados. Lo que no cabía en el montaje es el porqué de cada decisión — y eso es lo que quiero dejar aquí.
+
+## El problema, sin rodeos
+
+Una empresa recibe pedidos por email. Alguien los abre uno a uno y teclea los datos a mano en su sistema. No es un problema exótico — es el trabajo repetitivo más común que existe en cualquier operación pequeña. La pregunta que me hice no fue «¿puede la IA hacer esto?» (obviamente sí), sino **«¿cuánto de esto puedo dejar en manos de un agente sin que la primera vez que se equivoque sea un desastre?»**
+
+Esa pregunta es la que de verdad decide cómo se construye el sistema.
+
+## Por qué una sola pieza, no un pipeline desde el minuto uno
+
+Podría haber empezado con varios agentes especializados (uno que lee, otro que extrae, otro que valida). No lo hice. En este episodio construyo **una sola pieza** que lee y extrae — nada más — porque la primera versión de cualquier sistema no debería resolver el problema completo, debería demostrar que la pieza más pequeña funciona.
+
+<Callout type="tip" title="Regla práctica">
+Si tu primer prototipo ya tiene "manejo de errores", "reintentos" y "validación cruzada", probablemente estás construyendo la versión 3 antes de haber probado la versión 1.
+</Callout>
+
+Los agentes de validación y manejo de excepciones llegan en los próximos episodios — cuando la pieza base ya demostró que el enfoque funciona.
+
+## Dónde falla (y por qué eso está bien)
+
+En el vídeo lo ves en directo: hay un caso donde el agente da un resultado dudoso. No lo escondo. Un sistema que solo enseñas cuando todo sale bien no te dice nada útil sobre si merece la pena construirlo — lo interesante es el límite, no el caso perfecto.
+
+Lo que aprendí de ese fallo concreto es exactamente el tema del próximo episodio: cómo evitar que un agente se invente un dato que no está en el texto, en vez de simplemente devolver «no lo sé».
+
+## El código
+
+Todo lo que ves construir en el vídeo está descargable — no es una versión limpiada a posteriori, es el mismo código de la sesión.
+
+<Callout type="info" title="Cómo lo consigues">
+El `.zip` con el agente completo está en [/recursos](/recursos). Requiere confirmar tu email (doble opt-in, sin spam) — así también te aviso cuando publique el episodio 2.
+</Callout>
+
+Si lo pruebas y te encuentras con un caso donde falla distinto al que muestro en el vídeo, cuéntamelo — es exactamente el tipo de límite real que quiero mostrar en los próximos episodios.
