@@ -10,9 +10,12 @@ import { Toc } from "@/components/blog/toc";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { CopyCode } from "@/components/blog/copy-code";
 import { ShareButtons } from "@/components/blog/share-buttons";
-import { allPosts, getPost } from "@/lib/posts";
+import { RelatedPosts } from "@/components/blog/related-posts";
+import { CourseProgressMarker } from "@/components/course/course-progress-marker";
+import { allPosts, getPost, getRelatedPosts } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
 import { siteConfig } from "@/config/site";
+import { COURSE_SLUGS } from "@/config/course";
 
 export function generateStaticParams() {
   return allPosts.map((post) => ({ slug: post.slug }));
@@ -132,6 +135,10 @@ export default async function PostPage({
           </Prose>
           <CopyCode />
           <ShareButtons url={fullUrl} title={post.title} />
+          <RelatedPosts posts={getRelatedPosts(post)} />
+          {(COURSE_SLUGS as readonly string[]).includes(post.slug) ? (
+            <CourseProgressMarker slug={post.slug} />
+          ) : null}
         </div>
         {showToc ? (
           <aside className="mt-12 lg:mt-0">

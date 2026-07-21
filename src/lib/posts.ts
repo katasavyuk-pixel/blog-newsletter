@@ -28,3 +28,21 @@ export function getAllTags(): { tag: string; count: number }[] {
 export function getPostsByTag(tag: string): Post[] {
   return allPosts.filter((post) => post.tags.includes(tag));
 }
+
+/**
+ * Posts to keep reading after `post`: ranked by shared tags (radar editions
+ * excluded — they're news, not evergreen), newest first on ties, padded with
+ * recent posts when tag overlap runs out.
+ */
+export function getRelatedPosts(post: Post, limit = 3): Post[] {
+  const candidates = allPosts.filter(
+    (p) => p.slug !== post.slug && !p.tags.includes("radar"),
+  );
+  const scored = candidates
+    .map((p) => ({
+      post: p,
+      score: p.tags.filter((tag) => post.tags.includes(tag)).length,
+    }))
+    .sort((a, b) => b.score - a.score);
+  return scored.slice(0, limit).map((s) => s.post);
+}
