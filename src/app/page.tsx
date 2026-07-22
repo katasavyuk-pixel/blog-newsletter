@@ -1,4 +1,5 @@
 import { Hero } from "@/components/home/hero";
+import { StatusTicker } from "@/components/home/status-ticker";
 import { CoursePillar } from "@/components/home/course-pillar";
 import { LibraryShowcase } from "@/components/home/library-showcase";
 import { CadenceStrip } from "@/components/home/cadence-strip";
@@ -21,6 +22,7 @@ export default async function Home() {
   return (
     <>
       <Hero subscriberCount={subscriberCount} />
+      <StatusTicker />
       <CoursePillar />
       <LibraryShowcase />
       <CadenceStrip />

@@ -5,7 +5,7 @@ import { siteConfig } from "@/config/site";
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 /** Journey week, frozen per build/revalidation (module scope keeps render pure). */
-const JOURNEY_WEEK =
+export const JOURNEY_WEEK =
   Math.floor(
     (Date.now() - new Date(siteConfig.journey.start).getTime()) / WEEK_MS,
   ) + 1;

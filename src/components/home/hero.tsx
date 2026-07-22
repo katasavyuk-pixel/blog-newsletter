@@ -1,6 +1,7 @@
 import { Container } from "@/components/ui/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { GlowSection } from "@/components/ui/glow-section";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { SubscribeForm } from "@/components/newsletter/subscribe-form";
 import { JourneyPanel } from "@/components/home/journey-panel";
 import { siteConfig } from "@/config/site";
@@ -16,7 +17,7 @@ export function Hero({ subscriberCount }: { subscriberCount: number | null }) {
         size="wide"
         className="grid items-center gap-12 py-20 sm:py-28 lg:grid-cols-2"
       >
-        <div className="max-w-xl">
+        <ScrollReveal className="max-w-xl">
           <Eyebrow tone="dark">
             construyendo una empresa de IA en público
           </Eyebrow>
@@ -44,15 +45,15 @@ export function Hero({ subscriberCount }: { subscriberCount: number | null }) {
               {siteConfig.newsletter.magnet}
             </p>
           </div>
-        </div>
+        </ScrollReveal>
 
-        <div className="relative mx-auto w-full max-w-md">
+        <ScrollReveal delay={0.15} className="relative mx-auto w-full max-w-md">
           <div
             aria-hidden
             className="absolute -inset-3 rounded-3xl border border-dark-border-2"
           />
           <JourneyPanel subscriberCount={subscriberCount} />
-        </div>
+        </ScrollReveal>
       </Container>
     </GlowSection>
   );

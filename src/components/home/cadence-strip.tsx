@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { getLatestRadarEdition } from "@/lib/radar";
 import { formatDate } from "@/lib/format";
 
@@ -39,9 +40,10 @@ export function CadenceStrip() {
         </div>
 
         <ul className="mt-8 grid gap-3 lg:grid-cols-3">
-          {headlines.slice(0, 3).map((item) => (
+          {headlines.slice(0, 3).map((item, i) => (
             <li key={item.url}>
-              <Link
+              <ScrollReveal delay={i * 0.07} className="h-full">
+                <Link
                 href={edition.permalink}
                 className="group flex h-full flex-col gap-2 rounded-2xl border border-border bg-surface p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-accent hover:shadow-card-hover"
               >
@@ -56,7 +58,8 @@ export function CadenceStrip() {
                 <h3 className="font-display text-base font-medium leading-snug text-fg transition-colors group-hover:text-accent-ink">
                   {item.title}
                 </h3>
-              </Link>
+                </Link>
+              </ScrollReveal>
             </li>
           ))}
         </ul>

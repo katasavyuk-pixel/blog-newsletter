@@ -357,3 +357,19 @@
 .copy-code-btn:hover {
   color: var(--color-fg);
 }
+
+/* Status ticker — seamless marquee (content duplicated once, -50% loop).
+   Neutralized by the global prefers-reduced-motion block above. */
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll 36s linear infinite;
+}
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}

@@ -179,6 +179,18 @@ Montserrat); lo que cambió es estructura y copy.
 - Verificado e2e con Playwright: rutas 200, `/yt` → 307 con utm, form del hero (preview mode),
   screenshots desktop/móvil. Gotcha lint: `Date.now()` en render viola `react-hooks/purity` →
   calcular en scope de módulo.
+- **Capa "impacto" (feedback "no me llama la atención" + storyboard partículas del usuario)**:
+  (1) `ParticleField` (`src/components/effects/`, canvas client global en el layout, z-30 bajo
+  viñeta/grano z-40/41): brasas carmesí con estallido inicial que se asienta en deriva, sprites
+  pre-renderizados (nada de shadowBlur por frame), pausa con visibilitychange, `null` bajo
+  reduced-motion; (2) `StatusTicker` — marquesina CSS (`.ticker-track`, contenido duplicado,
+  loop -50%) con datos reales del viaje; (3) biblioteca en **bento asimétrico** con ordinales
+  cromados gigantes (`chrome-text` + Anton) y halo radial en la card destacada (`LibraryCard`
+  props `hero`/`ordinal`); (4) clímax carmesí de vuelta: `ClosingCta` = panel `bg-accent`
+  saturado con card de form espresso flotando; (5) `ScrollReveal` escalonado en hero/parrillas.
+  OJO: los full-page screenshots salen con parrillas "vacías" (whileInView no dispara sin
+  scroll) — verificar scrolleando. El look que quiere Kata: cinematográfico rojo/negro con
+  partículas, momentos "wow" — no minimalismo plano.
 
 ## Embudo y medición (2026-07-22)
 
