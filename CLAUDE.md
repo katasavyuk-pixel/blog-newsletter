@@ -2,7 +2,7 @@
 
 # CLAUDE.md — Blog + Newsletter de marca personal (IA)
 
-> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Embudo y medición — analítica, /yt, secuencia de bienvenida** (2026-07-22).
+> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Rediseño "Biblioteca de Sistemas"** (2026-07-22).
 
 ## Qué es esto
 
@@ -145,6 +145,40 @@ La home ya seguía el layout del diseño `Inicio.dc.html` (proyecto Claude Desig
 - **Regla al implementar diseños del proyecto Claude Design**: los mocks traen datos fake
   ("12.400+ suscriptores", "Soy Álex") — SIEMPRE sustituir por datos reales/honestos, y
   traducir hex → tokens.
+
+## Rediseño "Biblioteca de Sistemas" (2026-07-22)
+
+Pivote de posicionamiento + rediseño de arquitectura (spec completa en
+`docs/superpowers/specs/2026-07-22-rediseno-biblioteca-sistemas-design.md`; brainstorming + 2
+rondas de benchmark de 10 referencias). **Identidad visual intacta** (tokens rojo/negro, Anton +
+Montserrat); lo que cambió es estructura y copy.
+
+- **Posicionamiento**: de "aprende IA sin humo" → **"construyo NBI en público; sistemas replicables
+  probados en un negocio real"**. Lector nº 1 = emprendedor ya en marcha (el canal de YouTube
+  tratará emprendimiento/desarrollo/habilidades). NBI jamás se vende en la home — solo downstream
+  (email día 8). Filtro de identidad en el copy ("no encajarás si buscas atajos").
+- **Arquitectura** (patrón Clear/Ness Labs: biblioteca-como-página, home-como-argumento): nav de 4
+  items `Biblioteca (/biblioteca) · Curso · Noticias · Sobre mí` + CTA. `/blog` y `/recursos`
+  siguen vivos fuera de la nav (SEO + embudo `/yt` intactos). **`/biblioteca`** = biblioteca
+  completa por temas con destacados curados. `/sobre-mi` = "el viaje" (identidad → credencial →
+  misión → CTA).
+- **Home** (~7 secciones, exactamente 2 forms): hero captura (form + magnet nombrado) con **panel
+  de estado del viaje** (`JourneyPanel`: consola `kata --status` con misión/semana/sistemas/
+  suscriptores) → **pilar curso** (`CoursePillar`, tokenizador movido aquí como demo) →
+  **biblioteca curada** (`LibraryShowcase` + `LibraryCard`, cards "EN EL TALLER" con barra de
+  progreso = huecos anunciados) → cadencia Radar (`CadenceStrip`) → manifiesto → YouTube strip →
+  cierre que vende contenido FUTURO (`ClosingCta`, ancla `#newsletter`). Eliminados:
+  `blog-highlights`, `interactive-showcase`, `news-today`, `newsletter-cta`, `about-teaser`,
+  `final-cta`.
+- **SSOT nuevo**: `src/config/library.ts` (`LIBRARY_ITEMS` con `status disponible|en-construccion`,
+  temas, proof lines honestas; `COURSE_LESSON_META`). Regla de honestidad: cada item debe ser real.
+  `siteConfig.journey` (`start` = primer commit 2026-06-24, `mission` — actualizar cuando cambie).
+- **Métricas**: `getConfirmedSubscriberCount()` (`src/lib/subscribers.ts`, admin client, degrada a
+  `null`); home con `revalidate = 3600` (ISR). El contador solo se muestra desde
+  `newsletter.showCountFrom` (100).
+- Verificado e2e con Playwright: rutas 200, `/yt` → 307 con utm, form del hero (preview mode),
+  screenshots desktop/móvil. Gotcha lint: `Date.now()` en render viola `react-hooks/purity` →
+  calcular en scope de módulo.
 
 ## Embudo y medición (2026-07-22)
 
