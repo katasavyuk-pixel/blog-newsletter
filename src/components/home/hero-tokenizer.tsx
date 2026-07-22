@@ -9,7 +9,7 @@ type EncModule = {
   decode: (ids: number[]) => string;
 };
 
-const DEFAULT_TEXT = "Aprende IA de verdad, sin humo.";
+const DEFAULT_TEXT = "Sistemas probados en un negocio real.";
 
 /**
  * The hero IS the demo: a live, compact tokenizer the visitor can type into
