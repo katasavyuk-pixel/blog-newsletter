@@ -4,6 +4,12 @@ import { siteConfig } from "@/config/site";
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
+/** Journey week, frozen per build/revalidation (module scope keeps render pure). */
+const JOURNEY_WEEK =
+  Math.floor(
+    (Date.now() - new Date(siteConfig.journey.start).getTime()) / WEEK_MS,
+  ) + 1;
+
 /**
  * The journey status panel — the old `kata --status` lab console promoted to
  * hero visual: real build-time metrics of a business being built in public
@@ -15,10 +21,7 @@ export function JourneyPanel({
 }: {
   subscriberCount: number | null;
 }) {
-  const week =
-    Math.floor(
-      (Date.now() - new Date(siteConfig.journey.start).getTime()) / WEEK_MS,
-    ) + 1;
+  const week = JOURNEY_WEEK;
   const published = LIBRARY_ITEMS.filter((i) => i.status === "disponible").length;
   const building = LIBRARY_ITEMS.filter(
     (i) => i.status === "en-construccion",
