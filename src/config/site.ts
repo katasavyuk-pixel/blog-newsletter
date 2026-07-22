@@ -5,8 +5,9 @@
  * name / domain / bio / socials. Kept i18n-ready: text lives in config, not
  * hardcoded in components.
  *
- * AJUSTA si procede: `domain`/`url` (tu dominio real) y `social` (tus perfiles).
- * `author.bio` es un borrador neutro — personalízalo cuando quieras.
+ * Positioning (redesign 2026-07-22, see docs/superpowers/specs/): building
+ * NBI (an AI company) in public; reader #1 is a working entrepreneur; the
+ * promise is replicable systems proven in a real business.
  */
 
 export type SocialLink = { label: string; href: string };
@@ -19,21 +20,28 @@ export const siteConfig = {
   /** Absolute base URL — used for metadataBase / canonical / OG. */
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://kata.ianexora.com",
   /** §1 TAGLINE — one line: what you promise and to whom. */
-  tagline: "Aprende a aplicar IA de verdad, sin humo.",
+  tagline: "Sistemas probados en un negocio real. Llévatelos.",
   /** Default meta description (1–2 sentences). */
   description:
-    "Blog y newsletter sobre inteligencia artificial: artículos, recursos gratuitos y formación práctica para entender y aplicar la IA en tu día a día.",
+    "Estoy construyendo una empresa de IA en público. Blog y newsletter para emprendedores en marcha: sistemas replicables, plantillas y formación interactiva probados en un negocio real.",
   /** Primary content language. */
   locale: "es",
   /** Contact inbox for the privacy policy / data requests. TODO: confirma que es un buzón real (alias en ianexora.com). */
   contactEmail: "privacidad@ianexora.com",
-  /** §1 AUDIENCIA — mixed: devs + businesses + curious (leveled via tags). */
-  audience: "mixta",
+  /** §1 AUDIENCIA — reader #1: entrepreneurs already running something. */
+  audience: "emprendedores en marcha",
   author: {
     /** §1 TU_NOMBRE */
     name: "Kata Ivanovych",
-    /** §1 TU_BIO_CORTA — draft neutro, personalízalo. */
-    bio: "Ayudo a personas y equipos a entender y aplicar la inteligencia artificial sin humo. Aquí comparto artículos, recursos y formación práctica: lo que funciona, lo que no, y cómo empezar hoy.",
+    /** §1 TU_BIO_CORTA — identity in one line + credential + mission. */
+    bio: "Estoy construyendo NBI, una empresa de automatización con IA, y lo cuento en público: los sistemas que funcionan, los números reales y los errores. Si tienes un negocio en marcha, aquí te llevas lo que ya está probado. Sin humo.",
+  },
+  /** The public journey — anchors the "semana N" status panel and manifesto. */
+  journey: {
+    /** ISO date the public build started (first commit of this site). */
+    start: "2026-06-24",
+    /** Current mission, shown in the status panel. Update as it changes. */
+    mission: "primeros clientes de NBI",
   },
   /** §1 REDES — descomenta y pon tus perfiles reales. */
   social: [
@@ -45,23 +53,28 @@ export const siteConfig = {
   newsletter: {
     title: "Suscríbete a la newsletter",
     description:
-      "Ideas prácticas sobre IA, sin ruido. Un email cuando hay algo que merece la pena.",
+      "Cada sistema nuevo que funciona en mi negocio, contado para que lo repliques en el tuyo: qué construí, cómo, y los números de verdad.",
     cta: "Suscribirme",
+    /** Named lead magnet shown next to the capture forms (honest: it's the welcome sequence). */
+    magnet:
+      "Al suscribirte: el itinerario del curso interactivo de IA y cada sistema nuevo antes que nadie.",
     /** Value-prop checklist shown next to the home capture form (honest, no metrics). */
     bullets: [
-      "Una idea práctica sobre IA que puedes aplicar, sin relleno.",
-      "Lo que funciona y lo que no, explicado en claro.",
-      "Recursos y artículos interactivos para tocar y entender.",
+      "Un sistema replicable probado en mi negocio, con plantilla cuando la hay.",
+      "Los números y errores reales del viaje: lo que funciona y lo que no.",
+      "El curso interactivo de IA y cada recurso nuevo, antes que nadie.",
     ],
+    /** Hide the subscriber count below this threshold (honest social proof only). */
+    showCountFrom: 100,
   },
   /** Top-of-site announcement bar (set to "" to hide). */
   announcement:
-    "Nuevo: artículos interactivos sobre IA — toca, ajusta y entiende cómo funciona",
+    "Nuevo: la Biblioteca de Sistemas — lo que ya funciona en un negocio real, gratis",
 } as const;
 
 export type SiteConfig = typeof siteConfig;
 
-/** Primary navigation. Routes are built in their phases (Blog/Recursos → Fase 1/2). */
+/** Primary navigation — 4 items max + CTA (see redesign spec §arquitectura). */
 export const navLinks = [
   { label: "Noticias", href: "/blog/tag/radar" },
   { label: "Blog", href: "/blog" },
