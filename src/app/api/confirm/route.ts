@@ -4,6 +4,7 @@ import { createAdminClient, isSupabaseConfigured } from "@/lib/supabase/admin";
 import { hashToken, generateToken } from "@/lib/tokens";
 import { getResend, FROM, isEmailConfigured } from "@/lib/email";
 import { WelcomeEmail } from "@/emails/welcome";
+import { scheduleWelcomeSequence } from "@/lib/welcome-sequence";
 import { siteConfig } from "@/config/site";
 
 export const runtime = "nodejs";
@@ -70,6 +71,14 @@ export async function GET(request: NextRequest) {
       }),
     });
   }
+
+  // Onboarding drip (day 2 / 5 / 8) via Resend scheduledAt. Best-effort: skips
+  // itself while migration 0002 is unapplied and never breaks the redirect.
+  await scheduleWelcomeSequence(supabase, {
+    id: sub.id,
+    email: sub.email,
+    unsubscribeToken,
+  });
 
   const dest = resource
     ? `/gracias?descarga=${encodeURIComponent(resource)}`

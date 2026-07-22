@@ -1,15 +1,21 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient, isSupabaseConfigured } from "@/lib/supabase/admin";
+import { cancelWelcomeSequence } from "@/lib/welcome-sequence";
 
 export const runtime = "nodejs";
 
 async function doUnsubscribe(token: string | null): Promise<void> {
   if (!token || !isSupabaseConfigured()) return;
   const supabase = createAdminClient();
-  await supabase
+  const { data } = await supabase
     .from("subscribers")
     .update({ status: "unsubscribed", unsubscribed_at: new Date().toISOString() })
-    .eq("unsubscribe_token", token);
+    .eq("unsubscribe_token", token)
+    .select("id");
+  // Cancel any onboarding emails still scheduled in Resend for this subscriber.
+  for (const row of data ?? []) {
+    await cancelWelcomeSequence(supabase, row.id);
+  }
 }
 
 // One-click (RFC 8058): mail clients POST here and expect a 200 with no confirmation step.
