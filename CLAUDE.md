@@ -2,7 +2,7 @@
 
 # CLAUDE.md — Blog + Newsletter de marca personal (IA)
 
-> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **"Radar IA" — noticias semanales automatizadas + auto-post YouTube** (2026-07-21).
+> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Embudo y medición — analítica, /yt, secuencia de bienvenida** (2026-07-22).
 
 ## Qué es esto
 
@@ -30,12 +30,12 @@ pero la parte de pago/auth **no se construye** hasta la Fase 3.
 | Framework | Next.js App Router | `next@16.2.x` (Turbopack default, Node ≥20) |
 | Runtime | React | `react@19.x` / `react-dom@19.x` |
 | Estilos | Tailwind CSS v4 (CSS-first) | `tailwindcss@4` + `@tailwindcss/postcss@4` + `@tailwindcss/typography@0.5` |
-| Tipografía | Space Grotesk (display/UI) + Inter (cuerpo) | `next/font/google` |
+| Tipografía | Montserrat (cuerpo/UI) + Anton (display); mono = stack del sistema | `next/font/google` |
 | DB / clients | Supabase | `@supabase/ssr@0.12` + `@supabase/supabase-js@2.108`; región `eu-central-1` |
 | Content layer (Fase 1) | Velite | `velite@0.3.x` (no `1.0.0-alpha`) + rehype-pretty-code `0.14` + shiki `^1` |
 | Email (Fase 2) | Resend + React Email | `resend@6.14` + `react-email@6.6`; región `eu-west-1` |
 | Pagos (Fase 3) | Stripe | — |
-| Analítica | Umami self-host (EU) o Plausible Cloud (EU), cookieless | — |
+| Analítica | Vercel Web Analytics (cookieless, sin PII, sin cookies) — decidido 2026-07-22 | `@vercel/analytics@2` |
 
 ## Convenciones
 
@@ -67,11 +67,11 @@ next.config.ts · .env.example
 ## Decisiones de arquitectura
 
 - **Tema: página clara con SECCIONES OSCURAS deliberadas.** El rediseño "Kata Pro" (2026-06-25) reemplazó la antigua ley NBI "solo claro / nunca oscuro": hero, newsletter y footer son bandas espresso (`--color-dark #15100d`) con *glow* coral pulsante (`.glow-pulse`, congelado bajo `prefers-reduced-motion`). No es modo-oscuro con toggle (sin `.dark` ni `next-themes`): son superficies oscuras dentro de una página cálida. Tokens siguen siendo CSS variables (dark-ready si se quisiera un toggle).
-- **Marca = Kata Ivanovych — "Atardecer Coral" → "Kata Pro"** (subdominio de NBI `ianexora.com`): paleta cálida espresso `#15100d` + coral/terracota `#d8442b` (texto = `--color-accent-ink #be3621`, AA) + crema `#f4eee3`; acentos salmón/terracota/oro y chips de categoría. Tipografía **Newsreader** (serif, títulos peso 500) + **Hanken Grotesk** (cuerpo/botones) + **JetBrains Mono** (eyebrows/labels). Valores AA-verificados en `globals.css`. (La paleta NBI navy/cian quedó obsoleta en el rebrand `b044460` y el rediseño Kata Pro.)
+- **Marca = Kata Ivanovych — "Atardecer Coral" → "Kata Pro"** (subdominio de NBI `ianexora.com`): paleta cálida espresso `#15100d` + coral/terracota `#d8442b` (texto = `--color-accent-ink #be3621`, AA) + crema `#f4eee3`; acentos salmón/terracota/oro y chips de categoría. Tipografía real del código: **Montserrat** (cuerpo/UI, `--font-body`/`--font-display`) + **Anton** (display condensada, `--font-punch`) + mono del sistema (`--font-mono`, sin webfont). Valores AA-verificados en `globals.css`. (La paleta NBI navy/cian quedó obsoleta en el rebrand `b044460` y el rediseño Kata Pro.)
 - **Content layer = Velite** (Fase 1). Compila MDX en su propio proceso esbuild antes/junto a `next build`, así el pipeline Shiki/rehype-pretty-code corre intacto bajo **Turbopack** (que no puede pasar plugins remark/rehype con funciones a través de la frontera Rust). Frontmatter validado con Zod + tipos TS autogenerados. Contentlayer descartado (abandonado). Nunca `VeliteWebpackPlugin`; wiring vía npm scripts (`run-s`) o hook dynamic-import.
 - **Newsletter = lista en Supabase, Resend solo entrega.** Estado de consentimiento (`pending`/`confirmed`/`unsubscribed`) en nuestro Postgres. Transaccional (opt-in/bienvenida) vía `emails.send`; boletín vía loop propio sobre filas `confirmed` con `resend.batch.send` (lotes de 100, ≤5 req/s, idempotente por `issue_id`, breaker por cuota). Esto hace triviales los derechos RGPD y mantiene la PII fuera de la infra US de Resend.
   - **Matiz RGPD crítico:** región `eu-west-1` controla solo desde dónde se *envía*, NO residencia de datos (account data/logs/metadata de Resend viven en US bajo SCC + DPA). **Nunca prometer "100% UE"** — mismo encuadre que el matiz Gemini/OpenRouter.
-- **Analítica cookieless** (Umami EU / Plausible EU) → sin banner. Evitar GA4.
+- **Analítica cookieless = Vercel Web Analytics** (decidido 2026-07-22; antes se barajaba Umami/Plausible): sin cookies ni PII → sin banner; Vercel ya era subencargado (0 DPAs nuevos). Evitar GA4. Conversión del embudo = pageviews × `subscribers.source`.
 
 ## Capa interactiva — "Caja de Cristal" (rediseño)
 
@@ -146,6 +146,20 @@ La home ya seguía el layout del diseño `Inicio.dc.html` (proyecto Claude Desig
   ("12.400+ suscriptores", "Soy Álex") — SIEMPRE sustituir por datos reales/honestos, y
   traducir hex → tokens.
 
+## Embudo y medición (2026-07-22)
+
+Sprint "listo para el episodio 1" (investigación: con <1k subs los referidos no compensan;
+lead magnet específico por vídeo ~30% conversión vs ~2% genérico; secuencia de bienvenida =
+palanca nº1 lector→cliente). Decisiones: oferta = **NBI primero**; analítica = **Vercel WA**.
+
+- **Analítica**: `<Analytics/>` (`@vercel/analytics/next`) en el layout. Verificada en dev (debug mode).
+- **`/yt`** → `/recursos?utm_source=youtube` (307, `next.config.ts`) — link para descripción + comentario fijado de cada vídeo.
+- **Secuencia de bienvenida** (día 2 curso / día 5 historia / día 8 pitch NBI suave): contenidos en `src/emails/welcome-sequence.tsx` (reutiliza la carcasa `NewsletterEmail` → footer de baja + `List-Unsubscribe` RFC 8058), lógica en `src/lib/welcome-sequence.ts`. Se programa en `/api/confirm` con `scheduledAt` de Resend (sin cron, máx. 30 días); la baja (`/api/unsubscribe`) cancela pendientes en Resend y borra filas (re-alta = nuevo ciclo de consentimiento). **Best-effort**: si la tabla no existe o Resend falla, el opt-in NUNCA se rompe.
+- **`RESEND_REPLY_TO`** (env, opcional pero importante): el subdominio de envío no recibe correo — sin esta env las respuestas a "responde a este email" (día 5/8) rebotan. Cargar en Vercel un buzón real monitorizado.
+- **Pendiente para activar la secuencia**: (1) aplicar `supabase/migrations/0002_scheduled_emails.sql` en el SQL editor del proyecto del blog (esa cuenta Supabase NO tiene MCP/CLI desde esta máquina), (2) `RESEND_REPLY_TO` en Vercel, (3) e2e en prod: confirmar un alta de test → 3 emails en "Scheduled" de Resend + 3 filas en `scheduled_emails`; baja → cancelados.
+- **GEO (llms.txt, robots.ts, JSON-LD Person) deliberadamente NO construido**: es el contenido EN CÁMARA del episodio 1 (memoria `guion-episodio-1-geo`) — el 404 de `/llms.txt` es el "antes" del vídeo. No adelantar.
+- Descartado consciente (jul-2026): programa de referidos (<1k subs), comentarios giscus, Discord/Telegram (moderación vs tope 1,5h/sem — revisar a ~500-1k subs), analítica self-host.
+
 ## Modelo de datos (diseñado día 1, construido por fases)
 
 `RLS ON` en todas. Default-deny; escrituras vía servidor (`service_role`) o RPC
@@ -154,6 +168,9 @@ FROM PUBLIC` + `GRANT` explícito, verificar con `has_function_privilege`).
 
 **`subscribers`** (Fase 2) — `id uuid pk`, `email citext unique`, `status enum(pending|confirmed|unsubscribed)`, `confirm_token_hash` (solo `sha256`; el token claro solo viaja en el email), `confirm_expires_at`, `confirmed_at`, `unsubscribe_token unique`, `unsubscribed_at`, `consent_ip`, `source` (p.ej. `footer`, `lead_magnet:guia-rag`, `popup`), `locale default 'es'`, `created_at`.
 RLS: **sin** policies anon/authenticated. Alta vía Route Handler con `service_role` + verificación Turnstile + rate-limit. Token CSPRNG, single-use, compare en tiempo constante. Respuesta 200 genérica (anti-enumeración).
+
+**`scheduled_emails`** (2026-07-22, migración `0002`) — `id uuid pk`, `subscriber_id fk → subscribers on delete cascade`, `email_key` (`d2-curso`/`d5-historia`/`d8-nbi`), `resend_email_id` (para cancelar), `scheduled_at`, `created_at`, `unique(subscriber_id, email_key)`.
+RLS: sin policies (solo `service_role`). Filas borradas al darse de baja.
 
 **`resources`** (Fase 2) — `id uuid pk`, `slug unique`, `title`, `description`, `file_path` (Storage), `requires_email bool default true`, `download_count int default 0`, `published bool default false`, `created_at`.
 RLS: `SELECT USING (published = true)` para anon/authenticated. `download_count` vía RPC `increment_download_count`. Descarga: bucket **privado** + `createSignedUrl(path, 300, {download})` tras verificar email confirmado; policies de `storage.objects` con filtro `bucket_id`.
