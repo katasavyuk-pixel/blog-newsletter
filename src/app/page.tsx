@@ -1,34 +1,33 @@
-import { Hero } from "@/components/home/hero";
-import { StatusTicker } from "@/components/home/status-ticker";
-import { CoursePillar } from "@/components/home/course-pillar";
-import { LibraryShowcase } from "@/components/home/library-showcase";
-import { CadenceStrip } from "@/components/home/cadence-strip";
-import { Manifesto } from "@/components/home/manifesto";
-import { YouTubeStrip } from "@/components/home/youtube-strip";
-import { ClosingCta } from "@/components/home/closing-cta";
+import { UniverseMap } from "@/components/universe/universe-map";
+import { SemanticLayer } from "@/components/universe/semantic-layer";
+import { buildUniverse } from "@/lib/universe";
 import { getConfirmedSubscriberCount } from "@/lib/subscribers";
+import { siteConfig } from "@/config/site";
 
-/** Refresh hourly so the journey panel's subscriber count stays honest. */
+/** Refresh hourly: journey week, subscriber count and radar blips stay honest. */
 export const revalidate = 3600;
 
 /**
- * Home = argument, library = page (redesign spec): hero capture → course
- * pillar → curated library wall → weekly cadence → manifesto → video →
- * closing capture. Exactly two forms (hero + closing).
+ * Home = the navigable star map (redesign "El Universo", 2026-07-23 spec).
+ * The map is the experience; the SemanticLayer below is the crawlable,
+ * accessible, no-JS truth of the same universe. Capture: la Señal on the map
+ * (`senal-mapa`) + the anchored form in the list (`senal-lista`).
  */
 export default async function Home() {
-  const subscriberCount = await getConfirmedSubscriberCount();
+  const universe = buildUniverse();
+  const count = await getConfirmedSubscriberCount();
+  const subscriberCount =
+    count != null && count >= siteConfig.newsletter.showCountFrom ? count : null;
 
   return (
     <>
-      <Hero subscriberCount={subscriberCount} />
-      <StatusTicker />
-      <CoursePillar />
-      <LibraryShowcase />
-      <CadenceStrip />
-      <Manifesto />
-      <YouTubeStrip />
-      <ClosingCta />
+      <section
+        aria-label="El mapa del universo"
+        className="relative h-[calc(100svh-4rem)] min-h-[480px]"
+      >
+        <UniverseMap data={universe} subscriberCount={subscriberCount} />
+      </section>
+      <SemanticLayer data={universe} />
     </>
   );
 }

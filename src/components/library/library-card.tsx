@@ -110,7 +110,7 @@ export function LibraryCard({
 
   return (
     <Link
-      href={item.href ?? "/biblioteca"}
+      href={item.href ?? "/sistemas"}
       className={cn(
         "group",
         cardClasses,

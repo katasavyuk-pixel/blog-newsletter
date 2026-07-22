@@ -67,21 +67,17 @@ export const siteConfig = {
     /** Hide the subscriber count below this threshold (honest social proof only). */
     showCountFrom: 100,
   },
-  /** Top-of-site announcement bar (set to "" to hide). */
-  announcement:
-    "Nuevo: la Biblioteca de Sistemas — lo que ya funciona en un negocio real, gratis",
 } as const;
 
 export type SiteConfig = typeof siteConfig;
 
 /**
- * Primary navigation — 4 items + CTA (redesign spec §arquitectura: content
- * first, About last). /blog and /recursos stay live but leave the nav; the
- * library links into both.
+ * Primary navigation — 4 items + CTA (redesign "El Universo": cosmic naming,
+ * functional clarity). /blog and /recursos stay live but leave the nav.
  */
 export const navLinks = [
-  { label: "Biblioteca", href: "/biblioteca" },
+  { label: "Sistemas", href: "/sistemas" },
   { label: "Curso", href: "/empieza-aqui" },
-  { label: "Noticias", href: "/blog/tag/radar" },
+  { label: "Radar", href: "/blog/tag/radar" },
   { label: "Sobre mí", href: "/sobre-mi" },
 ] as const;

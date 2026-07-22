@@ -19,6 +19,12 @@ const nextConfig: NextConfig = {
         destination: "/recursos?utm_source=youtube",
         permanent: false,
       },
+      // Redesign "El Universo": the library route became /sistemas.
+      {
+        source: "/biblioteca",
+        destination: "/sistemas",
+        permanent: true,
+      },
     ];
   },
 };

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Montserrat, Anton } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
-import { AnnouncementBar } from "@/components/home/announcement-bar";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { MotionProvider } from "@/components/motion/motion-provider";
@@ -64,7 +63,6 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col bg-bg text-fg antialiased">
         <MotionProvider>
           <ParticleField />
-          <AnnouncementBar />
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />

@@ -12,7 +12,7 @@ export type ChipColor = "coral" | "navy" | "toffee" | "forest";
 
 export type LibraryTheme = "ia-aplicada" | "captacion" | "contenido";
 
-/** Display labels for the /biblioteca theme blocks, in page order. */
+/** Display labels for the /sistemas theme blocks, in page order. */
 export const LIBRARY_THEMES: Record<LibraryTheme, string> = {
   "ia-aplicada": "IA aplicada",
   captacion: "Captación y embudo",

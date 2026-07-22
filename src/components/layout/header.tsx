@@ -7,7 +7,7 @@ import { siteConfig } from "@/config/site";
 /** Sticky espresso-glass header: brand mark, primary nav and a newsletter CTA. */
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-dark-border bg-dark/90 text-on-dark backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-dark-border bg-space/85 text-on-dark backdrop-blur-md">
       <Container size="wide" className="flex h-16 items-center justify-between gap-4">
         <Link
           href="/"
@@ -26,7 +26,7 @@ export function Header() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Nav />
           <div className="hidden sm:block">
-            <Button href="/#newsletter" size="sm">
+            <Button href="/#senal" size="sm">
               Suscríbete
             </Button>
           </div>
