@@ -74,11 +74,14 @@ export const siteConfig = {
 
 export type SiteConfig = typeof siteConfig;
 
-/** Primary navigation — 4 items max + CTA (see redesign spec §arquitectura). */
+/**
+ * Primary navigation — 4 items + CTA (redesign spec §arquitectura: content
+ * first, About last). /blog and /recursos stay live but leave the nav; the
+ * library links into both.
+ */
 export const navLinks = [
-  { label: "Noticias", href: "/blog/tag/radar" },
-  { label: "Blog", href: "/blog" },
+  { label: "Biblioteca", href: "/biblioteca" },
   { label: "Curso", href: "/empieza-aqui" },
-  { label: "Recursos", href: "/recursos" },
+  { label: "Noticias", href: "/blog/tag/radar" },
   { label: "Sobre mí", href: "/sobre-mi" },
 ] as const;

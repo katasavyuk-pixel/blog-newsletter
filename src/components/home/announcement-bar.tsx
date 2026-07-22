@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
-import { getPostsByTag } from "@/lib/posts";
 import { siteConfig } from "@/config/site";
 
-/** Thin espresso ribbon above the header promoting the latest interactive post. */
+/** Thin espresso ribbon above the header promoting the library. */
 export function AnnouncementBar() {
   const text = siteConfig.announcement;
   if (!text) return null;
-  const href = getPostsByTag("interactivo")[0]?.permalink ?? "/recursos";
+  const href = "/biblioteca";
 
   return (
     <div className="bg-dark text-on-dark-muted">

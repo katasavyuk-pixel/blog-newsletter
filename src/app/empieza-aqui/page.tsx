@@ -32,7 +32,7 @@ export default function EmpiezaAquiPage() {
   return (
     <Container className="py-16">
       <header className="max-w-2xl">
-        <Eyebrow>Gratis · interactivo · a tu ritmo</Eyebrow>
+        <Eyebrow>El pilar de la biblioteca · gratis · a tu ritmo</Eyebrow>
         <h1 className="mt-3 font-display text-4xl font-medium tracking-tight text-fg sm:text-5xl">
           Empieza aquí: entiende la IA tocándola
         </h1>
@@ -53,8 +53,8 @@ export default function EmpiezaAquiPage() {
           ¿Terminaste el itinerario?
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-muted">
-          La newsletter sigue donde acaba el curso: una idea práctica de IA
-          cuando hay algo que merece la pena, sin ruido.
+          La newsletter sigue donde acaba el curso: cada sistema nuevo de la
+          biblioteca, contado para que lo repliques — sin ruido.
         </p>
         <div className="mt-5">
           <Button href="/#newsletter">Suscríbete gratis</Button>
