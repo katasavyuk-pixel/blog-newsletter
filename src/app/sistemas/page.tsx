@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   title: "Biblioteca de Sistemas",
   description:
     "Sistemas replicables probados en un negocio real: curso interactivo de IA, herramientas, guías y plantillas — gratis, con lo que está en construcción a la vista.",
-  alternates: { canonical: "/biblioteca" },
+  alternates: { canonical: "/sistemas" },
 };
 
 /**
