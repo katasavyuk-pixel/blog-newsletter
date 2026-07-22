@@ -60,6 +60,15 @@
   --color-glow-coral: rgba(122, 22, 32, 0.55);
   --color-glow-amber: rgba(199, 204, 210, 0.06);
 
+  /* Cosmic layer — redesign "El Universo" (2026-07-23 spec) */
+  --color-space: #050608; /* deep space — map & entry background */
+  --color-star: #f5f6f8; /* star core */
+  --color-star-dim: #b8bdc6; /* faint background stars */
+  --color-nebula-core: rgba(215, 33, 42, 0.5); /* crimson nebula inner glow */
+  --color-nebula-far: rgba(122, 22, 32, 0.32); /* nebula outer wash */
+  --color-ring-line: rgba(199, 204, 210, 0.08); /* expansion week-rings */
+  --color-map-line: rgba(199, 204, 210, 0.16); /* HUD hairlines on the map */
+
   /* Lines & focus */
   --color-border: #23262c;
   --color-ring: #d7212a;
