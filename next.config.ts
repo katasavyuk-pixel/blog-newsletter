@@ -11,6 +11,16 @@ const nextConfig: NextConfig = {
     // Native View Transitions API for app-like navigation (React 19.2 <ViewTransition>).
     viewTransition: true,
   },
+  async redirects() {
+    return [
+      // Short link for YouTube descriptions / pinned comments.
+      {
+        source: "/yt",
+        destination: "/recursos?utm_source=youtube",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
