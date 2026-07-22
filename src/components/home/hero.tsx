@@ -1,21 +1,15 @@
 import { Container } from "@/components/ui/container";
-import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { GlowSection } from "@/components/ui/glow-section";
-import { HeroTokenizer } from "@/components/home/hero-tokenizer";
-import { allPosts, getPostsByTag } from "@/lib/posts";
+import { SubscribeForm } from "@/components/newsletter/subscribe-form";
+import { JourneyPanel } from "@/components/home/journey-panel";
 import { siteConfig } from "@/config/site";
 
-/** Dark, glowing two-column hero — tagline + CTAs left, a LIVE tokenizer right. */
-export function Hero() {
-  // Lab-console status line: real numbers, frozen at build time (static page).
-  const latestRadar = getPostsByTag("radar")[0];
-  const statusLines = [
-    `${allPosts.length} artículos · ${getPostsByTag("interactivo").length} interactivos`,
-    latestRadar ? `radar: edición ${latestRadar.date.slice(0, 10)} ✓` : null,
-    "construido en público",
-  ].filter(Boolean) as string[];
-
+/**
+ * Dark, glowing two-column hero — identity + capture left (form #1 of 2 on
+ * the home, named magnet, identity filter), the live journey panel right.
+ */
+export function Hero({ subscriberCount }: { subscriberCount: number | null }) {
   return (
     <GlowSection fadeBottom>
       <Container
@@ -23,45 +17,32 @@ export function Hero() {
         className="grid items-center gap-12 py-20 sm:py-28 lg:grid-cols-2"
       >
         <div className="max-w-xl">
-          <Eyebrow tone="dark">IA explicada · interactiva · sin humo</Eyebrow>
+          <Eyebrow tone="dark">
+            construyendo una empresa de IA en público
+          </Eyebrow>
 
           <h1
             className="mt-5 font-punch font-normal uppercase text-on-dark text-balance"
             style={{ fontSize: "var(--text-hero)", lineHeight: 1.0 }}
           >
-            Aprende a aplicar IA de verdad,{" "}
-            <span className="text-accent">sin humo.</span>
+            Sistemas probados en un negocio real.{" "}
+            <span className="text-accent">Llévatelos.</span>
           </h1>
 
           <p className="mt-6 max-w-lg text-lg leading-relaxed text-on-dark-muted">
-            {siteConfig.description} Aquí no solo lees cómo funciona la IA:{" "}
+            Estoy montando NBI, una empresa de IA, con las puertas abiertas:
+            cada sistema que funciona, te lo llevas para tu negocio.{" "}
             <strong className="font-semibold text-on-dark">
-              metes la mano y giras el mando
-            </strong>
-            .
+              Para emprendedores en marcha
+            </strong>{" "}
+            — si buscas humo o atajos, no es tu sitio.
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button href="/#newsletter" size="lg">
-              Suscríbete gratis
-            </Button>
-            <Button href="/blog" variant="outline-dark" size="lg">
-              Explora los artículos
-            </Button>
-          </div>
-
-          <div className="mt-10 max-w-md rounded-xl border border-dark-border bg-dark-input/50 p-4 font-mono text-xs leading-relaxed text-on-dark-faint">
-            <p className="text-on-dark-muted">
-              <span className="text-salmon">$</span> kata --status
+          <div className="mt-8 max-w-lg">
+            <SubscribeForm source="hero" tone="dark" layout="inline" />
+            <p className="mt-3 text-sm leading-relaxed text-on-dark-faint">
+              {siteConfig.newsletter.magnet}
             </p>
-            {statusLines.map((line) => (
-              <p key={line}>
-                <span aria-hidden className="text-salmon">
-                  ▸{" "}
-                </span>
-                {line}
-              </p>
-            ))}
           </div>
         </div>
 
@@ -70,7 +51,7 @@ export function Hero() {
             aria-hidden
             className="absolute -inset-3 rounded-3xl border border-dark-border-2"
           />
-          <HeroTokenizer />
+          <JourneyPanel subscriberCount={subscriberCount} />
         </div>
       </Container>
     </GlowSection>
