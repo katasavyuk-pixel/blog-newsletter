@@ -1,5 +1,6 @@
 import { UniverseMap } from "@/components/universe/universe-map";
 import { SemanticLayer } from "@/components/universe/semantic-layer";
+import { EntrySequence } from "@/components/universe/entry-sequence";
 import { buildUniverse } from "@/lib/universe";
 import { getConfirmedSubscriberCount } from "@/lib/subscribers";
 import { siteConfig } from "@/config/site";
@@ -21,6 +22,11 @@ export default async function Home() {
 
   return (
     <>
+      {/* No-JS never sees the cinematic overlay — the semantic layer is the page. */}
+      <noscript>
+        <style>{`[data-entry-overlay]{display:none}`}</style>
+      </noscript>
+      <EntrySequence />
       <section
         aria-label="El mapa del universo"
         className="relative h-[calc(100svh-4rem)] min-h-[480px]"
