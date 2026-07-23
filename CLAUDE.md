@@ -2,7 +2,7 @@
 
 # CLAUDE.md — Blog + Newsletter de marca personal (IA)
 
-> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Rediseño "Biblioteca de Sistemas"** (2026-07-22).
+> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Rediseño "El Universo"** (2026-07-23).
 
 ## Qué es esto
 
@@ -120,7 +120,7 @@ por CI con **checkpoint humano**: nada se publica sin merge de un PR.
 - Primera edición real publicada: `content/posts/radar-2026-07-21.mdx` (redactada a mano
   siguiendo el mismo pipeline, 7/7 ítems verificados por el gate).
 
-## Retención y descubrimiento (2026-07-22, del diseño "Inicio" de Claude Design)
+## Retención y descubrimiento (2026-07-22) — PARCIALMENTE SUPERSEDIDO: las secciones de home aquí descritas ya no existen (ver "El Universo"); siguen vivos `/empieza-aqui`, related posts, `radar.ts` y el curso
 
 La home ya seguía el layout del diseño `Inicio.dc.html` (proyecto Claude Design
 `d90c113d-…`); esta pasada añadió lo que faltaba, traducido a los tokens rojo/negro:
@@ -146,7 +146,63 @@ La home ya seguía el layout del diseño `Inicio.dc.html` (proyecto Claude Desig
   ("12.400+ suscriptores", "Soy Álex") — SIEMPRE sustituir por datos reales/honestos, y
   traducir hex → tokens.
 
-## Rediseño "Biblioteca de Sistemas" (2026-07-22)
+## Rediseño "EL UNIVERSO" (2026-07-23) — VIGENTE, en producción
+
+Tercer rediseño, de concepto raíz (a Kata los dos anteriores "no le convencían: sin
+personalidad ni originalidad"). Brainstorming completo + plan aprobado; spec en
+`docs/superpowers/specs/2026-07-23-rediseno-universo-design.md`. **Desplegado a prod
+2026-07-23** (merge fast-forward a `main`, deploy automático verificado en vivo).
+
+- **Concepto (idea de Kata)**: la web ES un **universo rojo/negro en expansión** — el universo
+  de NBI construyéndose en público. Big bang = 2026-06-24; anillos = semanas; cada sistema
+  publicado = un sistema estelar que se enciende. Identidad visual previa (tokens, Anton/
+  Montserrat, grano/viñeta) intacta; personalidad elegida: directo sin filtros + explorador
+  en misión + científico juguetón (NO "constructor obsesivo").
+- **Home = mapa estelar navegable** (`src/components/universe/`): cámara pan/zoom/inercia con
+  motion values (`universe-map.tsx`), astros por tipo (`astro-node.tsx`: núcleo NBI,
+  constelación=curso con estrellas que ENCIENDE el progreso real del lector, sistemas,
+  protoestrellas con % formación, púlsar=radar con blips reales, baliza=la Señal con form,
+  sonda=YouTube autoactivable, cometas=posts), panel de foco con CTA "aterrizar"
+  (`astro-panel.tsx`), fondo canvas parallax (`starfield.tsx`). **Capa semántica SSR** bajo el
+  mapa (`semantic-layer.tsx`): h1, enlaces reales, form `#senal` — SEO/a11y/no-JS. Móvil =
+  vuelo guiado (`touch-action: pan-y`, el scroll de página sobrevive; modo libre opt-in).
+- **SSOT**: `src/config/universe.ts` (geometría pura client-safe: tipos, anclas, bandas, hash
+  determinista — cero coordenadas a mano en colecciones) + `src/lib/universe.ts`
+  (`buildUniverse()` server-only desde library/course/posts/radar/journey + `getUniversePulse()`
+  para NOVA). Home con `revalidate=3600`.
+- **Cinemática de entrada** (`entry-sequence.tsx`): negro+logo → vuelo warp → partícula → bloom
+  carmesí → mapa. Solo 1ª visita (localStorage `universe-intro-seen`), saltable siempre,
+  visitas siguientes fundido ~300 ms, reduced-motion estático, `<noscript>` la oculta, dobla
+  como pantalla de carga.
+- **NOVA, la copiloto** (`src/components/nova/`): TODA su voz en `nova-script.ts` (editar ahí).
+  v1 guionizada 0-coste-API (Fase 4 embeddings = darle cerebro). Wizard de llegada tras la
+  cinemática (ruta → email `source: nova-wizard` → vuelo a tu órbita; máx. 1 auto-apertura
+  por sesión, solo en el mapa). Dock brasa en toda la web: llévame a / ¿qué es esto?
+  (contextual por ruta) / mi progreso (★☆ + siguiente lección) / guardar coordenadas
+  (`nova-dock`) / no molestar. "Desde tu última visita" con datos reales (`getUniversePulse`
+  vía layout); celebración al encender estrella (gamificación "Fase C" absorbida).
+- **Rutas**: `/biblioteca` → **`/sistemas`** (308 en `next.config.ts`); nav = Sistemas · Curso ·
+  Radar · Sobre mí; announcement bar y las 11 secciones de la home anterior BORRADAS
+  (`components/home/` ya no existe; también fuera glow-section, brand-visual, typography).
+  Sagrado intacto: URLs de posts, `/recursos`, `/yt`, backend completo, Velite, widgets MDX,
+  Radar CI, RSS/sitemap.
+- **Verificación**: build+lint verdes por commit; e2e con playwright-cli (WebKit): intro
+  1ª/skip/repetida, wizard completo con alta en preview-mode, mapa clic→panel→aterrizaje,
+  vuelo guiado móvil emulado, barrido rutas 200/307/308, form Señal. Prod verificado con curl.
+- **Gotchas nuevos**: (1) `setPointerCapture` en pointerdown se traga los clicks de los hijos —
+  capturar solo al superar el umbral de drag; (2) rAF NO dispara en pestañas ocultas — la
+  decisión post-hidratación de la intro usa `setTimeout(0)`; (3) el lint prohíbe `ref.current=`
+  en render y `setState` directo en effects — patrones: `useSyncExternalStore`
+  (`use-coarse-pointer.ts`) o setTimeout; (4) playwright-cli en esta máquina: canal chrome no
+  existe → `open --browser webkit` (+ `--mobile` para coarse pointer); el Browser-pane del IDE
+  con panel oculto da screenshots negros y throttlea timers — no fiarse para verificar
+  animaciones.
+- **Pendiente de Kata (gusto)**: densidad/posiciones de astros, intensidad de partículas,
+  pulir el guion de NOVA a su voz, sensación del mapa en su móvil real. Técnico pendiente:
+  momento "fin de post → siguiente órbita" (descartado consciente en v1: RelatedPosts ya
+  cubre), rachas del radar, `/stats`.
+
+## Rediseño "Biblioteca de Sistemas" (2026-07-22) — SUPERSEDIDO por "El Universo" (estructura/home/nav ya no aplican; el POSICIONAMIENTO estratégico sigue vigente)
 
 Pivote de posicionamiento + rediseño de arquitectura (spec completa en
 `docs/superpowers/specs/2026-07-22-rediseno-biblioteca-sistemas-design.md`; brainstorming + 2

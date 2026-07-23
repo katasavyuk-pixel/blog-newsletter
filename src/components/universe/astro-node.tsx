@@ -1,6 +1,8 @@
 "use client";
 
 import { TAU, polar, type Astro } from "@/config/universe";
+import { COURSE_PROGRESS_KEY } from "@/config/course";
+import { useLocalState } from "@/hooks/use-local-state";
 import { cn } from "@/lib/utils";
 
 /**
@@ -14,6 +16,56 @@ import { cn } from "@/lib/utils";
 function lessonPos(index: number, count: number) {
   const angle = (index / count) * TAU - 1.95;
   return polar(index % 2 === 0 ? 46 : 68, angle);
+}
+
+/**
+ * The course constellation — its stars IGNITE with the reader's real progress
+ * (same localStorage the course pages write), so the map itself is the
+ * progress bar. Lit stars burn crimson with a glow; unlit stay dim chrome.
+ */
+function ConstellationVisual({ astro }: { astro: Astro }) {
+  const [progress] = useLocalState<Record<string, boolean>>(COURSE_PROGRESS_KEY, {});
+  const s = astro.size;
+  const stars = astro.stars ?? [];
+
+  return (
+    <span aria-hidden className="relative block" style={{ width: s, height: s }}>
+      <svg
+        viewBox={`${-s / 2} ${-s / 2} ${s} ${s}`}
+        className="absolute inset-0 h-full w-full overflow-visible"
+      >
+        <polyline
+          points={stars
+            .map((_, i) => {
+              const p = lessonPos(i, stars.length || 6);
+              return `${p.x},${p.y}`;
+            })
+            .join(" ")}
+          fill="none"
+          stroke="var(--color-map-line)"
+          strokeWidth="1"
+        />
+        {stars.map((star, i) => {
+          const p = lessonPos(i, stars.length || 6);
+          const lit = !!progress[star.slug];
+          return (
+            <circle
+              key={star.slug}
+              cx={p.x}
+              cy={p.y}
+              r={lit ? 5 : 4}
+              fill={lit ? "var(--color-accent-ink)" : "var(--color-star-dim)"}
+              className="astro-twinkle"
+              style={{
+                animationDelay: `${i * 0.7}s`,
+                filter: lit ? "drop-shadow(0 0 6px var(--color-accent))" : undefined,
+              }}
+            />
+          );
+        })}
+      </svg>
+    </span>
+  );
 }
 
 function Visual({ astro }: { astro: Astro }) {
@@ -37,40 +89,7 @@ function Visual({ astro }: { astro: Astro }) {
       );
 
     case "constelacion":
-      return (
-        <span aria-hidden className="relative block" style={{ width: s, height: s }}>
-          <svg
-            viewBox={`${-s / 2} ${-s / 2} ${s} ${s}`}
-            className="absolute inset-0 h-full w-full overflow-visible"
-          >
-            <polyline
-              points={(astro.stars ?? [])
-                .map((_, i) => {
-                  const p = lessonPos(i, astro.stars?.length ?? 6);
-                  return `${p.x},${p.y}`;
-                })
-                .join(" ")}
-              fill="none"
-              stroke="var(--color-map-line)"
-              strokeWidth="1"
-            />
-            {(astro.stars ?? []).map((star, i) => {
-              const p = lessonPos(i, astro.stars?.length ?? 6);
-              return (
-                <circle
-                  key={star.slug}
-                  cx={p.x}
-                  cy={p.y}
-                  r={4}
-                  fill="var(--color-star-dim)"
-                  className="astro-twinkle"
-                  style={{ animationDelay: `${i * 0.7}s` }}
-                />
-              );
-            })}
-          </svg>
-        </span>
-      );
+      return <ConstellationVisual astro={astro} />;
 
     case "protoestrella":
       return (

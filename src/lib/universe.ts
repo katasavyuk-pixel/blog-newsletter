@@ -34,6 +34,29 @@ const journeyWeek = Math.max(
   Math.floor((Date.now() - +new Date(siteConfig.journey.start)) / MS_PER_WEEK) + 1,
 );
 
+export type UniversePulse = {
+  week: number;
+  latestPost: { title: string; permalink: string; date: string } | null;
+  radarDate: string | null;
+};
+
+/**
+ * Tiny server-side summary of "what's new in the universe" — the layout hands
+ * it to NOVA so she can greet returning visitors with real novelties
+ * ("desde tu última visita…") without shipping the whole universe client-side.
+ */
+export function getUniversePulse(): UniversePulse {
+  const [latest] = allPosts;
+  const radar = getLatestRadarEdition();
+  return {
+    week: journeyWeek,
+    latestPost: latest
+      ? { title: latest.title, permalink: latest.permalink, date: latest.date }
+      : null,
+    radarDate: radar?.edition.date ?? null,
+  };
+}
+
 export function buildUniverse(): UniverseData {
   const astros: Astro[] = [];
 

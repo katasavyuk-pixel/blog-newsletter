@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { SubscribeForm } from "@/components/newsletter/subscribe-form";
 import { COURSE_SLUGS, COURSE_PROGRESS_KEY } from "@/config/course";
 import { useLocalState } from "@/hooks/use-local-state";
 import { cn } from "@/lib/utils";
+import type { UniversePulse } from "@/lib/universe";
 import {
   novaScript,
   novaWhatIsThis,
@@ -46,15 +47,63 @@ function Lines({ lines, from = 0 }: { lines: string[]; from?: number }) {
   );
 }
 
-export function Nova() {
+export function Nova({ pulse }: { pulse: UniversePulse }) {
   const pathname = usePathname();
   const router = useRouter();
   const [view, setView] = useState<View>("closed");
   const [chosen, setChosen] = useState<NovaWizardOption | null>(null);
+  const [celebrating, setCelebrating] = useState(false);
   const [wizardDone, setWizardDone] = useLocalState(WIZARD_DONE_KEY, false);
   const [muted, setMuted] = useLocalState(MUTED_KEY, false);
   const [introSeen] = useLocalState("universe-intro-seen", false);
   const [progress] = useLocalState<Record<string, boolean>>(COURSE_PROGRESS_KEY, {});
+  const [seenContent, setSeenContent] = useLocalState<{ post?: string; radar?: string }>(
+    "nova-seen-content",
+    {},
+  );
+  const [celebrated, setCelebrated] = useLocalState("nova-celebrated", 0);
+
+  const litCount = COURSE_SLUGS.filter((slug) => progress[slug]).length;
+  const nextSlug = COURSE_SLUGS.find((slug) => !progress[slug]);
+
+  // Real novelties since the last visit — only for RETURNING visitors (the
+  // baseline is stored silently on the first mount).
+  const postNews = !!(
+    pulse.latestPost && seenContent.post && pulse.latestPost.date > seenContent.post
+  );
+  const radarNews = !!(
+    pulse.radarDate && seenContent.radar && pulse.radarDate > seenContent.radar
+  );
+  const starNews = litCount > celebrated;
+  const hasNews = postNews || radarNews || starNews;
+
+  useEffect(() => {
+    if (seenContent.post || seenContent.radar) return;
+    if (!pulse.latestPost && !pulse.radarDate) return;
+    const t = setTimeout(() => {
+      setSeenContent({
+        post: pulse.latestPost?.date,
+        radar: pulse.radarDate ?? undefined,
+      });
+    }, 0);
+    return () => clearTimeout(t);
+  }, [seenContent, setSeenContent, pulse]);
+
+  /**
+   * Close, marking novelties as seen ONLY when they were actually displayed
+   * (the menu is where the news block lives — closing from elsewhere keeps
+   * the dock pulsing until the visitor really sees them).
+   */
+  const close = useCallback(() => {
+    setView("closed");
+    setCelebrating(false);
+    if ((postNews || radarNews) && view === "menu") {
+      setSeenContent({
+        post: pulse.latestPost?.date ?? seenContent.post,
+        radar: pulse.radarDate ?? seenContent.radar,
+      });
+    }
+  }, [postNews, radarNews, view, pulse, seenContent, setSeenContent]);
 
   // Arrival wizard: on the map, once the entry cinematic has finished, at most
   // once per session. The timeout keeps setState out of the effect body and
@@ -84,21 +133,18 @@ export function Nova() {
   useEffect(() => {
     if (view === "closed") return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setView("closed");
+      if (event.key === "Escape") close();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [view]);
+  }, [view, close]);
 
   const finishWizard = (href: string | null) => {
     setWizardDone(true);
     setChosen(null);
-    setView("closed");
+    close();
     if (href) router.push(href);
   };
-
-  const litCount = COURSE_SLUGS.filter((slug) => progress[slug]).length;
-  const nextSlug = COURSE_SLUGS.find((slug) => !progress[slug]);
 
   const open = view !== "closed";
 
@@ -108,10 +154,22 @@ export function Nova() {
         type="button"
         aria-label={open ? "Cerrar NOVA" : "NOVA — tu copiloto"}
         aria-expanded={open}
-        onClick={() => setView(open ? "closed" : wizardDone ? "menu" : "wizard")}
+        onClick={() => {
+          if (open) {
+            close();
+            return;
+          }
+          if (starNews) {
+            setCelebrating(true);
+            setCelebrated(litCount);
+            setView("progress");
+            return;
+          }
+          setView(wizardDone ? "menu" : "wizard");
+        }}
         className={cn(
           "fixed bottom-4 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-dark-border-2 bg-dark/85 backdrop-blur transition-transform hover:scale-110",
-          !wizardDone && !muted && "glow-pulse",
+          (!wizardDone || hasNews) && !muted && "glow-pulse",
         )}
       >
         <span
@@ -142,7 +200,7 @@ export function Nova() {
             </p>
             <button
               type="button"
-              onClick={() => setView("closed")}
+              onClick={close}
               aria-label="Cerrar NOVA"
               className="rounded-full border border-dark-border-2 px-2 py-0.5 font-mono text-xs text-on-dark-muted transition-colors hover:text-on-dark"
             >
@@ -201,6 +259,37 @@ export function Nova() {
 
           {view === "menu" ? (
             <div>
+              {postNews || radarNews ? (
+                <div className="mt-3 rounded-xl border border-dark-border-2 bg-dark-input/60 p-3">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-salmon">
+                    {novaScript.news.title}
+                  </p>
+                  {postNews && pulse.latestPost ? (
+                    <Link
+                      href={pulse.latestPost.permalink}
+                      onClick={close}
+                      className="mt-1.5 block text-sm text-on-dark transition-colors hover:text-salmon"
+                    >
+                      <span aria-hidden className="font-mono text-salmon">
+                        ▸{" "}
+                      </span>
+                      {novaScript.news.post} {pulse.latestPost.title}
+                    </Link>
+                  ) : null}
+                  {radarNews ? (
+                    <Link
+                      href="/blog/tag/radar"
+                      onClick={close}
+                      className="mt-1.5 block text-sm text-on-dark transition-colors hover:text-salmon"
+                    >
+                      <span aria-hidden className="font-mono text-salmon">
+                        ▸{" "}
+                      </span>
+                      {novaScript.news.radar}
+                    </Link>
+                  ) : null}
+                </div>
+              ) : null}
               <p className="mt-3 font-display text-sm font-bold">{novaScript.menu.title}</p>
               <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-on-dark-faint">
                 {novaScript.menu.navTitle}
@@ -210,7 +299,7 @@ export function Nova() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={() => setView("closed")}
+                    onClick={close}
                     className="text-sm text-on-dark-muted transition-colors hover:text-on-dark"
                   >
                     <span aria-hidden className="font-mono text-salmon">
@@ -256,6 +345,11 @@ export function Nova() {
 
           {view === "progress" ? (
             <div>
+              {celebrating ? (
+                <p className="nova-line mt-3 text-sm font-semibold text-salmon">
+                  {novaScript.progress.celebrate}
+                </p>
+              ) : null}
               <p className="mt-3 font-display text-sm font-bold">{novaScript.progress.title}</p>
               <p aria-hidden className="mt-2 font-mono text-lg tracking-[0.35em] text-salmon">
                 {COURSE_SLUGS.map((slug) => (progress[slug] ? "★" : "☆")).join("")}
@@ -279,7 +373,7 @@ export function Nova() {
                 </button>
                 <Link
                   href={nextSlug ? `/blog/${nextSlug}` : "/empieza-aqui"}
-                  onClick={() => setView("closed")}
+                  onClick={close}
                   className="rounded-xl bg-accent px-4 py-2 font-display text-sm font-bold text-on-accent transition-colors hover:bg-accent-strong"
                 >
                   {litCount === 0 ? novaScript.progress.startCta : novaScript.progress.continueCta}

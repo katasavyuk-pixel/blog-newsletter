@@ -8,6 +8,7 @@ import { MotionProvider } from "@/components/motion/motion-provider";
 import { ParticleField } from "@/components/effects/particle-field";
 import { Nova } from "@/components/nova/nova";
 import { siteConfig } from "@/config/site";
+import { getUniversePulse } from "@/lib/universe";
 
 // UI / body / headings — Montserrat (weight hierarchy 400–800).
 const sans = Montserrat({
@@ -67,7 +68,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
-          <Nova />
+          <Nova pulse={getUniversePulse()} />
         </MotionProvider>
         {/* Cookieless, no-PII page analytics (Vercel is already a listed subprocessor). */}
         <Analytics />

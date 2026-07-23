@@ -87,8 +87,16 @@ export const novaScript = {
     back: "← volver",
   },
 
+  news: {
+    title: "Desde tu última visita",
+    post: "nuevo en el universo:",
+    radar: "cayó el radar del lunes",
+  },
+
   progress: {
     title: "Tu constelación",
+    celebrate:
+      "⭐ Estrella encendida. La constelación crece — y el mapa lo sabe.",
     none: "Aún no has encendido ninguna estrella. La primera lección son diez minutos y un tokenizador que puedes romper.",
     some: (lit: number, total: number) =>
       `${lit}/${total} estrellas encendidas. La constelación va tomando forma.`,
