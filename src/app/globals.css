@@ -434,3 +434,19 @@
   );
   animation: entry-bloom-in 0.4s ease-out forwards;
 }
+
+/* NOVA speaking: lines fade in one after another (delay set inline). */
+@keyframes nova-line-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.nova-line {
+  opacity: 0;
+  animation: nova-line-in 0.5s ease-out forwards;
+}

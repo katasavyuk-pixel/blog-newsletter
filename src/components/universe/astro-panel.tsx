@@ -51,7 +51,7 @@ export function AstroPanel({
     <div
       role="dialog"
       aria-label={astro.name}
-      className="absolute inset-x-3 bottom-3 z-30 mx-auto max-w-md rounded-2xl border border-dark-border-2 bg-dark/95 p-5 text-on-dark shadow-card-hover backdrop-blur-md sm:inset-x-auto sm:right-4 sm:bottom-4"
+      className="absolute inset-x-3 bottom-16 z-30 mx-auto max-w-md rounded-2xl border border-dark-border-2 bg-dark/95 p-5 text-on-dark shadow-card-hover backdrop-blur-md sm:inset-x-auto sm:bottom-4 sm:right-20"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
