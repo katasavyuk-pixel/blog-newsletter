@@ -16,14 +16,9 @@ export function Footer() {
         <div className="max-w-sm">
           <Link
             href="/"
-            className="flex items-center gap-2.5"
+            className="flex items-center"
             aria-label={`${siteConfig.name} — inicio`}
           >
-            <span
-              aria-hidden
-              className="h-4 w-4 rotate-45 rounded-[3px] bg-accent"
-              style={{ boxShadow: "0 0 16px var(--color-glow-coral)" }}
-            />
             <span className="font-display text-sm font-extrabold uppercase tracking-[0.2em] chrome-text">
               {siteConfig.name}
             </span>
