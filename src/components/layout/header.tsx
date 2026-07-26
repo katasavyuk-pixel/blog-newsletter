@@ -26,7 +26,7 @@ export function Header() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Nav />
           <div className="hidden sm:block">
-            <Button href="/#senal" size="sm">
+            <Button href="/#newsletter" size="sm">
               Suscríbete
             </Button>
           </div>

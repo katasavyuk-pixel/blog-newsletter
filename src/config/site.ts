@@ -72,11 +72,12 @@ export const siteConfig = {
 export type SiteConfig = typeof siteConfig;
 
 /**
- * Primary navigation — 4 items + CTA (redesign "El Universo": cosmic naming,
- * functional clarity). /blog and /recursos stay live but leave the nav.
+ * Primary navigation — 4 items + CTA (blog editorial layout, 2026-07-26:
+ * retires the cosmic naming from "El Universo"). /recursos stays live but
+ * leaves the nav.
  */
 export const navLinks = [
-  { label: "Sistemas", href: "/sistemas" },
+  { label: "Blog", href: "/blog" },
   { label: "Curso", href: "/empieza-aqui" },
   { label: "Radar", href: "/blog/tag/radar" },
   { label: "Sobre mí", href: "/sobre-mi" },

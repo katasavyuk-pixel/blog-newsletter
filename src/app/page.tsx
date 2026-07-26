@@ -1,39 +1,31 @@
-import { UniverseMap } from "@/components/universe/universe-map";
-import { SemanticLayer } from "@/components/universe/semantic-layer";
-import { EntrySequence } from "@/components/universe/entry-sequence";
-import { buildUniverse } from "@/lib/universe";
+import { Hero } from "@/components/home/hero";
+import { CadenceStrip } from "@/components/home/cadence-strip";
+import { LibraryShowcase } from "@/components/home/library-showcase";
+import { Manifesto } from "@/components/home/manifesto";
+import { YouTubeStrip } from "@/components/home/youtube-strip";
+import { ClosingCta } from "@/components/home/closing-cta";
 import { getConfirmedSubscriberCount } from "@/lib/subscribers";
-import { siteConfig } from "@/config/site";
 
-/** Refresh hourly: journey week, subscriber count and radar blips stay honest. */
+/** Refresh hourly: journey week, subscriber count and radar stay honest. */
 export const revalidate = 3600;
 
 /**
- * Home = the navigable star map (redesign "El Universo", 2026-07-23 spec).
- * The map is the experience; the SemanticLayer below is the crawlable,
- * accessible, no-JS truth of the same universe. Capture: la Señal on the map
- * (`senal-mapa`) + the anchored form in the list (`senal-lista`).
+ * Home = direct editorial blog layout (retires the "El Universo" star map,
+ * 2026-07-26: it read as exploration, not as a professional AI blog).
+ * Hero states the value prop with no scroll/click required; the rest proves
+ * it with real content — Radar headlines, the systems library, the journey.
  */
 export default async function Home() {
-  const universe = buildUniverse();
-  const count = await getConfirmedSubscriberCount();
-  const subscriberCount =
-    count != null && count >= siteConfig.newsletter.showCountFrom ? count : null;
+  const subscriberCount = await getConfirmedSubscriberCount();
 
   return (
     <>
-      {/* No-JS never sees the cinematic overlay — the semantic layer is the page. */}
-      <noscript>
-        <style>{`[data-entry-overlay]{display:none}`}</style>
-      </noscript>
-      <EntrySequence />
-      <section
-        aria-label="El mapa del universo"
-        className="relative h-[calc(100svh-4rem)] min-h-[480px]"
-      >
-        <UniverseMap data={universe} subscriberCount={subscriberCount} />
-      </section>
-      <SemanticLayer data={universe} />
+      <Hero subscriberCount={subscriberCount} />
+      <CadenceStrip />
+      <LibraryShowcase />
+      <Manifesto />
+      <YouTubeStrip />
+      <ClosingCta />
     </>
   );
 }
