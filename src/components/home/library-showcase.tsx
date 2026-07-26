@@ -13,7 +13,7 @@ import { LIBRARY_ITEMS } from "@/config/library";
  * The home's curated library wall as an asymmetric bento: first available
  * system doubles up with a crimson halo, chrome ordinals on every card,
  * staggered reveals. Curation lives in library.ts; the full library is
- * /biblioteca (home-as-argument, library-as-page).
+ * /sistemas (home-as-argument, library-as-page).
  */
 export function LibraryShowcase() {
   const items = LIBRARY_ITEMS.map(resolveLibraryItem).filter(
