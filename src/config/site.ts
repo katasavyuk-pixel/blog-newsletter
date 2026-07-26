@@ -43,11 +43,10 @@ export const siteConfig = {
     /** Current mission, shown in the status panel. Update as it changes. */
     mission: "primeros clientes de NBI",
   },
-  /** §1 REDES — descomenta y pon tus perfiles reales. */
   social: [
-    // { label: "LinkedIn", href: "https://linkedin.com/in/kata-ivanovych" },
-    // { label: "X", href: "https://x.com/kataivanovych" },
-    // { label: "GitHub", href: "https://github.com/kataivanovych" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/katalin-savyuk-b024b7408/" },
+    { label: "X", href: "https://x.com/Kata_malavie" },
+    { label: "GitHub", href: "https://github.com/katasavyuk-pixel" },
   ] as SocialLink[],
   /** Newsletter capture copy (the real form is wired in Fase 2). */
   newsletter: {
