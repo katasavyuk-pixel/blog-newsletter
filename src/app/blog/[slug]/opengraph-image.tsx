@@ -7,7 +7,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // Satori (next/og) has no access to our CSS tokens, so brand colors are literal here.
-// "Kata Pro" red/black premium: cold black + controlled deep-red halo, crimson gem.
+// "Kata Pro" red/black premium: cold black + controlled deep-red halo.
 export default async function Image({
   params,
 }: {
@@ -65,15 +65,6 @@ export default async function Image({
             textTransform: "uppercase",
           }}
         >
-          <div
-            style={{
-              width: 26,
-              height: 26,
-              transform: "rotate(45deg)",
-              borderRadius: 4,
-              background: "#d7212a",
-            }}
-          />
           {siteConfig.name}
         </div>
         <div

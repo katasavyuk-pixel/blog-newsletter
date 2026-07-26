@@ -47,7 +47,7 @@
   --color-outline-hover: #6b6f76;
   --color-on-dark: #eaecee;
   --color-on-dark-muted: #9aa0a8;
-  --color-on-dark-faint: #6b6f76;
+  --color-on-dark-faint: #8a8f97; /* AA vs --color-dark and --color-dark-input (≥4.5:1) */
 
   /* Monochrome category chips (icon chips / badges) */
   --color-cat-navy: #3a3e45;
