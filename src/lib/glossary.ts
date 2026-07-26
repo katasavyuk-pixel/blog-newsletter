@@ -1,10 +1,19 @@
-/** Central glossary for the <Term> hover/focus popover. Grows over time. */
-export type GlossaryEntry = { title: string; def: string };
+/**
+ * Central glossary for the <Term> hover/focus popover, and the source for
+ * the indexable /glosario pages. Grows over time.
+ */
+export type GlossaryEntry = {
+  title: string;
+  def: string;
+  /** Slug of the post that explains this term in depth, if one exists. */
+  relatedSlug?: string;
+};
 
 export const glossary: Record<string, GlossaryEntry> = {
   token: {
     title: "Token",
     def: "La unidad mínima que procesa un modelo de lenguaje: trozos de palabra, no letras ni palabras enteras. El precio y el límite de contexto se miden en tokens.",
+    relatedSlug: "que-es-un-token",
   },
   embedding: {
     title: "Embedding",
@@ -13,6 +22,7 @@ export const glossary: Record<string, GlossaryEntry> = {
   rag: {
     title: "RAG",
     def: "Retrieval-Augmented Generation: recuperar fragmentos relevantes de tus datos y dárselos al modelo como contexto antes de que responda, para reducir alucinaciones.",
+    relatedSlug: "que-es-rag",
   },
   prompt: {
     title: "Prompt",
@@ -21,10 +31,12 @@ export const glossary: Record<string, GlossaryEntry> = {
   hallucination: {
     title: "Alucinación",
     def: "Cuando el modelo responde con algo plausible pero falso (datos, citas o fechas inventadas) con total seguridad. Fluido no es lo mismo que correcto.",
+    relatedSlug: "cuando-la-ia-alucina",
   },
   temperature: {
     title: "Temperatura",
     def: "Parámetro que controla la aleatoriedad de la generación: cerca de 0 es determinista y conservador; alto, más diverso y caótico.",
+    relatedSlug: "temperatura-y-aleatoriedad",
   },
   attention: {
     title: "Atención",

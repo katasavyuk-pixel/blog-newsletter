@@ -11,6 +11,8 @@ import { ReadingProgress } from "@/components/blog/reading-progress";
 import { CopyCode } from "@/components/blog/copy-code";
 import { ShareButtons } from "@/components/blog/share-buttons";
 import { RelatedPosts } from "@/components/blog/related-posts";
+import { WorkWithNbiCta } from "@/components/blog/work-with-nbi-cta";
+import { SubscribeForm } from "@/components/newsletter/subscribe-form";
 import { CourseProgressMarker } from "@/components/course/course-progress-marker";
 import { allPosts, getPost, getRelatedPosts } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
@@ -133,9 +135,23 @@ export default async function PostPage({
           <Prose>
             <MDXContent code={post.content} components={widgets} />
           </Prose>
+
+          <div className="not-prose mt-10 rounded-2xl border border-border bg-surface p-6">
+            <p className="font-display text-sm font-semibold text-fg">
+              ¿Te sirvió esto?
+            </p>
+            <p className="mt-1 text-sm text-muted">
+              {siteConfig.newsletter.magnet}
+            </p>
+            <div className="mt-4">
+              <SubscribeForm source="post-inline" />
+            </div>
+          </div>
+
           <CopyCode />
           <ShareButtons url={fullUrl} title={post.title} />
           <RelatedPosts posts={getRelatedPosts(post)} />
+          <WorkWithNbiCta />
           {(COURSE_SLUGS as readonly string[]).includes(post.slug) ? (
             <CourseProgressMarker slug={post.slug} />
           ) : null}

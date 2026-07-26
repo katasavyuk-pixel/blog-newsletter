@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
+import { WorkWithNbiCta } from "@/components/blog/work-with-nbi-cta";
 import {
   LibraryCard,
   resolveLibraryItem,
@@ -113,6 +114,8 @@ export default async function BibliotecaPage() {
           el blog →
         </Link>
       </p>
+
+      <WorkWithNbiCta />
     </Container>
   );
 }

@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Prose } from "@/components/ui/prose";
 import { SubscribeForm } from "@/components/newsletter/subscribe-form";
+import { CredibilityBadges } from "@/components/ui/credibility-badges";
 import { siteConfig } from "@/config/site";
+import { allPosts } from "@/lib/posts";
+import { getConfirmedSubscriberCount } from "@/lib/subscribers";
+import { weekNumberSince } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "El viaje",
@@ -14,10 +19,20 @@ export const metadata: Metadata = {
  * "El viaje" — identity in one line, honest credential, mission, newsletter
  * CTA (Barry/Welsh about structure; never a chronological biography).
  */
-export default function AboutPage() {
+export default async function AboutPage() {
+  const count = await getConfirmedSubscriberCount();
+  const subscriberCount =
+    count != null && count >= siteConfig.newsletter.showCountFrom ? count : null;
+
   return (
     <Container className="py-16">
       <div className="mx-auto max-w-2xl">
+        <CredibilityBadges
+          weekNumber={weekNumberSince(siteConfig.journey.start)}
+          subscriberCount={subscriberCount}
+          postCount={allPosts.length}
+          className="mb-5"
+        />
         <h1 className="font-display text-4xl font-medium tracking-tight text-fg sm:text-5xl">
           El viaje
         </h1>
@@ -36,6 +51,13 @@ export default function AboutPage() {
             Esto te encantará si tienes un negocio en marcha y ejecutas. No
             encajarás si buscas atajos, fórmulas mágicas o humo motivacional:
             aquí solo hay lo que funciona, explicado para que lo repliques.
+          </p>
+          <p>
+            Si quieres que implemente algo parecido en tu negocio,{" "}
+            <Link href="/trabaja-con-nbi" className="text-accent-ink">
+              hablemos
+            </Link>
+            .
           </p>
         </Prose>
 

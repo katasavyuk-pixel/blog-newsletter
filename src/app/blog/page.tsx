@@ -43,6 +43,13 @@ export default function BlogIndexPage() {
         </div>
       ) : null}
 
+      <p className="mt-4 text-sm text-muted">
+        ¿Buscas un término suelto?{" "}
+        <Link href="/glosario" className="text-accent-ink hover:underline">
+          Consulta el glosario →
+        </Link>
+      </p>
+
       {!featured ? (
         <p className="mt-12 text-muted">
           Aún no hay artículos. Añade un{" "}

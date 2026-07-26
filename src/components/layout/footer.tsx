@@ -57,6 +57,12 @@ export function Footer() {
             RSS
           </a>
           <Link
+            href="/glosario"
+            className="text-sm text-on-dark-muted transition-colors hover:text-on-dark"
+          >
+            Glosario
+          </Link>
+          <Link
             href="/privacidad"
             className="text-sm text-on-dark-muted transition-colors hover:text-on-dark"
           >
