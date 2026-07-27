@@ -2,7 +2,7 @@
 
 # CLAUDE.md — Blog + Newsletter de marca personal (IA)
 
-> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Rediseño "El Universo"** (2026-07-23).
+> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Diagnóstico estratégico y retirada de "El Universo"** (2026-07-26).
 
 ## Qué es esto
 
@@ -146,12 +146,19 @@ La home ya seguía el layout del diseño `Inicio.dc.html` (proyecto Claude Desig
   ("12.400+ suscriptores", "Soy Álex") — SIEMPRE sustituir por datos reales/honestos, y
   traducir hex → tokens.
 
-## Rediseño "EL UNIVERSO" (2026-07-23) — VIGENTE, en producción
+## Rediseño "EL UNIVERSO" (2026-07-23) — SUPERSEDIDO, retirado 2026-07-26
 
 Tercer rediseño, de concepto raíz (a Kata los dos anteriores "no le convencían: sin
 personalidad ni originalidad"). Brainstorming completo + plan aprobado; spec en
 `docs/superpowers/specs/2026-07-23-rediseno-universo-design.md`. **Desplegado a prod
 2026-07-23** (merge fast-forward a `main`, deploy automático verificado en vivo).
+
+**Retirado 2026-07-26**: feedback de Kata — "no parecía blog profesional". La home volvió al
+layout editorial de "Biblioteca de Sistemas" (sección siguiente); `src/components/universe/` y
+`src/components/nova/` se eliminaron por completo, igual que los tokens/animaciones "Cosmic
+layer" en `globals.css`. Diagnóstico completo en
+`docs/superpowers/specs/2026-07-26-diagnostico-estrategico-y-monetizacion.md`. El resto de esta
+sección queda como registro histórico de lo que se construyó y por qué.
 
 - **Concepto (idea de Kata)**: la web ES un **universo rojo/negro en expansión** — el universo
   de NBI construyéndose en público. Big bang = 2026-06-24; anillos = semanas; cada sistema
@@ -202,12 +209,17 @@ personalidad ni originalidad"). Brainstorming completo + plan aprobado; spec en
   momento "fin de post → siguiente órbita" (descartado consciente en v1: RelatedPosts ya
   cubre), rachas del radar, `/stats`.
 
-## Rediseño "Biblioteca de Sistemas" (2026-07-22) — SUPERSEDIDO por "El Universo" (estructura/home/nav ya no aplican; el POSICIONAMIENTO estratégico sigue vigente)
+## Rediseño "Biblioteca de Sistemas" (2026-07-22) — VIGENTE (El Universo se retiró 2026-07-26; la home volvió a este layout editorial)
 
 Pivote de posicionamiento + rediseño de arquitectura (spec completa en
 `docs/superpowers/specs/2026-07-22-rediseno-biblioteca-sistemas-design.md`; brainstorming + 2
 rondas de benchmark de 10 referencias). **Identidad visual intacta** (tokens rojo/negro, Anton +
 Montserrat); lo que cambió es estructura y copy.
+
+**Actualización 2026-07-26**: tras retirar "El Universo", la home volvió a este layout, con 2
+ajustes sobre lo descrito abajo: la ruta se renombró `/biblioteca` → `/sistemas` (redirect 308),
+y el nav pasó a `Blog · Curso · Radar · Sobre mí` (antes `Biblioteca · Curso · Noticias · Sobre
+mí`). El resto de la arquitectura de esta sección sigue vigente tal cual.
 
 - **Posicionamiento**: de "aprende IA sin humo" → **"construyo NBI en público; sistemas replicables
   probados en un negocio real"**. Lector nº 1 = emprendedor ya en marcha (el canal de YouTube
@@ -247,6 +259,32 @@ Montserrat); lo que cambió es estructura y copy.
   OJO: los full-page screenshots salen con parrillas "vacías" (whileInView no dispara sin
   scroll) — verificar scrolleando. El look que quiere Kata: cinematográfico rojo/negro con
   partículas, momentos "wow" — no minimalismo plano.
+
+## Diagnóstico estratégico y hoja de ruta de negocio (2026-07-26)
+
+Auditoría completa a petición de Kata ("rediseña el blog como arquitecto senior"): investigación
+de código + `git diff` de las 4 ramas `claude/*` + sitio en vivo + GitHub Actions, antes de
+proponer nada. Spec completa (diagnóstico por sección: estrategia, posicionamiento, monetización,
+newsletter, YouTube, UX, SEO, premium) en
+`docs/superpowers/specs/2026-07-26-diagnostico-estrategico-y-monetizacion.md`.
+
+- **Conclusión central**: posicionamiento, pilares de contenido, newsletter y stack ya están
+  maduros y validados por 2 rediseños — no se tocan. Los huecos reales, verificados con datos, no
+  son de diseño: **precio/alcance de NBI sin definir** (bloquea `/trabaja-con-nbi` y el email día
+  8), **0 vídeos de YouTube reales** (infraestructura lista, falta `YOUTUBE_CHANNEL_ID` y grabar),
+  **volumen editorial bajo** (9 posts, 1 edición de Radar), y **2 promesas "en el taller"
+  abiertas** (Stack GEO, Máquina de bienvenida) sin fecha.
+- **Recomendación explícita: congelar el diseño visual 60-90 días.** 3 rediseños en 5 semanas es
+  hoy el mayor riesgo del proyecto — desplaza tiempo de lo que sí convierte (oferta, contenido,
+  YouTube) a iterar una capa que ya funciona.
+- **Monetización**: 0€ activo ahora (correcto, <100 suscriptores). Orden recomendado: definir
+  precio NBI → primer producto de pago barato (plantilla/checklist, 3-6 meses) → premium/newsletter
+  de pago solo con cadencia semanal sostenida + ~500-1000 suscriptores. Propuesta ligera para
+  entonces: **"NBI Inside"**, 12€/mes o 120€/año, acceso a builds completos + sesión mensual.
+- **Housekeeping del mismo día**: limpiados los tokens/animaciones "Cosmic layer" huérfanos en
+  `globals.css` (Universo ya no tiene componentes que los usen); señaladas sin borrar las 3 ramas
+  `claude/*` superseded (`blog-design-changes-90fd54`, `blog-redesign-from-scratch-e77d7c`,
+  `universo-mapa-intencion-04c032` — esta última, commit idéntico a `main`).
 
 ## Embudo y medición (2026-07-22)
 
