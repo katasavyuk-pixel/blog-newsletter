@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat, Anton } from "next/font/google";
+import { Inter, Anton } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
@@ -8,11 +8,13 @@ import { MotionProvider } from "@/components/motion/motion-provider";
 import { ParticleField } from "@/components/effects/particle-field";
 import { siteConfig } from "@/config/site";
 
-// UI / body / headings — Montserrat (weight hierarchy 400–800).
-const sans = Montserrat({
+// UI / cuerpo / titulares — Inter, la misma que el vídeo (brandCine.ts).
+// Antes era Montserrat; se unificó el 2026-07-29 para que blog y YouTube usen
+// una sola tipografía. Anton se queda para el punch, igual que en el TitleCard.
+const sans = Inter({
   subsets: ["latin"],
-  variable: "--font-montserrat",
-  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-sans",
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 

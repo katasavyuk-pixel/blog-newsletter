@@ -2,67 +2,81 @@
 @plugin "@tailwindcss/typography";
 
 /*
-  Kata Ivanovych / "Kata Pro" — RED/BLACK PREMIUM · cromo monocromo.
-  Cold near-black page, crimson #d7212a as the ONLY color (used with restraint),
-  chrome/silver accents (wordmark, hairlines, ordinals), cold-white text, a
-  CONTROLLED red halo (never neon), fine grain + vignette. Fonts: Montserrat
-  (UI/body/headings) + Anton (display punch). SSOT:
-  ~/Documents/YTvideos/lanzamiento/estilo-visual-katapro.md.
+  Kata Ivanovych — identidad ÚNICA para web y vídeo (unificada 2026-07-29).
+
+  Antes había tres paletas vivas a la vez: esta ("Kata Pro", negro FRÍO +
+  carmesí #d7212a + cromo plata + Montserrat), la del vídeo (negro CÁLIDO +
+  rojo #E11423 + Space Grotesk) y una crema/coral que BRAND_GUIDE.md seguía
+  documentando como oficial pese a que ya nadie la usaba. El SSOT que citaba
+  esta cabecera (~/Documents/YTvideos/lanzamiento/estilo-visual-katapro.md) ni
+  siquiera existía en disco.
+
+  La fuente de verdad es ahora YT_claude/05_remotion/src/brandCine.ts. Estos
+  tokens la derivan: negro cálido, rojo neón, blanco cálido. Anton para el
+  punch (igual que el TitleCard del vídeo) e Inter para todo lo demás.
+
+  Contrastes WCAG medidos sobre --color-bg (#0B0608). Los de acento importan:
+  --color-accent (4.14:1) es SUPERFICIE, nunca texto pequeño; para texto rojo
+  va --color-accent-ink (5.74:1, AA).
+
   NEVER hardcode hex in JSX — reference tokens (bg-bg, text-fg, text-accent,
   text-chrome, bg-dark, ...). All tokens are CSS variables (theme-swappable).
 */
 
 @theme {
-  /* Surfaces (cold black) */
-  --color-bg: #0a0b0d; /* cold near-black — page background */
-  --color-surface: #141518; /* card / code surface */
-  --color-surface-2: #101317; /* deeper band / hover */
+  /* Surfaces (warm black — brandCine.bg) */
+  --color-bg: #0b0608; /* warm near-black — page background */
+  --color-surface: #1a1113; /* card / code surface (1.086:1 vs bg — misma separación que antes) */
+  --color-surface-2: #160a0e; /* deeper band / hover — brandCine.bg2 */
 
-  /* Text — cold white on black */
-  --color-fg: #eaecee; /* cold white — body & headings (~17:1) */
-  --color-muted: #9aa0a8; /* secondary text (~7:1) */
-  --color-faint: #6b6f76; /* gunmetal — decorative muted */
+  /* Text — warm white on warm black */
+  --color-fg: #f6efec; /* warm white — body & headings (17.70:1) */
+  --color-muted: #c2a7ac; /* secondary text (9.02:1) */
+  --color-faint: #8a7276; /* decorative muted */
 
-  /* The single color: crimson */
-  --color-accent: #d7212a; /* crimson — SURFACE: buttons, pills, decor */
-  --color-accent-strong: #7a1620; /* deep red — hover / gradients */
-  --color-accent-ink: #f2555e; /* brighter red for TEXT on black (~5.5:1, AA) */
-  --color-on-accent: #f2f4f6; /* cold white over crimson surfaces (bold/large) */
-  --color-coral-soft: #ffd9dc; /* pale text over the crimson panel (large) */
-  --color-salmon: #f2555e; /* bright-red accent on dark (links/status) */
+  /* The single color: neon red */
+  --color-accent: #e11423; /* SURFACE: buttons, pills, decor. 4.14:1 → nunca texto pequeño */
+  --color-accent-strong: #7a0c18; /* deep red — hover / gradients. 1.81:1, decorativo */
+  --color-accent-ink: #ff3b4e; /* TEXT red on black (5.74:1, AA) */
+  --color-on-accent: #ffffff; /* PURO, no el cálido: 4.85:1 sobre el rojo vs 4.27:1 */
+  --color-coral-soft: #ffd9dc; /* pale text over the red panel (large) */
+  --color-salmon: #ff3b4e; /* bright-red accent on dark (links/status) */
 
-  /* Chrome / silver (premium accents) */
-  --color-eyebrow: #c7ccd2; /* chrome — eyebrows / labels */
-  --color-gold: #c7ccd2; /* chrome — oversized numerals (gold descartado) */
-  --color-chrome: #c7ccd2;
-  --color-gunmetal: #6b6f76;
-  --color-red-deep: #7a1620;
+  /* Chrome (premium accents) — templado para el negro cálido */
+  --color-eyebrow: #d2c8c5; /* chrome — eyebrows / labels (12.27:1) */
+  --color-gold: #d2c8c5; /* chrome — oversized numerals (gold descartado) */
+  --color-chrome: #d2c8c5;
+  --color-gunmetal: #8a7276;
+  --color-red-deep: #7a0c18;
 
   /* Dark "feature" sections (radial-black + red halo) */
-  --color-dark: #0c0e12; /* feature section bg */
-  --color-dark-input: #070809; /* inputs */
-  --color-dark-border: #1e2024;
-  --color-dark-border-2: #2a2d33;
-  --color-dark-border-3: #3a3e45;
-  --color-outline-hover: #6b6f76;
-  --color-on-dark: #eaecee;
-  --color-on-dark-muted: #9aa0a8;
-  --color-on-dark-faint: #8a8f97; /* AA vs --color-dark and --color-dark-input (≥4.5:1) */
+  --color-dark: #0d0709; /* feature section bg */
+  --color-dark-input: #060304; /* inputs */
+  --color-dark-border: #241a1c;
+  --color-dark-border-2: #302326;
+  --color-dark-border-3: #443436;
+  --color-outline-hover: #9a868a;
+  --color-on-dark: #f6efec;
+  --color-on-dark-muted: #c2a7ac;
+  /* Conserva el fix de a11y de 448679c (≥4.5:1 vs --color-dark y
+     --color-dark-input) en versión cálida, y con su misma holgura: 5.85:1 y
+     6.02:1. Un #8a7276 también habría pasado, pero raspando (4.52:1). */
+  --color-on-dark-faint: #9a868a;
 
   /* Monochrome category chips (icon chips / badges) */
-  --color-cat-navy: #3a3e45;
-  --color-cat-toffee: #7a1620;
-  --color-cat-forest: #4a4e54;
-  --color-cat-pale-green: #1a1c20;
-  --color-cat-pale-blue: #20232a;
+  --color-cat-navy: #443436;
+  --color-cat-toffee: #7a0c18;
+  --color-cat-forest: #544a4b;
+  --color-cat-pale-green: #1c1618;
+  --color-cat-pale-blue: #241d1f;
 
-  /* Glow layers — controlled deep-red halo + faint chrome (never neon) */
-  --color-glow-coral: rgba(122, 22, 32, 0.55);
-  --color-glow-amber: rgba(199, 204, 210, 0.06);
+  /* Glow layers — controlled deep-red halo + faint chrome */
+  --color-glow-coral: rgba(122, 12, 24, 0.55);
+  --color-glow-amber: rgba(210, 200, 197, 0.06);
 
   /* Lines & focus */
-  --color-border: #23262c;
-  --color-ring: #d7212a;
+  --color-border: #2e2426; /* 1.338:1 vs bg — misma visibilidad que el #23262c anterior */
+  --color-ring: #e11423;
 
   /* Status */
   --color-danger: #ff6b6b;
@@ -81,8 +95,11 @@
 }
 
 @theme inline {
-  --font-display: var(--font-montserrat);
-  --font-body: var(--font-montserrat);
+  /* Inter para titulares y cuerpo; Anton solo para el punch (hero, ordinales
+     gigantes), igual que el TitleCard del vídeo. Anton en cada h3 de un
+     artículo sería ilegible: es una condensada de un solo peso. */
+  --font-display: var(--font-sans);
+  --font-body: var(--font-sans);
   --font-punch: var(--font-anton);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
     monospace;
@@ -103,7 +120,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Headings: Montserrat, heavy for premium punch. */
+  /* Headings: Inter, heavy for premium punch. */
   h1,
   h2,
   h3,
@@ -158,11 +175,11 @@
 .chrome-text {
   background-image: linear-gradient(
     165deg,
-    #4a4e54 0%,
-    #c7ccd2 30%,
+    #544a4b 0%,
+    #d2c8c5 30%,
     #ffffff 50%,
-    #9aa0a8 64%,
-    #4a4e54 100%
+    #a89a9c 64%,
+    #544a4b 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
