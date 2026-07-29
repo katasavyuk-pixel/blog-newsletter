@@ -8,7 +8,8 @@
  * Idempotent and stateless: once a post with that youtubeId is merged, the
  * video stops being "new". No external state to keep in sync.
  *
- * Usage: YOUTUBE_CHANNEL_ID=UC... node scripts/radar/youtube.mjs
+ * Usage: node scripts/radar/youtube.mjs
+ *        (YOUTUBE_CHANNEL_ID=UC... to override the channel)
  */
 import { readFile, readdir, writeFile, mkdir } from "node:fs/promises";
 import { XMLParser } from "fast-xml-parser";
@@ -16,11 +17,12 @@ import { XMLParser } from "fast-xml-parser";
 const POSTS_DIR = new URL("../../content/posts/", import.meta.url);
 const OUT_PATH = new URL("../../scratch/youtube-new.json", import.meta.url);
 
-const channelId = process.env.YOUTUBE_CHANNEL_ID;
-if (!channelId) {
-  console.error("YOUTUBE_CHANNEL_ID is not set — nothing to do.");
-  process.exit(1);
-}
+// Kata Ivanovych's channel. This is public data — it's in the channel URL and in
+// the RSS feed this script reads — so it lives here instead of in an env var that
+// has to be remembered on every run. Override with YOUTUBE_CHANNEL_ID to point at
+// another channel.
+const DEFAULT_CHANNEL_ID = "UCizhz3u2FTUjSf-hqvNGKOQ";
+const channelId = process.env.YOUTUBE_CHANNEL_ID || DEFAULT_CHANNEL_ID;
 
 // Video IDs already referenced by a post (any frontmatter `youtubeId: <id>`).
 const knownIds = new Set();
