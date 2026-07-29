@@ -4,6 +4,13 @@
 
 > Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Diagnóstico estratégico y retirada de "El Universo"** (2026-07-26).
 
+## Antes de escribir contenido
+
+Voz, qué se puede decir (restricciones legales con caducidad) y la mecánica del embudo viven en
+`~/Developer/Marca-Personal` — **carga la skill `marca-kata`**. No las copies aquí: este archivo
+y el del canal describían cada uno su versión de la misma marca y llevaban semanas divergiendo.
+Aquí solo va la implementación: rutas, tablas, componentes, deploy.
+
 ## Qué es esto
 
 Plataforma de **marca personal sobre IA**: blog + newsletter para construir comunidad
@@ -30,7 +37,7 @@ pero la parte de pago/auth **no se construye** hasta la Fase 3.
 | Framework | Next.js App Router | `next@16.2.x` (Turbopack default, Node ≥20) |
 | Runtime | React | `react@19.x` / `react-dom@19.x` |
 | Estilos | Tailwind CSS v4 (CSS-first) | `tailwindcss@4` + `@tailwindcss/postcss@4` + `@tailwindcss/typography@0.5` |
-| Tipografía | Montserrat (cuerpo/UI) + Anton (display); mono = stack del sistema | `next/font/google` |
+| Tipografía | Inter (cuerpo/UI/titulares) + Anton (display punch); mono = stack del sistema | `next/font/google` |
 | DB / clients | Supabase | `@supabase/ssr@0.12` + `@supabase/supabase-js@2.108`; región `eu-central-1` |
 | Content layer (Fase 1) | Velite | `velite@0.3.x` (no `1.0.0-alpha`) + rehype-pretty-code `0.14` + shiki `^1` |
 | Email (Fase 2) | Resend + React Email | `resend@6.14` + `react-email@6.6`; región `eu-west-1` |
@@ -66,8 +73,8 @@ next.config.ts · .env.example
 
 ## Decisiones de arquitectura
 
-- **Tema: página clara con SECCIONES OSCURAS deliberadas.** El rediseño "Kata Pro" (2026-06-25) reemplazó la antigua ley NBI "solo claro / nunca oscuro": hero, newsletter y footer son bandas espresso (`--color-dark #15100d`) con *glow* coral pulsante (`.glow-pulse`, congelado bajo `prefers-reduced-motion`). No es modo-oscuro con toggle (sin `.dark` ni `next-themes`): son superficies oscuras dentro de una página cálida. Tokens siguen siendo CSS variables (dark-ready si se quisiera un toggle).
-- **Marca = Kata Ivanovych — "Atardecer Coral" → "Kata Pro"** (subdominio de NBI `ianexora.com`): paleta cálida espresso `#15100d` + coral/terracota `#d8442b` (texto = `--color-accent-ink #be3621`, AA) + crema `#f4eee3`; acentos salmón/terracota/oro y chips de categoría. Tipografía real del código: **Montserrat** (cuerpo/UI, `--font-body`/`--font-display`) + **Anton** (display condensada, `--font-punch`) + mono del sistema (`--font-mono`, sin webfont). Valores AA-verificados en `globals.css`. (La paleta NBI navy/cian quedó obsoleta en el rebrand `b044460` y el rediseño Kata Pro.)
+- **Tema: página OSCURA entera** (`--color-bg #0b0608`, negro cálido). Corregido 2026-07-29: este punto decía *"página clara con secciones oscuras"*, que describía el "Kata Pro" de junio y quedó invertido con el rebrand a la paleta cine. No es modo-oscuro con toggle (sin `.dark` ni `next-themes`) — es la única identidad. Las bandas de sección usan `--color-dark #0d0709`, un pelo más profundo que el fondo.
+- **Marca = Kata Ivanovych — paleta CINE, la misma que el vídeo** (subdominio de NBI `ianexora.com`). Desde 2026-07-29 los tokens derivan de `YT_claude/05_remotion/src/cine/brandCine.ts`: fondo `#0b0608`, texto `#f6efec`, `--color-accent #e11423` **solo como superficie** (4.14:1, nunca texto pequeño) y `--color-accent-ink #ff3b4e` para texto rojo (5.74:1, AA). Tipografía real del código: **Inter** (cuerpo/UI/titulares, `--font-body`/`--font-display`) + **Anton** (display punch, `--font-punch`) + mono del sistema. Valores AA-verificados en `globals.css`. Reparto por superficie y el porqué: `~/Developer/Marca-Personal/IDENTIDAD.md`. (Obsoletas: la NBI navy/cian del rebrand `b044460`, el "Atardecer Coral" y el espresso/coral de "Kata Pro".)
 - **Content layer = Velite** (Fase 1). Compila MDX en su propio proceso esbuild antes/junto a `next build`, así el pipeline Shiki/rehype-pretty-code corre intacto bajo **Turbopack** (que no puede pasar plugins remark/rehype con funciones a través de la frontera Rust). Frontmatter validado con Zod + tipos TS autogenerados. Contentlayer descartado (abandonado). Nunca `VeliteWebpackPlugin`; wiring vía npm scripts (`run-s`) o hook dynamic-import.
 - **Newsletter = lista en Supabase, Resend solo entrega.** Estado de consentimiento (`pending`/`confirmed`/`unsubscribed`) en nuestro Postgres. Transaccional (opt-in/bienvenida) vía `emails.send`; boletín vía loop propio sobre filas `confirmed` con `resend.batch.send` (lotes de 100, ≤5 req/s, idempotente por `issue_id`, breaker por cuota). Esto hace triviales los derechos RGPD y mantiene la PII fuera de la infra US de Resend.
   - **Matiz RGPD crítico:** región `eu-west-1` controla solo desde dónde se *envía*, NO residencia de datos (account data/logs/metadata de Resend viven en US bajo SCC + DPA). **Nunca prometer "100% UE"** — mismo encuadre que el matiz Gemini/OpenRouter.
