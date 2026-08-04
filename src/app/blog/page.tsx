@@ -1,56 +1,44 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
-import { PostCard } from "@/components/blog/post-card";
+import { ArchiveList } from "@/components/content/content-row";
+import { PostMeta } from "@/components/content/post-meta";
 import { TagList } from "@/components/blog/tag-list";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
-import { allPosts, getAllTags, getPostsByTag } from "@/lib/posts";
-import { formatDate } from "@/lib/format";
-
-/** Weekly "Radar IA" editions live in their own strip, not the main grid. */
-const RADAR_TAG = "radar";
+import { FORMATOS, TEMAS } from "@/config/taxonomy";
+import { allPosts, getAllTags } from "@/lib/posts";
 
 export const metadata: Metadata = {
-  title: "Blog",
+  title: "Artículos",
   description:
-    "Artículos interactivos sobre inteligencia artificial: del fundamento a la práctica, sin humo.",
+    "El archivo completo: sistemas, lecciones interactivas, notas y las ediciones del Radar IA.",
   alternates: { canonical: "/blog" },
 };
 
 export default function BlogIndexPage() {
   const tags = getAllTags();
-  const articles = allPosts.filter((post) => !post.tags.includes(RADAR_TAG));
-  const radarEditions = getPostsByTag(RADAR_TAG).slice(0, 3);
-  const [featured, ...rest] = articles;
+  // The lead is the newest substantive piece. A Radar edition is a weekly
+  // roundup, not an argument, so it never opens the page — but it does belong
+  // in the archive below, where its formato column identifies it on sight.
+  const lead = allPosts.find((post) => post.formato !== "radar");
+  const rest = allPosts.filter((post) => post.slug !== lead?.slug);
 
   return (
     <Container className="py-16">
       <header className="max-w-2xl">
-        <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
-          Blog
+        <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent-ink">
+          Archivo
         </p>
         <h1 className="headline mt-2 text-4xl text-fg sm:text-5xl">
-          Aprende IA tocándola
+          Todo lo que he publicado
         </h1>
         <p className="mt-3 text-lg leading-relaxed text-muted">
-          Artículos donde no solo lees cómo funciona la IA: la manipulas.
+          Sistemas, lecciones interactivas, notas y las ediciones del Radar. Lo
+          más reciente arriba.
         </p>
       </header>
 
-      {tags.length > 0 ? (
-        <div className="mt-8">
-          <TagList tags={tags} />
-        </div>
-      ) : null}
-
-      <p className="mt-4 text-sm text-muted">
-        ¿Buscas un término suelto?{" "}
-        <Link href="/glosario" className="text-accent-ink hover:underline">
-          Consulta el glosario →
-        </Link>
-      </p>
-
-      {!featured ? (
+      {!lead ? (
         <p className="mt-12 text-muted">
           Aún no hay artículos. Añade un{" "}
           <code className="text-accent-ink">.mdx</code> en{" "}
@@ -58,10 +46,10 @@ export default function BlogIndexPage() {
         </p>
       ) : (
         <>
-          {/* Featured (bento hero) */}
+          {/* Lead story — the one piece the page argues for. */}
           <ScrollReveal>
             <Link
-              href={featured.permalink}
+              href={lead.permalink}
               className="group relative mt-10 block overflow-hidden rounded-3xl border border-border bg-surface p-8 transition-colors hover:border-accent sm:p-10"
             >
               <span
@@ -72,73 +60,57 @@ export default function BlogIndexPage() {
                     "radial-gradient(circle, var(--color-accent), transparent 70%)",
                 }}
               />
-              <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
-                {featured.kicker ?? "Destacado"}
+              <p className="font-mono text-xs uppercase tracking-[0.2em]">
+                <span className="text-accent-ink">{FORMATOS[lead.formato]}</span>
+                <span aria-hidden className="text-faint">
+                  {" · "}
+                </span>
+                <span className="text-faint">{TEMAS[lead.tema]}</span>
               </p>
-              <h2 className="mt-3 max-w-3xl headline text-3xl text-fg text-balance transition-colors group-hover:text-accent-ink sm:text-4xl">
-                {featured.title}
+              <h2 className="headline mt-3 max-w-3xl text-3xl text-fg text-balance transition-colors group-hover:text-accent-ink sm:text-4xl">
+                {lead.title}
               </h2>
-              <p className="mt-3 max-w-2xl text-muted">{featured.description}</p>
-              <div className="mt-5 flex items-center gap-2 text-sm text-muted">
-                <time dateTime={featured.date}>{formatDate(featured.date)}</time>
-                <span aria-hidden>·</span>
-                <span>{featured.metadata.readingTime} min</span>
-              </div>
+              <p className="mt-3 max-w-2xl text-muted">
+                {lead.dek ?? lead.description}
+              </p>
+              <PostMeta post={lead} className="mt-5" />
             </Link>
           </ScrollReveal>
 
-          {radarEditions.length > 0 ? (
-            <ScrollReveal>
-              <section
-                aria-labelledby="radar-heading"
-                className="mt-10 rounded-3xl border border-border bg-surface p-6 sm:p-8"
-              >
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <h2
-                    id="radar-heading"
-                    className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink"
-                  >
-                    Radar IA — la semana en titulares
-                  </h2>
-                  <Link
-                    href={`/blog/tag/${RADAR_TAG}`}
-                    className="text-sm text-accent-ink hover:underline"
-                  >
-                    Todas las ediciones →
-                  </Link>
-                </div>
-                <ul className="mt-4 divide-y divide-border">
-                  {radarEditions.map((post) => (
-                    <li key={post.slug}>
-                      <Link
-                        href={post.permalink}
-                        className="group flex flex-wrap items-baseline justify-between gap-2 py-3"
-                      >
-                        <span className="font-display font-medium text-fg transition-colors group-hover:text-accent-ink">
-                          {post.title}
-                        </span>
-                        <time dateTime={post.date} className="text-sm text-muted">
-                          {formatDate(post.date)}
-                        </time>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            </ScrollReveal>
-          ) : null}
-
+          {/* The archive proper: rows, not a grid of repeated cards. */}
           {rest.length > 0 ? (
-            <div className="mt-8 grid gap-8 sm:grid-cols-2">
-              {rest.map((post, i) => (
-                <ScrollReveal key={post.slug} delay={i * 0.06}>
-                  <PostCard post={post} />
-                </ScrollReveal>
-              ))}
-            </div>
+            <section aria-labelledby="archivo" className="mt-16">
+              <h2
+                id="archivo"
+                className="font-mono text-xs uppercase tracking-[0.2em] text-accent-ink"
+              >
+                Archivo
+              </h2>
+              <ArchiveList posts={rest} className="mt-4 border-t border-border" />
+            </section>
           ) : null}
         </>
       )}
+
+      {tags.length > 0 ? (
+        <section aria-labelledby="temas" className="mt-16">
+          <h2
+            id="temas"
+            className="font-mono text-xs uppercase tracking-[0.2em] text-faint"
+          >
+            Filtrar por palabra clave
+          </h2>
+          <div className="mt-4">
+            <TagList tags={tags} />
+          </div>
+          <p className="mt-4 text-sm text-muted">
+            ¿Buscas un término suelto?{" "}
+            <Link href="/glosario" className="text-accent-ink hover:underline">
+              Consulta el glosario →
+            </Link>
+          </p>
+        </section>
+      ) : null}
     </Container>
   );
 }
