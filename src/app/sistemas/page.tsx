@@ -41,7 +41,7 @@ export default async function BibliotecaPage() {
     <Container size="wide" className="py-16">
       <header className="max-w-2xl">
         <Eyebrow>Gratis · probado · replicable</Eyebrow>
-        <h1 className="mt-3 font-display text-4xl font-medium tracking-tight text-fg sm:text-5xl">
+        <h1 className="mt-3 headline text-4xl text-fg sm:text-5xl">
           La Biblioteca de Sistemas
         </h1>
         <p className="mt-4 text-lg leading-relaxed text-muted">

@@ -98,7 +98,7 @@ export default async function PostPage({
           <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
             {post.kicker ?? post.tags[0] ?? "Artículo"}
           </p>
-          <h1 className="mt-3 font-display text-4xl font-medium leading-[1.05] tracking-tight text-fg text-balance sm:text-5xl">
+          <h1 className="headline mt-3 text-4xl text-fg text-balance sm:text-5xl">
             {post.title}
           </h1>
           <p className="mt-5 text-lg leading-relaxed text-muted sm:text-xl">

@@ -27,7 +27,7 @@ export function CadenceStrip() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <Eyebrow>Cada lunes · en automático</Eyebrow>
-            <h2 className="mt-3 font-display text-2xl font-medium text-fg sm:text-3xl">
+            <h2 className="mt-3 headline text-3xl text-fg sm:text-4xl">
               Radar IA: la semana en titulares
             </h2>
           </div>

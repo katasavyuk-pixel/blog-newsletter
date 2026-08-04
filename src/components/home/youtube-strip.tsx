@@ -20,7 +20,7 @@ export function YouTubeStrip() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <Eyebrow>YouTube · construcción pública</Eyebrow>
-            <h2 className="mt-3 font-display text-3xl font-medium text-fg sm:text-4xl">
+            <h2 className="mt-3 headline text-3xl text-fg sm:text-4xl">
               Sistemas construidos en vídeo, explicados aquí
             </h2>
           </div>

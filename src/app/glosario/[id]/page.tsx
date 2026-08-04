@@ -48,7 +48,7 @@ export default async function GlossaryEntryPage({
         <p className="mt-6 font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
           Glosario
         </p>
-        <h1 className="mt-3 font-display text-4xl font-medium tracking-tight text-fg sm:text-5xl">
+        <h1 className="mt-3 headline text-4xl text-fg sm:text-5xl">
           {entry.title}
         </h1>
         <p className="mt-5 text-lg leading-relaxed text-muted">{entry.def}</p>

@@ -21,7 +21,7 @@ export default function GlossaryPage() {
         <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
           Glosario
         </p>
-        <h1 className="mt-2 font-display text-4xl font-medium tracking-tight text-fg sm:text-5xl">
+        <h1 className="mt-2 headline text-4xl text-fg sm:text-5xl">
           Términos de IA, sin rodeos
         </h1>
         <p className="mt-3 text-lg leading-relaxed text-muted">

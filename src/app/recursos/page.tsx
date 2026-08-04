@@ -4,6 +4,12 @@ import { Card } from "@/components/ui/card";
 import { SubscribeForm } from "@/components/newsletter/subscribe-form";
 import { getPublishedResources } from "@/lib/resources";
 
+// The resource list comes from Supabase and must reflect the DB on every request.
+// Without this the route prerenders at build time: `getPublishedResources()` bails
+// out to [] when the Supabase envs are missing, so it never reaches `cookies()` and
+// nothing opts the segment out of static rendering — the empty state gets baked in.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Recursos gratuitos",
   description:
@@ -17,7 +23,7 @@ export default async function ResourcesPage() {
   return (
     <Container className="py-16">
       <header className="max-w-2xl">
-        <h1 className="font-display text-4xl font-medium tracking-tight text-fg sm:text-5xl">
+        <h1 className="headline text-4xl text-fg sm:text-5xl">
           Recursos gratuitos
         </h1>
         <p className="mt-3 text-lg leading-relaxed text-muted">

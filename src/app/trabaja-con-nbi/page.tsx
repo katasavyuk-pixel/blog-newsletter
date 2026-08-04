@@ -24,7 +24,7 @@ export default function WorkWithNbiPage() {
         <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
           NBI
         </p>
-        <h1 className="mt-2 font-display text-4xl font-medium tracking-tight text-fg sm:text-5xl">
+        <h1 className="mt-2 headline text-4xl text-fg sm:text-5xl">
           Trabaja con NBI
         </h1>
         <Prose className="mt-6">

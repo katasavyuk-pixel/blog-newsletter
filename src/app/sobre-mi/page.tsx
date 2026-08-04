@@ -33,7 +33,7 @@ export default async function AboutPage() {
           postCount={allPosts.length}
           className="mb-5"
         />
-        <h1 className="font-display text-4xl font-medium tracking-tight text-fg sm:text-5xl">
+        <h1 className="headline text-4xl text-fg sm:text-5xl">
           El viaje
         </h1>
         <Prose className="mt-6">

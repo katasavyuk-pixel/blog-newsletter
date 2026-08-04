@@ -33,7 +33,7 @@ export default function EmpiezaAquiPage() {
     <Container className="py-16">
       <header className="max-w-2xl">
         <Eyebrow>El pilar de la biblioteca · gratis · a tu ritmo</Eyebrow>
-        <h1 className="mt-3 font-display text-4xl font-medium tracking-tight text-fg sm:text-5xl">
+        <h1 className="mt-3 headline text-4xl text-fg sm:text-5xl">
           Empieza aquí: entiende la IA tocándola
         </h1>
         <p className="mt-4 text-lg leading-relaxed text-muted">

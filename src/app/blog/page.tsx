@@ -29,7 +29,7 @@ export default function BlogIndexPage() {
         <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
           Blog
         </p>
-        <h1 className="mt-2 font-display text-4xl font-medium tracking-tight text-fg sm:text-5xl">
+        <h1 className="headline mt-2 text-4xl text-fg sm:text-5xl">
           Aprende IA tocándola
         </h1>
         <p className="mt-3 text-lg leading-relaxed text-muted">
@@ -75,7 +75,7 @@ export default function BlogIndexPage() {
               <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
                 {featured.kicker ?? "Destacado"}
               </p>
-              <h2 className="mt-3 max-w-3xl font-display text-3xl font-medium tracking-tight text-fg text-balance transition-colors group-hover:text-accent-ink sm:text-4xl">
+              <h2 className="mt-3 max-w-3xl headline text-3xl text-fg text-balance transition-colors group-hover:text-accent-ink sm:text-4xl">
                 {featured.title}
               </h2>
               <p className="mt-3 max-w-2xl text-muted">{featured.description}</p>

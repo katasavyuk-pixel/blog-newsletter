@@ -171,6 +171,22 @@
   }
 }
 
+/* Editorial headline face — the one real typographic contrast on the site.
+   --font-display and --font-body both resolve to Inter, so headlines and body
+   were the same face at different sizes, which is what made a publication read
+   like a landing page. Anton supplies the contrast, but only where a headline
+   is genuinely large: it is a single-weight condensed, so hierarchy comes from
+   size and colour rather than weight, it ships very tight and needs a little
+   tracking, and it must never touch body copy (IDENTIDAD.md).
+   Sentence case, never all-caps: Spanish headlines carry accents, and Anton
+   uppercase swallows them. Do not use below ~28px. */
+.headline {
+  font-family: var(--font-punch);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.02;
+}
+
 /* Chrome / silver metallic gradient for text (wordmark, ordinals). */
 .chrome-text {
   background-image: linear-gradient(

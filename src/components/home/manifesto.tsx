@@ -22,7 +22,7 @@ export function Manifesto() {
           />
           <div>
             <Eyebrow>El viaje</Eyebrow>
-            <h2 className="mt-3 font-display text-3xl font-medium text-fg sm:text-4xl">
+            <h2 className="mt-3 headline text-3xl text-fg sm:text-4xl">
               Construyo una empresa. Tú te llevas los sistemas.
             </h2>
             <p className="mt-4 max-w-prose text-lg leading-relaxed text-muted">

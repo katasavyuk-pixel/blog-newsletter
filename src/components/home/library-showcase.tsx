@@ -31,7 +31,7 @@ export function LibraryShowcase() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <Eyebrow>La biblioteca de sistemas</Eyebrow>
-            <h2 className="mt-3 font-display text-3xl font-medium text-fg sm:text-4xl">
+            <h2 className="mt-3 headline text-3xl text-fg sm:text-4xl">
               Lo que ya funciona, listo para copiar
             </h2>
             <p className="mt-3 max-w-xl text-muted">

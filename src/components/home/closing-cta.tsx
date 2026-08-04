@@ -33,7 +33,7 @@ export function ClosingCta() {
               <p className="font-mono text-xs uppercase tracking-widest text-coral-soft">
                 ▸ la newsletter
               </p>
-              <h2 className="mt-3 font-display text-3xl font-medium text-on-accent sm:text-5xl">
+              <h2 className="mt-3 headline text-3xl text-on-accent sm:text-5xl">
                 Lo próximo que te llevas
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-coral-soft">
