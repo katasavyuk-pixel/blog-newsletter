@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { TagPill } from "@/components/content/tag-pill";
 
+/** Secondary keyword filter. Primary navigation is tema/formato, not tags. */
 export function TagList({
   tags,
   active,
@@ -11,19 +11,13 @@ export function TagList({
   return (
     <div className="flex flex-wrap gap-2">
       {tags.map(({ tag, count }) => (
-        <Link
+        <TagPill
           key={tag}
+          tag={tag}
+          count={count}
           href={`/blog/tag/${encodeURIComponent(tag)}`}
-          className={cn(
-            "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors",
-            active === tag
-              ? "border-accent-strong bg-accent-strong text-on-accent"
-              : "border-border text-muted hover:bg-surface hover:text-fg",
-          )}
-        >
-          #{tag}
-          <span className="text-xs opacity-70">{count}</span>
-        </Link>
+          active={active === tag}
+        />
       ))}
     </div>
   );

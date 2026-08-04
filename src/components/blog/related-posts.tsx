@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatDate } from "@/lib/format";
+import { PostMeta } from "@/components/content/post-meta";
 import type { Post } from "@/lib/posts";
 
 /** "Sigue leyendo" — related articles at the end of a post, so the reading flow never dead-ends. */
@@ -21,11 +21,7 @@ export function RelatedPosts({ posts }: { posts: Post[] }) {
             href={post.permalink}
             className="group flex flex-col rounded-2xl border border-border bg-surface p-5 transition-all hover:-translate-y-0.5 hover:border-accent"
           >
-            <div className="flex items-center gap-2 text-xs text-faint">
-              <time dateTime={post.date}>{formatDate(post.date)}</time>
-              <span aria-hidden>·</span>
-              <span>{post.metadata.readingTime} min</span>
-            </div>
+            <PostMeta post={post} short />
             <h3 className="mt-2 flex-1 font-display text-base font-medium leading-snug text-fg transition-colors group-hover:text-accent-ink">
               {post.title}
             </h3>
