@@ -71,13 +71,19 @@ export const siteConfig = {
 export type SiteConfig = typeof siteConfig;
 
 /**
- * Primary navigation — 4 items + CTA (blog editorial layout, 2026-07-26:
- * retires the cosmic naming from "El Universo"). /recursos stays live but
- * leaves the nav.
+ * Primary navigation, ordered by how much each shelf carries the positioning.
+ *
+ * /sistemas leads: it is the flagship the whole site argues for, and until now
+ * it was reachable only from in-page links — absent from both nav and footer.
+ * "Blog" is labelled "Artículos" because the Radar is also blog content, so the
+ * generic name did not distinguish the archive from the site itself. Routes are
+ * unchanged, so nothing indexed moves.
  */
 export const navLinks = [
-  { label: "Blog", href: "/blog" },
+  { label: "Sistemas", href: "/sistemas" },
   { label: "Curso", href: "/empieza-aqui" },
   { label: "Radar", href: "/blog/tag/radar" },
+  { label: "Artículos", href: "/blog" },
+  { label: "Recursos", href: "/recursos" },
   { label: "Sobre mí", href: "/sobre-mi" },
 ] as const;

@@ -16,8 +16,12 @@ import { LIBRARY_ITEMS } from "@/config/library";
  * /sistemas (home-as-argument, library-as-page).
  */
 export function LibraryShowcase() {
+  // No !featured filter: it existed because the course had its own CoursePillar
+  // section on the home. That section was deleted and the filter outlived it,
+  // so the six interactive lessons — the most complete thing on the site — were
+  // the one item the shelf refused to show.
   const items = LIBRARY_ITEMS.map(resolveLibraryItem).filter(
-    (item): item is ResolvedLibraryItem => item !== null && !item.featured,
+    (item): item is ResolvedLibraryItem => item !== null,
   );
   if (items.length === 0) return null;
 
