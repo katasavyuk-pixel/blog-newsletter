@@ -22,6 +22,31 @@ const mdx = await readFile(mdxPath, "utf8");
 const { items } = JSON.parse(await readFile(CANDIDATES_PATH, "utf8"));
 const byUrl = new Map(items.map((item) => [item.url, item]));
 
+/**
+ * Fold typographic variants before comparing text attributes.
+ *
+ * The writing model retypes headlines and flattens U+2019 to a plain apostrophe,
+ * so a verbatim !== read that as an invented title: the 27-jul and 3-ago
+ * editions both died on a smart quote and never opened a PR. None of these
+ * substitutions can turn one article into another, and identity still hangs on
+ * the URL, which is compared verbatim.
+ *
+ * Escapes are spelled out on purpose — this file exists to compare exact
+ * characters, and literal invisible ones are unreviewable.
+ */
+const canonical = (value) =>
+  typeof value === "string"
+    ? value
+        .normalize("NFC")
+        .replace(/[‘’‚‛′]/g, "'") // single quotes, prime
+        .replace(/[“”„‟″]/g, '"') // double quotes, double prime
+        .replace(/[‐-―−]/g, "-") // hyphens, en/em dash, minus
+        .replace(/…/g, "...") // ellipsis
+        .replace(/[   ​]/g, " ") // nbsp, figure/narrow space, ZWSP
+        .replace(/\s+/g, " ")
+        .trim()
+    : value;
+
 // Pull the attributes out of each <RadarItem ...> opening tag.
 const radarItems = [...mdx.matchAll(/<RadarItem\s+([\s\S]*?)>/g)].map(([, attrs]) => {
   const get = (name) => attrs.match(new RegExp(`${name}="([^"]*)"`))?.[1];
@@ -35,19 +60,18 @@ if (radarItems.length === 0) {
 
 const errors = [];
 for (const item of radarItems) {
+  // The URL is the identity key: matched verbatim, never folded.
   const candidate = byUrl.get(item.url);
   if (!candidate) {
     errors.push(`URL not in candidates (possible hallucination): ${item.url}`);
     continue;
   }
-  if (item.title !== candidate.title) {
-    errors.push(`Title altered for ${item.url}\n  expected: ${candidate.title}\n  got:      ${item.title}`);
-  }
-  if (item.source !== candidate.source) {
-    errors.push(`Source altered for ${item.url}: expected "${candidate.source}", got "${item.source}"`);
-  }
-  if (item.axis !== candidate.axis) {
-    errors.push(`Axis altered for ${item.url}: expected "${candidate.axis}", got "${item.axis}"`);
+  for (const field of ["title", "source", "axis"]) {
+    if (canonical(item[field]) !== canonical(candidate[field])) {
+      errors.push(
+        `${field} altered for ${item.url}\n  expected: ${candidate[field]}\n  got:      ${item[field]}`,
+      );
+    }
   }
 }
 
