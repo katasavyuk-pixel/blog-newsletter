@@ -14,6 +14,7 @@ const BodySchema = z.object({
   email: z.string().email().max(254),
   source: z.string().max(80).optional(),
   resource: z.string().max(80).optional(),
+  utmSource: z.string().max(80).optional(),
   turnstileToken: z.string().optional(),
 });
 
@@ -44,9 +45,12 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = createAdminClient();
-  const source = body.resource
+  const baseSource = body.resource
     ? `lead_magnet:${body.resource}`
     : body.source ?? "site";
+  const source = body.utmSource
+    ? `${baseSource}:${body.utmSource}`
+    : baseSource;
 
   const { data: existing } = await supabase
     .from("subscribers")

@@ -57,10 +57,17 @@ export function SubscribeForm({
       (form.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null)
         ?.value || undefined;
     try {
+      const utm = new URLSearchParams(window.location.search).get("utm_source");
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, source, resource, turnstileToken }),
+        body: JSON.stringify({
+          email,
+          source,
+          resource,
+          utmSource: utm ?? undefined,
+          turnstileToken,
+        }),
       });
       if (!res.ok) {
         setState("error");
