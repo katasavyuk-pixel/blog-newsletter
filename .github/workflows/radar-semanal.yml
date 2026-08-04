@@ -58,7 +58,9 @@ jobs:
             EDITORIAL RULES:
             - Follow the structure of content/_templates/radar.mdx exactly
               (frontmatter fields included; date: ${{ steps.edition.outputs.date }},
-              tags must include `radar`, draft: false).
+              tema: contenido, formato: radar, tags must include `radar`,
+              draft: false). `tema` and `formato` come from a closed vocabulary
+              in src/config/taxonomy.ts — copy them verbatim, do not invent one.
             - Select the 5-7 most relevant items, covering the three axes
               (ia, negocio, geopolitica) if solid material exists for each.
               Fewer items is better than filler.

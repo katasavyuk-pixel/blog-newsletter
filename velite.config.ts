@@ -4,6 +4,9 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
 import { transformerNotationDiff } from "@shikijs/transformers";
+// Relative, not "@/": velite compiles this config in its own esbuild pass and
+// does not read the tsconfig path aliases.
+import { FORMATO_KEYS, TEMA_KEYS } from "./src/config/taxonomy";
 
 const posts = defineCollection({
   name: "Post",
@@ -16,6 +19,10 @@ const posts = defineCollection({
       dek: s.string().max(300).optional(), // standfirst / intro under the headline
       date: s.isodate(),
       updated: s.isodate().optional(),
+      // Closed vocabulary, both required: a mistyped tema fails the build rather
+      // than creating a category of one. Free `tags` stay as secondary keywords.
+      tema: s.enum(TEMA_KEYS),
+      formato: s.enum(FORMATO_KEYS),
       tags: s.array(s.string()).default([]),
       cover: s.image().optional(),
       youtubeId: s.string().max(20).optional(), // companion YouTube video ID, if any

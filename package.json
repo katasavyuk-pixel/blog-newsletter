@@ -7,7 +7,7 @@
     "dev:content": "velite dev",
     "dev:next": "next dev",
     "build": "run-s build:content build:next",
-    "build:content": "velite build --clean",
+    "build:content": "velite build --clean --strict",
     "build:next": "next build",
     "start": "next start",
     "lint": "eslint"

@@ -1,0 +1,174 @@
+---
+title: "Antes del TMS hay otro sistema: tu inbox"
+description: "Un TMS no crea datos: los recibe. Y casi siempre los recibe de alguien que los está copiando a mano desde un correo. Ese copiado también es un sistema — solo que nadie lo eligió, nadie lo documentó y nadie lo mide."
+kicker: Sistemas
+dek: "El caso es logístico, pero el patrón no: donde la información entra por un canal conversacional y sale hacia un sistema estructurado, siempre hay una persona haciendo de puente. Cómo se mide y qué forma tiene el arreglo."
+date: 2026-08-04
+tema: operaciones
+formato: sistema
+tags:
+  - sistemas
+  - automatización
+  - logística
+  - construcción pública
+draft: true
+premium: false
+---
+
+<Callout type="warn" title="Borrador — no publicado">
+Este post está en `draft: true`. Antes de publicarlo: pasar la checklist de
+`~/Developer/Marca-Personal/QUE_PUEDO_DECIR.md`, confirmar que el recurso enlazado en
+`/recursos` está dado de alta, y revisar que ningún ejemplo se pueda leer como un cliente
+concreto.
+</Callout>
+
+Una empresa de transporte compra un TMS para ordenar la operación. Tiene sentido: ahí viven
+las expediciones, los estados, los costes, la trazabilidad. La decisión se discute meses, se
+compara con dos alternativas y se firma con la sensación de haber resuelto algo grande.
+
+Y entonces llega el lunes, y el dato sigue entrando igual que antes: alguien abre un correo,
+lee una confirmación escrita en prosa y la teclea en una pantalla.
+
+Un TMS no crea datos. Los recibe. Quien los crea es una persona leyendo un email.
+
+## El TMS empieza donde el dato ya está limpio
+
+Casi todo el software de operaciones —TMS, ERP, CRM, la herramienta de tickets— asume el
+mismo punto de partida: que el dato llega ya estructurado, con su campo y su formato. Es una
+suposición razonable para el fabricante del software, porque estructurar el dato del mundo
+real no es su problema. Es el tuyo.
+
+Por eso comprar la herramienta rara vez produce el salto que se esperaba. La herramienta
+ordena lo que ya está dentro. No toca los treinta metros anteriores, que es donde está el
+trabajo repetitivo de verdad.
+
+## El sistema que no elegiste
+
+Abre el buzón de tráfico de cualquier transportista y verás la capa de entrada real: un
+cliente que manda el pedido en un PDF adjunto, un proveedor que confirma la hora en el cuerpo
+del correo, un hilo de nueve mensajes donde la ventana de carga cambió dos veces y la buena es
+la del séptimo.
+
+Eso es un sistema. Tiene entradas, tiene reglas y tiene una salida. Lo que no tiene es lo que
+le pedimos a cualquier otro sistema de la casa:
+
+- **No tiene dueño.** Si preguntas quién es el responsable del proceso, la respuesta es un
+  nombre propio, no un rol.
+- **No está documentado.** Las reglas ("si el asunto trae la matrícula, es de la ruta nueva")
+  viven en la cabeza de quien lleva años haciéndolo.
+- **No se mide.** Nadie sabe cuánto tiempo consume ni cuántos errores mete, porque nunca se
+  contó.
+
+Tres señales de que lo tienes en casa, sea cual sea tu sector:
+
+1. Hay campos de tu sistema que alguien rellena **mirando otra pantalla**.
+2. La respuesta a "¿de dónde sale este dato?" es un nombre propio.
+3. Cuando esa persona se va de vacaciones, algo se atasca.
+
+## Esto no va de logística
+
+El caso logístico es el más fácil de ver porque el volumen lo hace evidente, pero el patrón es
+el mismo en cualquier operación donde la información **entra por un canal conversacional**
+(correo, WhatsApp, un PDF, una llamada) y tiene que **salir hacia un sistema estructurado**.
+
+Cambia el vocabulario, no la forma:
+
+| Sector | Entra así | Alguien lo teclea aquí |
+|---|---|---|
+| Transporte | Confirmación de carga por email | TMS |
+| Asesoría | Factura del cliente en PDF | Software contable |
+| Clínica | Cita pedida por WhatsApp | Agenda |
+| Agencia | Brief en un hilo de correo | Gestor de proyectos |
+| Ecommerce | Incidencia del proveedor por email | Herramienta de tickets |
+
+Si te reconoces en cualquier fila, el resto del artículo va contigo aunque no tengas un camión.
+
+## Cuánto trabajo es, en realidad
+
+Antes de decidir nada hay que dejar de discutir con intuiciones. La pregunta útil no es
+"¿cuánto tiempo se pierde?" —esa nadie la responde bien de memoria— sino **cuántos campos
+distintos se están tecleando a mano**.
+
+<GuessReveal prompt="Piensa en un correo típico de confirmación de transporte. ¿Cuántos campos distintos crees que acaban tecleados a mano en el sistema?" revealLabel="Ver el inventario">
+
+Cuando lo inventarié para el checklist que preparé sobre esto, salieron **25 campos**,
+repartidos en cinco bloques: identificación y partes, fechas/horas/ventanas, carga y medidas,
+dinero y condiciones, y documentación y trazabilidad.
+
+Un aviso honesto: 25 no es una estadística del sector ni sale de ningún estudio. Es el número
+de campos de ese inventario concreto — una cuenta, no una medición. Tu operación puede tener
+doce o cuarenta. El valor no está en la cifra, está en **tener la lista escrita** para dejar
+de decidir de oído.
+
+</GuessReveal>
+
+## El filtro de tres preguntas
+
+No todo proceso repetitivo merece que lo automatices. Para cada candidato, tres preguntas:
+
+1. **Volumen.** ¿Cuántas veces al día o a la semana ocurre?
+2. **Coste del error.** Si el dato entra mal, ¿se corrige en dos minutos o hay que llamar a un
+   cliente?
+3. **Variabilidad.** ¿Llega siempre con la misma forma, o cada remitente lo escribe a su
+   manera?
+
+Las dos primeras te dicen si tocarlo, y la tercera cuánto va a costar:
+
+| | Coste del error bajo | Coste del error alto |
+|---|---|---|
+| **Volumen alto** | Automatiza; revisa por muestreo | Automatiza **con revisión humana obligatoria** |
+| **Volumen bajo** | Déjalo. No es tu problema | Checklist humana primero; automatiza después |
+
+La variabilidad no cambia el cuadrante, cambia el esfuerzo: un flujo donde cada remitente
+escribe distinto se puede resolver igual, pero cuesta más y se equivoca más al principio. Si
+alguien te vende que eso da igual, desconfía.
+
+## La forma que tiene el arreglo
+
+Cuatro pasos, en este orden:
+
+1. **Inbox** — el buzón deja de ser el sitio donde alguien lee y pasa a ser una entrada del
+   sistema: se recoge el mensaje y sus adjuntos.
+2. **Extracción** — de ese texto se sacan los campos del inventario. No "todo lo que se pueda":
+   exactamente los campos de la lista.
+3. **Revisión humana** — lo extraído se muestra junto al original, y una persona confirma o
+   corrige. Este paso no es opcional.
+4. **Dato validado** — solo entonces entra en el TMS, en la agenda o donde sea.
+
+Fíjate en lo que **no** promete este diseño. No es "la IA gestiona tu operación". Es algo más
+aburrido y más defendible: **el dato se escribe una vez**, y quien antes tecleaba ahora revisa.
+
+<Callout type="warn" title="Lo que esto no te arregla">
+No sustituye al TMS: lo alimenta. No es cero errores — un extractor se equivoca, igual que se
+equivoca una persona a las siete de la tarde; la diferencia es que el error de la máquina es
+medible y repetible, y por eso está el paso 3. Y sobre todo: no arregla un proceso que nadie
+sabe describir. Si no puedes escribir la lista de campos, todavía no tienes un problema de
+automatización — tienes un problema de definición.
+</Callout>
+
+## Construido en público, y sin cifras todavía
+
+Estoy construyendo esta capa de entrada en NBI, y este blog funciona con esa misma regla: aquí
+solo entran los números que puedo enseñar. Hoy lo verificable es el diseño y el inventario, no
+un porcentaje de ahorro. El día que tenga los datos de un caso real —y permiso para
+publicarlos— van a estar aquí con fecha, y también los que salgan mal.
+
+Mientras tanto, lo que ya está funcionando en público lo puedes auditar tú mismo: el
+[Radar](/blog/tag/radar) de este blog se genera con un pipeline que verifica cada titular
+contra su fuente antes de dejar publicar nada. Mismo principio que el paso 3 — la máquina
+propone, el humano firma.
+
+<Callout type="tip" title="Llévate el inventario">
+El checklist de campos y el filtro de tres preguntas están en
+[/recursos](/recursos), para que lo apliques a tu propia operación. Te lo envío por email —
+con confirmación, sin spam.
+</Callout>
+
+---
+
+### ¿Prefieres que lo mire contigo?
+
+Esto es lo otro que hago, y va aparte del recurso de arriba: si tienes un negocio en marcha y
+quieres saber si tu capa de entrada da para automatizarla, cuéntame el caso en
+[Trabaja con NBI](/trabaja-con-nbi) — qué proceso te está costando tiempo o dinero, y te digo
+si tiene sentido y por dónde empezaría. Te contesto yo, no un equipo comercial.
