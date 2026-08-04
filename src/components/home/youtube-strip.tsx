@@ -24,8 +24,10 @@ export function YouTubeStrip() {
               Sistemas construidos en vídeo, explicados aquí
             </h2>
           </div>
+          {/* The construccion-publica tag only exists on drafts, so linking it
+              here was a guaranteed notFound() the moment this strip switched on. */}
           <Link
-            href="/blog/tag/construccion-publica"
+            href="/blog"
             className="font-display text-sm text-accent-ink transition-colors hover:text-accent-strong"
           >
             Todos los episodios →

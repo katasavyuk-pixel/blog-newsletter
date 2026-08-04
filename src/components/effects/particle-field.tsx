@@ -15,15 +15,41 @@ type Particle = {
   hue: number; // index into the sprite palette
 };
 
-/** Ember palette — crimson family only, brand discipline (one color). */
-const PALETTE = ["#d7212a", "#f2555e", "#7a1620", "#ffd9dc"];
+/**
+ * Ember palette — crimson family only, brand discipline (one color).
+ *
+ * Read from the @theme tokens at runtime instead of hardcoded: a canvas cannot
+ * use Tailwind classes, so when the palette moved to the video identity these
+ * literals were the one surface that silently kept painting the retired red.
+ * Order is load-bearing — index 3 is the pale highlight (see `hue` below).
+ */
+const PALETTE_TOKENS = [
+  "--color-accent",
+  "--color-accent-ink",
+  "--color-accent-strong",
+  "--color-coral-soft",
+];
+
+/** Mirrors globals.css; used only if a token is missing or is not plain hex. */
+const PALETTE_FALLBACK = ["#e11423", "#ff3b4e", "#7a0c18", "#ffd9dc"];
+
+/** The sprite gradient appends alpha as hex, so any other notation is unusable. */
+const HEX6 = /^#[0-9a-f]{6}$/i;
+
+function readPalette(): string[] {
+  const styles = getComputedStyle(document.documentElement);
+  return PALETTE_TOKENS.map((token, i) => {
+    const value = styles.getPropertyValue(token).trim();
+    return HEX6.test(value) ? value : PALETTE_FALLBACK[i];
+  });
+}
 
 const DPR_CAP = 2;
 const BURST_DAMPING = 0.965; // initial explosion settles into drift in ~2s
 
 /** Pre-render one glowing dot per palette color — shadowBlur per frame is too slow. */
-function makeSprites(): HTMLCanvasElement[] {
-  return PALETTE.map((color) => {
+function makeSprites(palette: string[]): HTMLCanvasElement[] {
+  return palette.map((color) => {
     const sprite = document.createElement("canvas");
     sprite.width = sprite.height = 32;
     const ctx = sprite.getContext("2d")!;
@@ -55,7 +81,7 @@ export function ParticleField() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const sprites = makeSprites();
+    const sprites = makeSprites(readPalette());
     let particles: Particle[] = [];
     let width = 0;
     let height = 0;

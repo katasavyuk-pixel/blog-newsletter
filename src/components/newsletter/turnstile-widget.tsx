@@ -11,7 +11,8 @@ export function TurnstileWidget({ siteKey }: { siteKey: string }) {
         src="https://challenges.cloudflare.com/turnstile/v0/api.js"
         strategy="lazyOnload"
       />
-      <div className="cf-turnstile" data-sitekey={siteKey} data-theme="light" />
+      {/* The site has no light mode — a light widget would be a bright slab in the form. */}
+      <div className="cf-turnstile" data-sitekey={siteKey} data-theme="dark" />
     </div>
   );
 }
