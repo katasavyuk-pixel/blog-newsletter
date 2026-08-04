@@ -1,13 +1,8 @@
 import type { ReactNode } from "react";
+import { RADAR_AXES } from "@/config/taxonomy";
 import { formatDate } from "@/lib/format";
 
 type RadarAxis = "ia" | "negocio" | "geopolitica";
-
-const axisLabels: Record<RadarAxis, string> = {
-  ia: "IA",
-  negocio: "Negocio",
-  geopolitica: "Geopolítica",
-};
 
 /**
  * One news item inside a weekly "Radar IA" edition (server component).
@@ -33,7 +28,7 @@ export function RadarItem({
     <article className="not-prose my-6 rounded-2xl border border-border bg-surface p-5">
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
         <span className="rounded-full bg-bg px-2.5 py-1 font-display font-medium uppercase tracking-wider text-accent-ink">
-          {axisLabels[axis] ?? axis}
+          {RADAR_AXES[axis] ?? axis}
         </span>
         <time dateTime={date}>{formatDate(date)}</time>
       </div>

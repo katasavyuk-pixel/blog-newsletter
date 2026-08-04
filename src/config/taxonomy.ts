@@ -42,6 +42,17 @@ export const FORMATO_KEYS = [
 
 export type Formato = (typeof FORMATO_KEYS)[number];
 
+/**
+ * Radar axes. Lives here rather than beside either consumer: the map was
+ * duplicated verbatim in radar-item.tsx and cadence-strip.tsx, so the two
+ * surfaces could drift apart while looking identical.
+ */
+export const RADAR_AXES: Record<string, string> = {
+  ia: "IA",
+  negocio: "Negocio",
+  geopolitica: "Geopolítica",
+};
+
 export const FORMATOS: Record<Formato, string> = {
   sistema: "Sistema",
   radar: "Radar",

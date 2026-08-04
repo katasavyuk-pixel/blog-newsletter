@@ -22,8 +22,11 @@ export const siteConfig = {
   /** §1 TAGLINE — one line: what you promise and to whom. */
   tagline: "Sistemas probados en un negocio real. Llévatelos.",
   /** Default meta description (1–2 sentences). */
+  // "mi negocio", never "una empresa": QUE_PUEDO_DECIR.md forbids claiming a
+  // legal personality that does not exist yet, and this is the wording
+  // ESTRATEGIA.md uses for the same thing. Revisit when the alta resolves.
   description:
-    "Estoy construyendo una empresa de IA en público. Blog y newsletter para emprendedores en marcha: sistemas replicables, plantillas y formación interactiva probados en un negocio real.",
+    "Construyo mi negocio de soluciones de IA en público. Blog y newsletter para emprendedores en marcha: sistemas replicables, plantillas y formación interactiva probados en un negocio real.",
   /** Primary content language. */
   locale: "es",
   /** Contact inbox for the privacy policy / data requests. TODO: confirma que es un buzón real (alias en ianexora.com). */
@@ -34,7 +37,7 @@ export const siteConfig = {
     /** §1 TU_NOMBRE */
     name: "Kata Ivanovych",
     /** §1 TU_BIO_CORTA — identity in one line + credential + mission. */
-    bio: "Estoy construyendo NBI, una empresa de automatización con IA, y lo cuento en público: los sistemas que funcionan, los números reales y los errores. Si tienes un negocio en marcha, aquí te llevas lo que ya está probado. Sin humo.",
+    bio: "Construyo NBI, mi negocio de automatización con IA, y lo cuento en público: los sistemas que funcionan, los números reales y los errores. Si tienes un negocio en marcha, aquí te llevas lo que ya está probado. Sin humo.",
   },
   /** The public journey — anchors the "semana N" status panel and manifesto. */
   journey: {

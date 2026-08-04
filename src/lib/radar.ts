@@ -1,6 +1,34 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { formatDateShort } from "@/lib/format";
 import { getPostsByTag, type Post } from "@/lib/posts";
+
+/**
+ * A weekly edition is late once it is more than ten days old — a Monday plus
+ * enough slack that a merged-on-Tuesday edition does not read as broken.
+ */
+const CADENCE_GRACE_DAYS = 10;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+/**
+ * Whether the site may still claim a weekly cadence.
+ *
+ * "Cada lunes · en automático" used to be hardcoded next to the strip. It was
+ * false for two weeks straight while the CI gate silently rejected editions,
+ * and the homepage kept advertising it — the single most damaging thing on a
+ * site whose whole argument is that its claims are checkable. Now the claim is
+ * derived from the newest edition, so a broken pipeline degrades the copy
+ * instead of turning it into a lie.
+ */
+export function getRadarCadence(
+  editionDate: string,
+  now = new Date(),
+): { onSchedule: boolean; label: string } {
+  const ageDays = (now.getTime() - new Date(editionDate).getTime()) / MS_PER_DAY;
+  return ageDays <= CADENCE_GRACE_DAYS
+    ? { onSchedule: true, label: "Cada lunes · en automático" }
+    : { onSchedule: false, label: `Última edición: ${formatDateShort(editionDate)}` };
+}
 
 export type RadarHeadline = {
   title: string;
