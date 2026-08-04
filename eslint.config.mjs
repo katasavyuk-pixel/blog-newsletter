@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Agent tooling, not app source. Git worktrees live here and each one is a
+    // full copy of the repo, so without this `npm run lint` reports thousands of
+    // problems from abandoned branches and stops being usable as a gate.
+    ".claude/**",
   ]),
 ]);
 
