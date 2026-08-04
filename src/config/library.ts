@@ -80,6 +80,10 @@ export const LIBRARY_ITEMS: LibraryItem[] = [
   },
   {
     id: "stack-geo",
+    // Was flipped to `disponible` pointing at the maitreai-geo post, but that
+    // post is still draft: true, so resolveLibraryItem() returned null and the
+    // card vanished from both /sistemas and the home instead of shipping.
+    // Flip it back the day the post publishes. ETA lands with the Fase 2 invariant.
     status: "en-construccion",
     title: "Stack GEO: que la IA recomiende tu negocio",
     blurb:
