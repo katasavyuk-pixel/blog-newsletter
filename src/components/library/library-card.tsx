@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { IconChip } from "@/components/ui/icon-chip";
 import { cn } from "@/lib/utils";
 import type { LibraryItem } from "@/config/library";
+import { evidenciaLabel } from "@/lib/evidence";
 import { getPost } from "@/lib/posts";
 
 export type ResolvedLibraryItem = LibraryItem & { title: string; blurb: string };
@@ -13,7 +14,15 @@ export function resolveLibraryItem(
 ): ResolvedLibraryItem | null {
   if (item.slug) {
     const post = getPost(item.slug);
-    if (!post) return null;
+    if (!post) {
+      // This used to `return null`, which is how stack-geo vanished from both
+      // /sistemas and the home: the item claimed to be available while its post
+      // was still draft, and the UI rendered nothing rather than saying so.
+      throw new Error(
+        `LIBRARY_ITEMS["${item.id}"] apunta al slug "${item.slug}", que no existe o es draft/premium. ` +
+          'Publica el post, o cambia su evidencia a { tipo: "en-taller", eta: "YYYY-MM" }.',
+      );
+    }
     return {
       ...item,
       title: item.title ?? post.title,
@@ -70,7 +79,10 @@ export function LibraryCard({
   ordinal?: string;
   hero?: boolean;
 }) {
-  if (item.status === "en-construccion") {
+  // Branch on the evidence itself, not on a separate status field: the two used
+  // to be independent and could contradict each other.
+  if (item.evidencia.tipo === "en-taller") {
+    const { eta, progreso = 0 } = item.evidencia;
     return (
       <div className={cn(cardClasses, "border-dashed")}>
         {ordinal ? <Ordinal value={ordinal} /> : null}
@@ -89,7 +101,7 @@ export function LibraryCard({
         <div className="mt-4">
           <div
             role="progressbar"
-            aria-valuenow={item.progress ?? 0}
+            aria-valuenow={progreso}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-label={`Progreso de ${item.title}`}
@@ -97,11 +109,13 @@ export function LibraryCard({
           >
             <div
               className="h-full rounded-full bg-accent"
-              style={{ width: `${item.progress ?? 0}%` }}
+              style={{ width: `${progreso}%` }}
             />
           </div>
+          {/* The ETA is the whole point: an announced gap without a date is just
+              an open promise, and two of them sat on the home for weeks. */}
           <p className="mt-2 font-mono text-xs text-faint">
-            ▸ construyéndose en NBI · {item.format}
+            ▸ construyéndose en NBI · {item.format} · ETA {eta}
           </p>
         </div>
       </div>
@@ -139,9 +153,9 @@ export function LibraryCard({
       </p>
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <Badge tone="blue">{item.format}</Badge>
-        {item.proof ? (
-          <span className="font-mono text-xs text-faint">▸ {item.proof}</span>
-        ) : null}
+        <span className="font-mono text-xs text-faint">
+          ▸ {evidenciaLabel(item.evidencia)}
+        </span>
       </div>
     </Link>
   );

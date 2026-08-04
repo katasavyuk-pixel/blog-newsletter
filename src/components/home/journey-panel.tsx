@@ -1,5 +1,5 @@
 import { allPosts, getPostsByTag } from "@/lib/posts";
-import { LIBRARY_ITEMS } from "@/config/library";
+import { LIBRARY_ITEMS, libraryStatus } from "@/config/library";
 import { siteConfig } from "@/config/site";
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
@@ -22,9 +22,11 @@ export function JourneyPanel({
   subscriberCount: number | null;
 }) {
   const week = JOURNEY_WEEK;
-  const published = LIBRARY_ITEMS.filter((i) => i.status === "disponible").length;
+  const published = LIBRARY_ITEMS.filter(
+    (i) => libraryStatus(i) === "disponible",
+  ).length;
   const building = LIBRARY_ITEMS.filter(
-    (i) => i.status === "en-construccion",
+    (i) => libraryStatus(i) === "en-construccion",
   ).length;
   const latestRadar = getPostsByTag("radar")[0];
   const showCount =

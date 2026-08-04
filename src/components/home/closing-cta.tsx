@@ -1,6 +1,6 @@
 import { Container } from "@/components/ui/container";
 import { SubscribeForm } from "@/components/newsletter/subscribe-form";
-import { LIBRARY_ITEMS } from "@/config/library";
+import { LIBRARY_ITEMS, libraryStatus } from "@/config/library";
 import { siteConfig } from "@/config/site";
 
 /**
@@ -12,7 +12,7 @@ import { siteConfig } from "@/config/site";
  */
 export function ClosingCta() {
   const upcoming = LIBRARY_ITEMS.filter(
-    (item) => item.status === "en-construccion",
+    (item) => libraryStatus(item) === "en-construccion",
   );
 
   return (
