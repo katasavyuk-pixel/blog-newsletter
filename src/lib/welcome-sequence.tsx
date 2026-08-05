@@ -257,7 +257,10 @@ export async function cancelWelcomeSequence(
 export async function sendSequencePreview(
   supabase: AdminClient,
   input: { email: string; resource?: string; dryRun?: boolean },
-): Promise<{ key: string; subject: string; html?: string; sent?: boolean; error?: string }[]> {
+): Promise<{
+  steps: { key: string; subject: string; html?: string; sent?: boolean; error?: string }[];
+  aviso?: string;
+}> {
   const steps = getSequence();
   const ctx = await buildContext(supabase, input.email, input.resource);
   const unsubscribeUrl = unsubscribeUrlFor("preview-token-no-valido");
@@ -293,5 +296,26 @@ export async function sendSequencePreview(
     });
   }
 
-  return results;
+  // The download button needs a CONFIRMED subscriber: the signature identifies
+  // the address, but /api/download still reads its status live. A preview sent to
+  // an address that is not confirmed therefore contains a button that bounces to
+  // /recursos — correct behaviour that looks exactly like a bug. Say so, because
+  // this is the one thing about the preview that is not representative.
+  let aviso: string | undefined;
+  if (ctx.downloadUrl) {
+    const { data } = await supabase
+      .from("subscribers")
+      .select("status")
+      .eq("email", input.email)
+      .maybeSingle();
+    if (data?.status !== "confirmed") {
+      aviso =
+        `${input.email} no es un suscriptor confirmado, así que el botón de descarga ` +
+        `rebotará a /recursos en vez de servir el PDF. Es el comportamiento correcto: ` +
+        `la descarga exige email confirmado. Para probar la descarga de verdad hace ` +
+        `falta un alta real y pulsar el enlace de confirmación.`;
+    }
+  }
+
+  return { steps: results, aviso };
 }

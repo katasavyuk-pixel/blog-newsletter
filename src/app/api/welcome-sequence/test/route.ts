@@ -71,12 +71,17 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const steps = await sendSequencePreview(createAdminClient(), {
+    const { steps, aviso } = await sendSequencePreview(createAdminClient(), {
       email: body.email,
       resource: body.resource,
       dryRun: body.dryRun ?? false,
     });
-    return NextResponse.json({ ok: true, dryRun: body.dryRun ?? false, steps });
+    return NextResponse.json({
+      ok: true,
+      dryRun: body.dryRun ?? false,
+      steps,
+      ...(aviso ? { aviso } : {}),
+    });
   } catch (err) {
     console.error("[welcome-sequence/test] error:", err);
     return NextResponse.json({ ok: false, error: "error interno" }, { status: 500 });

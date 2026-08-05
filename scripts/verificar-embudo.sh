@@ -116,8 +116,10 @@ s=$(curl -s -X POST "$BASE/api/welcome-sequence/test" \
       -H "Authorization: Bearer $SECRETO" -H 'Content-Type: application/json' \
       -d "{\"email\":\"$CORREO\",\"resource\":\"$RECURSO\"}")
 enviados=$(printf '%s' "$s" | grep -o '"sent":true' | wc -l | tr -d ' ')
+aviso=$(printf '%s' "$s" | sed -n 's/.*"aviso":"\([^"]*\)".*/\1/p')
 [ "$enviados" = "3" ] && ok "3 de 3 pasos enviados" \
                       || { bad "solo $enviados de 3 enviados"; echo "  $s"; }
+[ -n "$aviso" ] && printf '  \033[33m!\033[0m %s\n' "$aviso"
 
 cat <<'FIN'
 
@@ -127,13 +129,23 @@ Lo que falta ya no lo puede comprobar un script. En tu bandeja:
   [ ] Llegan 3 correos con asunto "[PRUEBA] …"
   [ ] El 1º trae la TABLA del desglose de costes y la fórmula
   [ ] Los 3 llevan "Cancelar suscripción" visible al pie
-  [ ] El botón de descarga del 1º ABRE EL PDF pulsándolo desde Gmail
-      ← este es el tramo que llevaba roto desde que se construyó
   [ ] Responder a cualquiera de ellos llega a un buzón que leas
       ← si no, el reply rate es cero por construcción
 
-Ninguno de estos correos ha creado un suscriptor: el modo prueba no
-escribe en la base de datos.
+OJO con el botón de descarga: aquí NO va a servir el PDF, y es correcto.
+La descarga exige un suscriptor confirmado, y el modo prueba no crea
+ninguno (no escribe en la base de datos, que es lo que lo hace seguro).
+Si el aviso amarillo de arriba ha salido, es exactamente eso.
+
+Para probar la descarga de verdad hace falta un alta real:
+
+  curl -X POST https://kata.ianexora.com/api/subscribe \
+    -H 'Content-Type: application/json' \
+    -d '{"email":"TU+e2e@gmail.com","resource":"25-datos-emails-logisticos",
+         "consent":true,"signupPath":"/recursos","source":"recursos"}'
+
+...y pulsar el enlace de confirmación que llega. El email que viene DESPUÉS
+de confirmar sí lleva un botón que sirve el PDF.
 FIN
 
 echo
