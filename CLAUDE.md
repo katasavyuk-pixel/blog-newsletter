@@ -378,7 +378,7 @@ analítica = **Vercel WA**.
     incumplía RFC 8058, y el primero que recibía cualquiera. Y `d8-nbi` decía *"montamos sistemas
     de IA"*, plural de cortesía que `QUE_PUEDO_DECIR.md` prohíbe. Al reescribir se cerraron los dos.
 - **`RESEND_REPLY_TO`** (env, opcional pero importante): el subdominio de envío no recibe correo — sin esta env las respuestas a "responde a este email" rebotan. Cargar en Vercel un buzón real monitorizado. `siteConfig.replyEmail` es el mismo buzón en versión pública (para `mailto:`), porque una env de servidor no sirve en un enlace.
-- **Secuencia activa desde 2026-07-29**: migraciones `0001`/`0002`/`0003` aplicadas (la BD de producción estaba **vacía** — no faltaba la secuencia, faltaba `subscribers`), `RESEND_REPLY_TO` = `info@ianexora.com` desplegada. **Sigue sin comprobarse que ese alias llegue a un buzón que Kata lea**: si no llega, las respuestas se pierden en silencio, que es justo el fallo que la variable existía para evitar — y el *reply rate* es la métrica de la fase.
+- **Secuencia activa desde 2026-07-29**: migraciones `0001`/`0002`/`0003` aplicadas (la BD de producción estaba **vacía** — no faltaba la secuencia, faltaba `subscribers`), `RESEND_REPLY_TO` = `info@ianexora.com` desplegada. **Verificado end-to-end el 2026-08-05**: Kata respondió a un email de la secuencia y la respuesta llegó a `info@ianexora.com`. Era el último eslabón sin comprobar del embudo y el que sostiene la métrica de la fase (*reply rate*); llevaba dos sesiones abierto.
 - **GEO: construido a medias, y el corte es deliberado** (2026-08-05). **SÍ hay**:
   `TechArticle`/`Article` por `formato`, `BreadcrumbList`, `DefinedTerm` en el glosario, `WebSite`
   en la home, `lastmod` real en el sitemap, fechas visibles, `AuthorBio` al pie,
