@@ -90,17 +90,27 @@ export type SiteConfig = typeof siteConfig;
 /**
  * Primary navigation, ordered by how much each shelf carries the positioning.
  *
- * /sistemas leads: it is the flagship the whole site argues for, and until now
- * it was reachable only from in-page links — absent from both nav and footer.
  * "Blog" is labelled "Artículos" because the Radar is also blog content, so the
  * generic name did not distinguish the archive from the site itself. Routes are
  * unchanged, so nothing indexed moves.
+ *
+ * Reordered 2026-08-05. Curso leads because it is the differentiating asset —
+ * six interactive lessons, free, no account — and nothing else on the site is
+ * hard to copy. Recursos moves up to second now that it carries a working
+ * calculator and a real download; it used to sit fifth pointing at an empty
+ * state. Sistemas drops to fourth: two of its five items are still "en el
+ * taller", which makes it a shelf with half the slots empty — a poor first
+ * impression, and it will earn the position back when those ship.
+ *
+ * Radar stays in the nav. Demoting it to the footer was considered and
+ * rejected: it is the only thing on the site that demonstrably runs on its own,
+ * and getRadarCadence() already degrades the claim when it stops.
  */
 export const navLinks = [
-  { label: "Sistemas", href: "/sistemas" },
   { label: "Curso", href: "/empieza-aqui" },
-  { label: "Radar", href: "/radar" },
-  { label: "Artículos", href: "/blog" },
   { label: "Recursos", href: "/recursos" },
+  { label: "Artículos", href: "/blog" },
+  { label: "Sistemas", href: "/sistemas" },
+  { label: "Radar", href: "/radar" },
   { label: "Sobre mí", href: "/sobre-mi" },
 ] as const;
