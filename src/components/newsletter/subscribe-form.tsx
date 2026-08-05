@@ -7,7 +7,7 @@ import { TurnstileWidget } from "./turnstile-widget";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
-type FormState = "idle" | "loading" | "done" | "preview" | "error";
+type FormState = "idle" | "loading" | "done" | "preview" | "error" | "waiting";
 type Tone = "light" | "dark";
 type Layout = "inline" | "stacked";
 
@@ -75,6 +75,16 @@ export function SubscribeForm({
     const turnstileToken =
       (form.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null)
         ?.value || undefined;
+
+    // With Turnstile configured the server rejects a tokenless request, so
+    // sending one anyway would burn the signup and show a generic "algo falló".
+    // The widget can still be loading — say so and let them press again, instead
+    // of failing in a way that looks like the form is broken.
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setState("waiting");
+      return;
+    }
+
     try {
       const utm = new URLSearchParams(window.location.search).get("utm_source");
       const res = await fetch("/api/subscribe", {
@@ -172,6 +182,12 @@ export function SubscribeForm({
           )}
         </span>
       </label>
+
+      {state === "waiting" ? (
+        <p className={cn("text-sm", t.status)} role="status">
+          Un segundo: la verificación anti-spam está cargando. Vuelve a pulsar.
+        </p>
+      ) : null}
 
       {state === "error" ? (
         <p className="text-sm text-danger" role="alert">
