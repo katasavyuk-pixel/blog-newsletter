@@ -48,6 +48,27 @@ fi
 # Longitud, nunca el valor: confirma que se leyó algo plausible sin exponerlo.
 echo "Secreto leído del $ORIGEN (${#SECRETO} caracteres)."
 
+# Comprobar el secreto ANTES de hacer nada. El portapapeles es ambiguo —
+# gana lo último que se copió, y aquí hay dos secretos en juego (el del boletín
+# y el del panel). Sin esta comprobación, usar el equivocado se manifestaría como
+# un fallo raro a mitad del script, después de haber tocado producción.
+PRUEBA=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/api/welcome-sequence/test" \
+  -H "Authorization: Bearer $SECRETO" -H 'Content-Type: application/json' \
+  -d '{"email":"probe@example.com","dryRun":true}')
+if [ "$PRUEBA" = "401" ]; then
+  cat <<'FIN'
+
+Ese no es NEWSLETTER_SEND_SECRET: el servidor lo rechaza (401).
+
+Si vienes del portapapeles, seguramente tienes copiado el del panel. Copia el
+del boletín de tu gestor de contraseñas y vuelve a ejecutar esto. No se ha
+enviado ningún correo ni se ha tocado nada.
+FIN
+  exit 1
+fi
+[ "$PRUEBA" = "200" ] && echo "Secreto correcto (el servidor lo acepta)." \
+                      || echo "Aviso: la comprobación devolvió $PRUEBA, no 200/401. Sigo."
+
 ok()   { printf '  \033[32m✓\033[0m %s\n' "$1"; }
 bad()  { printf '  \033[31m✗\033[0m %s\n' "$1"; FALLOS=$((FALLOS+1)); }
 FALLOS=0
