@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/container";
 import { Prose } from "@/components/ui/prose";
 import { MDXContent } from "@/components/mdx/mdx-content";
 import { widgets } from "@/components/mdx/widgets";
+import { SuscripcionInline } from "@/components/mdx/widgets/suscripcion-inline";
 import { YouTubeEmbed } from "@/components/mdx/widgets/youtube-embed";
 import { Toc } from "@/components/blog/toc";
 import { ReadingProgress } from "@/components/blog/reading-progress";
@@ -18,6 +19,7 @@ import { allPosts, getPost } from "@/lib/posts";
 import { siteConfig } from "@/config/site";
 import { FORMATOS, TEMAS } from "@/config/taxonomy";
 import { COURSE_SLUGS } from "@/config/course";
+import { ctaInlineFor } from "@/config/cta-inline";
 
 export function generateStaticParams() {
   return allPosts.map((post) => ({ slug: post.slug }));
@@ -143,7 +145,19 @@ export default async function PostPage({
 
           <div className="mt-10">
             <Prose>
-              <MDXContent code={post.content} components={widgets} />
+              {/* SuscripcionInline is bound to this post here because an MDX body
+                  cannot read its own frontmatter. Authors write a bare
+                  <SuscripcionInline /> and the contextual copy resolves from
+                  `cta_inline`, falling back per `formato`. */}
+              <MDXContent
+                code={post.content}
+                components={{
+                  ...widgets,
+                  SuscripcionInline: () => (
+                    <SuscripcionInline {...ctaInlineFor(post)} />
+                  ),
+                }}
+              />
             </Prose>
           </div>
 

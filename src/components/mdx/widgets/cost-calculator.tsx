@@ -52,8 +52,11 @@ function Stat({
  */
 export function CostCalculator({
   captureMode = false,
+  source = "recursos",
 }: {
   captureMode?: boolean;
+  /** Attribution bucket for the capture. `post-inline` when inside an article. */
+  source?: string;
 }) {
   const [modelId, setModelId] = useState(COST_DEFAULTS.modelId);
   const [inTok, setInTok] = useState(COST_DEFAULTS.inTok);
@@ -153,7 +156,7 @@ export function CostCalculator({
           </p>
           <div className="mt-4">
             <SubscribeForm
-              source="recursos"
+              source={source}
               magnetSlug={COST_MAGNET_SLUG}
               payload={() => ({ ...inputs })}
               submitLabel="Enviármelo"

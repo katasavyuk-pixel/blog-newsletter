@@ -26,6 +26,15 @@ const posts = defineCollection({
       tags: s.array(s.string()).default([]),
       cover: s.image().optional(),
       youtubeId: s.string().max(20).optional(), // companion YouTube video ID, if any
+      // Contextual copy for the in-body <SuscripcionInline/>. Optional: without
+      // it the component falls back per `formato` (src/config/cta-inline.ts), so
+      // an article never shows a generic ask.
+      cta_inline: s
+        .object({
+          gancho: s.string().max(120),
+          promesa: s.string().max(220),
+        })
+        .optional(),
       draft: s.boolean().default(false),
       premium: s.boolean().default(false),
       path: s.path(),

@@ -17,6 +17,12 @@ import { YouTubeEmbed } from "./youtube-embed";
  * Interactive widgets available inside MDX posts. Passed straight to
  * <MDXContent components={widgets} /> — authors write <TokenizerPlayground/>,
  * <Quiz/>, <Term id="token">…</Term> etc. in markdown.
+ *
+ * `SuscripcionInline` is deliberately NOT here: it needs the post's frontmatter
+ * for its copy, and the MDX body cannot see it. The article page adds it to this
+ * map already bound to the post. Authors still write a bare
+ * <SuscripcionInline /> — a post that uses it outside that page renders nothing
+ * rather than an unstyled tag, which is the failure mode we want.
  */
 export const widgets = {
   Callout,

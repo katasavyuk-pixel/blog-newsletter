@@ -124,6 +124,10 @@ export async function sendIssue(
           preview: issue.preheader,
           title: issue.title,
           unsubscribeUrl,
+          siteUrl: siteConfig.url,
+          // Broadcasts carry the standard closing; the onboarding sequence does
+          // not (its last email is the offer). See NewsletterEmail.
+          showClosing: true,
           children: <div dangerouslySetInnerHTML={{ __html: issue.html }} />,
         }),
         headers: {

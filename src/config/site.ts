@@ -31,6 +31,20 @@ export const siteConfig = {
   locale: "es",
   /** Contact inbox for the privacy policy / data requests. TODO: confirma que es un buzón real (alias en ianexora.com). */
   contactEmail: "privacidad@ianexora.com",
+  /**
+   * Public address for "just reply and tell me". Same mailbox as RESEND_REPLY_TO,
+   * which is a server env and therefore unusable in a mailto: link.
+   *
+   * Deliberately not `contactEmail` — that one is the privacy/data-rights inbox,
+   * and routing "tell me about your process" there mixes a legal channel with a
+   * conversational one.
+   *
+   * NOTE: it is still unverified that this alias reaches a mailbox anyone reads
+   * (ESTADO.md, task 1). Reply rate is the metric for this phase, so if it does
+   * not land, this link and the sequence's "responde a este email" are both
+   * decorative.
+   */
+  replyEmail: "info@ianexora.com",
   /** §1 AUDIENCIA — reader #1: entrepreneurs already running something. */
   audience: "emprendedores en marcha",
   author: {
