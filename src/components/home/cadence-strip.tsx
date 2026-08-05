@@ -29,7 +29,7 @@ export function CadenceStrip() {
             </h2>
           </div>
           <Link
-            href="/blog/tag/radar"
+            href="/radar"
             className="font-display text-sm text-accent-ink transition-colors hover:text-accent-strong"
           >
             Todas las ediciones →

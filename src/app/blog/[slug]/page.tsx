@@ -10,13 +10,13 @@ import { Toc } from "@/components/blog/toc";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { CopyCode } from "@/components/blog/copy-code";
 import { ShareButtons } from "@/components/blog/share-buttons";
-import { RelatedPosts } from "@/components/blog/related-posts";
-import { WorkWithNbiCta } from "@/components/blog/work-with-nbi-cta";
-import { SubscribeForm } from "@/components/newsletter/subscribe-form";
+import { ArticleClosing } from "@/components/blog/article-closing";
+import { PostMeta } from "@/components/content/post-meta";
+import { TagPill } from "@/components/content/tag-pill";
 import { CourseProgressMarker } from "@/components/course/course-progress-marker";
-import { allPosts, getPost, getRelatedPosts } from "@/lib/posts";
-import { formatDate } from "@/lib/format";
+import { allPosts, getPost } from "@/lib/posts";
 import { siteConfig } from "@/config/site";
+import { FORMATOS, TEMAS } from "@/config/taxonomy";
 import { COURSE_SLUGS } from "@/config/course";
 
 export function generateStaticParams() {
@@ -62,7 +62,9 @@ export default async function PostPage({
   if (!post) notFound();
 
   const fullUrl = `${siteConfig.url}${post.permalink}`;
-  const showToc = post.toc.length > 2;
+  // Two headings is already worth a table of contents; the old threshold of >2
+  // hid it on most articles, so the rail sat empty on pages that needed it.
+  const showToc = post.toc.length > 1;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -87,80 +89,77 @@ export default async function PostPage({
         }}
       />
 
-      <div className="mx-auto max-w-3xl">
-        <Link
-          href="/blog"
-          className="text-sm font-medium text-accent-ink hover:underline"
-        >
-          ← Volver al blog
-        </Link>
-        <header className="mt-8">
-          <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
-            {post.kicker ?? post.tags[0] ?? "Artículo"}
-          </p>
-          <h1 className="headline mt-3 text-4xl text-fg text-balance sm:text-5xl">
-            {post.title}
-          </h1>
-          <p className="mt-5 text-lg leading-relaxed text-muted sm:text-xl">
-            {post.dek ?? post.description}
-          </p>
-          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-5 text-sm text-muted">
-            <span className="font-medium text-fg">{siteConfig.author.name}</span>
-            <span aria-hidden>·</span>
-            <time dateTime={post.date}>{formatDate(post.date)}</time>
-            <span aria-hidden>·</span>
-            <span>{post.metadata.readingTime} min de lectura</span>
-            {post.tags.length > 0 ? (
-              <div className="flex flex-wrap gap-1.5 sm:ml-auto">
-                {post.tags.map((tag) => (
-                  <Link
-                    key={tag}
-                    href={`/blog/tag/${encodeURIComponent(tag)}`}
-                    className="rounded-full bg-surface px-2.5 py-0.5 text-xs text-accent-ink hover:bg-surface-2"
-                  >
-                    #{tag}
-                  </Link>
-                ))}
-              </div>
-            ) : null}
-          </div>
-        </header>
-        {post.youtubeId ? (
-          <YouTubeEmbed id={post.youtubeId} title={post.title} />
-        ) : null}
-      </div>
+      {/* Header and body share one grid column so they sit on the same optical
+          axis. They used to be separate containers — a centred max-w-3xl header
+          over a max-w-5xl grid — so on desktop the h1 and the text it
+          introduced were visibly out of alignment. */}
+      <div className="mx-auto max-w-5xl lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-12">
+        <div className="min-w-0">
+          <nav aria-label="Migas" className="font-mono text-xs text-faint">
+            <Link href="/blog" className="text-accent-ink hover:underline">
+              Artículos
+            </Link>
+            <span aria-hidden> / </span>
+            <span>{TEMAS[post.tema]}</span>
+          </nav>
 
-      <div className="mx-auto mt-10 max-w-3xl lg:grid lg:max-w-5xl lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-12">
-        <div>
-          <Prose>
-            <MDXContent code={post.content} components={widgets} />
-          </Prose>
-
-          <div className="not-prose mt-10 rounded-2xl border border-border bg-surface p-6">
-            <p className="font-display text-sm font-semibold text-fg">
-              ¿Te sirvió esto?
+          <header className="mt-8">
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent-ink">
+              {FORMATOS[post.formato]}
             </p>
-            <p className="mt-1 text-sm text-muted">
-              {siteConfig.newsletter.magnet}
+            <h1 className="headline mt-3 text-4xl text-fg text-balance sm:text-5xl">
+              {post.title}
+            </h1>
+            <p className="mt-5 text-lg leading-relaxed text-muted sm:text-xl">
+              {post.dek ?? post.description}
             </p>
-            <div className="mt-4">
-              <SubscribeForm source="post-inline" />
+            <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-5">
+              <span className="font-mono text-xs text-fg">
+                {siteConfig.author.name}
+              </span>
+              <span aria-hidden className="text-faint">
+                ·
+              </span>
+              <PostMeta post={post} />
+              {post.tags.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5 sm:ml-auto">
+                  {post.tags.map((tag) => (
+                    <TagPill
+                      key={tag}
+                      tag={tag}
+                      href={`/blog/tag/${encodeURIComponent(tag)}`}
+                    />
+                  ))}
+                </div>
+              ) : null}
             </div>
+          </header>
+
+          {post.youtubeId ? (
+            <YouTubeEmbed id={post.youtubeId} title={post.title} />
+          ) : null}
+
+          <div className="mt-10">
+            <Prose>
+              <MDXContent code={post.content} components={widgets} />
+            </Prose>
           </div>
 
           <CopyCode />
-          <ShareButtons url={fullUrl} title={post.title} />
-          <RelatedPosts posts={getRelatedPosts(post)} />
-          <WorkWithNbiCta />
+          <ArticleClosing post={post} />
           {(COURSE_SLUGS as readonly string[]).includes(post.slug) ? (
             <CourseProgressMarker slug={post.slug} />
           ) : null}
         </div>
-        {showToc ? (
-          <aside className="mt-12 lg:mt-0">
-            <Toc items={post.toc} />
-          </aside>
-        ) : null}
+
+        {/* Sticky rail: contents plus sharing, which used to sit at the bottom
+            of the four-block pile where it competed with the calls to action. */}
+        <aside className="mt-12 lg:mt-0">
+          <div className="lg:sticky lg:top-24">
+            {showToc ? <Toc items={post.toc} /> : null}
+            <ShareButtons url={fullUrl} title={post.title} />
+          </div>
+        </aside>
       </div>
     </Container>
   );

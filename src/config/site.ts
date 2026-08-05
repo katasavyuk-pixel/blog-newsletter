@@ -85,7 +85,7 @@ export type SiteConfig = typeof siteConfig;
 export const navLinks = [
   { label: "Sistemas", href: "/sistemas" },
   { label: "Curso", href: "/empieza-aqui" },
-  { label: "Radar", href: "/blog/tag/radar" },
+  { label: "Radar", href: "/radar" },
   { label: "Artículos", href: "/blog" },
   { label: "Recursos", href: "/recursos" },
   { label: "Sobre mí", href: "/sobre-mi" },

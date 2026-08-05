@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: `${base}/sistemas`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${base}/blog`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    { url: `${base}/radar`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/empieza-aqui`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/glosario`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/recursos`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
@@ -32,12 +33,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  const tagRoutes: MetadataRoute.Sitemap = getAllTags().map(({ tag }) => ({
-    url: `${base}/blog/tag/${encodeURIComponent(tag)}`,
-    lastModified: now,
-    changeFrequency: "weekly",
-    priority: 0.4,
-  }));
+  // `radar` is excluded: /blog/tag/radar now 308s to /radar, and a sitemap that
+  // lists redirects instead of canonical URLs is asking crawlers to waste budget.
+  const tagRoutes: MetadataRoute.Sitemap = getAllTags()
+    .filter(({ tag }) => tag !== "radar")
+    .map(({ tag }) => ({
+      url: `${base}/blog/tag/${encodeURIComponent(tag)}`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.4,
+    }));
 
   return [...staticRoutes, ...glossaryRoutes, ...postRoutes, ...tagRoutes];
 }

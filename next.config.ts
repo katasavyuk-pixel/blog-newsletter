@@ -25,6 +25,14 @@ const nextConfig: NextConfig = {
         destination: "/sistemas",
         permanent: true,
       },
+      // The Radar is a named series, not a tag filter: a filter URL cannot say
+      // what it is or how its claims are verified. Editions keep their
+      // /blog/<slug> permalinks, so nothing indexed moves.
+      {
+        source: "/blog/tag/radar",
+        destination: "/radar",
+        permanent: true,
+      },
     ];
   },
 };

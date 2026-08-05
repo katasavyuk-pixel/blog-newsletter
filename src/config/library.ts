@@ -79,7 +79,7 @@ export const LIBRARY_ITEMS: LibraryItem[] = [
     title: "Radar IA en automático",
     blurb:
       "Noticias de IA filtradas y verificadas cada lunes, generadas por un pipeline anti-alucinación con checkpoint humano. Funciona en producción en este mismo blog.",
-    href: "/blog/tag/radar",
+    href: "/radar",
     tema: "contenido",
     color: "navy",
     glyph: "◉",
@@ -89,7 +89,7 @@ export const LIBRARY_ITEMS: LibraryItem[] = [
     // so the claim is now just the part that is verifiable on sight.
     evidencia: {
       tipo: "en-produccion",
-      url: "/blog/tag/radar",
+      url: "/radar",
       desde: "julio de 2026",
     },
   },
