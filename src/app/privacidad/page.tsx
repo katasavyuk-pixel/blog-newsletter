@@ -33,8 +33,17 @@ export default function PrivacyPage() {
             con la única finalidad de enviarte contenidos y recursos sobre
             inteligencia artificial. Para acreditar tu consentimiento guardamos
             también la <strong>fecha</strong>, la <strong>dirección IP</strong> y el{" "}
-            <strong>origen</strong> de la suscripción. No pedimos más datos de los
-            necesarios.
+            <strong>origen</strong> de la suscripción, incluida la{" "}
+            <strong>página desde la que te suscribiste</strong>. No pedimos más
+            datos de los necesarios.
+          </p>
+          <p>
+            Si usas una de las herramientas del sitio (por ejemplo, la
+            calculadora de costes de IA) y pides que te enviemos el resultado,
+            guardamos junto a tu correo <strong>los parámetros que
+            introdujiste y el cálculo resultante</strong>, con la única finalidad
+            de poder enviártelo por escrito. Usar la herramienta no requiere dar
+            ningún dato: solo se guarda si pides el envío.
           </p>
 
           <h2>Base legal</h2>
@@ -75,7 +84,8 @@ export default function PrivacyPage() {
           <p>
             Conservamos tus datos mientras sigas suscrito. Si te das de baja, dejamos de
             enviarte correos de inmediato y eliminamos tus datos cuando ya no son
-            necesarios.
+            necesarios. La supresión alcanza también a los cálculos que hayas
+            pedido por email: se borran con tu dirección, no se conservan aparte.
           </p>
 
           <h2>Tus derechos</h2>
