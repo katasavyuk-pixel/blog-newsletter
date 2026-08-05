@@ -18,8 +18,10 @@ import { JourneyPanel } from "@/components/home/journey-panel";
  * signature from the video identity, and it is doing its job.
  */
 export function Masthead({ subscriberCount }: { subscriberCount: number | null }) {
+  // `id` is where the scrollytelling intro's skip link lands; the scroll margin
+  // keeps the sticky header off the eyebrow when the page jumps here.
   return (
-    <GlowSection fadeBottom>
+    <GlowSection id="masthead" fadeBottom className="scroll-mt-20">
       <Container
         size="wide"
         className="grid items-center gap-12 py-20 sm:py-28 lg:grid-cols-2"

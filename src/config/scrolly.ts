@@ -53,8 +53,14 @@ export type SignalItem = {
 };
 
 /**
- * Real headlines from actual Radar editions (curated from content/posts/radar-*).
- * They are what survives when Chispa filters the noise in scene 2.
+ * What survives when Chispa filters the noise in scene 2.
+ *
+ * These are the seven `<RadarItem>` of `content/posts/radar-2026-08-04.mdx`,
+ * verbatim — same titles, same sources, same dates, curly apostrophes included.
+ * The scene closes on "De cien ruidos, siete señales", so the list has to be
+ * seven and it has to be a real edition: this list is checkable against the post,
+ * and on a site whose whole argument is that the numbers can be checked, a
+ * decorative five would be the one lie on the page.
  */
 export const SIGNAL_ITEMS: SignalItem[] = [
   {
@@ -68,18 +74,28 @@ export const SIGNAL_ITEMS: SignalItem[] = [
     date: "2026-08-04",
   },
   {
-    title: "Here's why AI agents lie and cheat to reach their goals",
-    source: "MIT Technology Review",
-    date: "2026-08-04",
-  },
-  {
-    title: "Anthropic's $1.5 billion book piracy settlement approved by judge",
-    source: "The Verge AI",
-    date: "2026-07-21",
-  },
-  {
     title: "Trump administration reportedly drafting ban on Chinese datacenter components",
     source: "The Guardian AI",
     date: "2026-08-04",
+  },
+  {
+    title: "China’s Alibaba takes another swipe at America’s AI supremacy",
+    source: "The Verge AI",
+    date: "2026-08-03",
+  },
+  {
+    title: "Here’s why AI agents lie and cheat to reach their goals",
+    source: "MIT Technology Review",
+    date: "2026-08-03",
+  },
+  {
+    title: "Claude published malicious code to the Internet and attacked 3 real companies",
+    source: "Ars Technica",
+    date: "2026-07-31",
+  },
+  {
+    title: "A fundamental flaw leaves LLMs strikingly vulnerable to attack",
+    source: "MIT Technology Review",
+    date: "2026-07-30",
   },
 ];

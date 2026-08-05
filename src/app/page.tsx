@@ -1,3 +1,4 @@
+import { ScrollyIntro } from "@/components/home/scrolly/scrolly-intro";
 import { Masthead } from "@/components/home/masthead";
 import { StartHere } from "@/components/home/start-here";
 import { LibraryShowcase } from "@/components/home/library-showcase";
@@ -7,6 +8,7 @@ import { YouTubeStrip } from "@/components/home/youtube-strip";
 import { ClosingCta } from "@/components/home/closing-cta";
 import { Manifesto } from "@/components/home/manifesto";
 import { getConfirmedSubscriberCount } from "@/lib/subscribers";
+import { getJourneyStatusLines } from "@/lib/journey";
 import { JsonLd } from "@/components/ui/json-ld";
 import { websiteJsonLd } from "@/lib/jsonld";
 
@@ -28,12 +30,16 @@ export const revalidate = 3600;
  */
 export default async function Home() {
   const subscriberCount = await getConfirmedSubscriberCount();
+  // Same call the JourneyPanel makes inside the masthead, so the terminal in the
+  // intro and the panel it introduces can never print different numbers.
+  const statusLines = getJourneyStatusLines(subscriberCount);
 
   return (
     <>
       {/* WebSite only. The Person node with sameAs is episode-1 material — see
           src/lib/jsonld.ts and docs/geo-checklist.md. */}
       <JsonLd data={websiteJsonLd()} />
+      <ScrollyIntro statusLines={statusLines} />
       <Masthead subscriberCount={subscriberCount} />
       <StartHere />
       <LibraryShowcase />

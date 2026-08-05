@@ -1,6 +1,6 @@
 # Home scrollytelling (F2)
 
-Fecha: 2026-08-05 · Estado: aprobado por Kata · Spec previa a implementación
+Fecha: 2026-08-05 · Estado: **implementado y verificado en navegador real** (2026-08-06)
 
 ## Decisión
 
@@ -48,9 +48,52 @@ línea a línea con datos reales (misma fuente que `JourneyPanel`, extraída a
 - `ScrollReveal` gana variante `blur` y se aplica a las secciones que no lo
   tienen.
 
-## Verificación
+## La trampa que casi se cuela: motion acelera esto y lo rompe
 
-Navegador real: scroll programático por las 3 escenas (posiciones/opacidades),
-aterrizaje en masthead, reduced-motion (intro ausente), viewport móvil (escenas
-cortas, sin 3D), 0 errores consola, `eslint` + `tsc` limpios, screenshots en
-`.playwright-cli/`.
+Escrito con la forma normal —`useTransform(progress, [a, b], [x, y])`— **nada
+funcionaba, y funcionaba de una manera que no se ve mirando**: las escenas
+animaban, solo que con los valores equivocados.
+
+Motion v12 compila esos `useTransform` a animaciones WAAPI ligadas al scroll
+cuando la propiedad es acelerable (`opacity`, `transform`, `filter`). El timeline
+que construye es un **`ViewTimeline` anclado al elemento animado**, y aquí cada
+elemento vive dentro de un viewport `position: sticky`. Un elemento clavado
+apenas recorre el viewport, así que su ViewTimeline apenas avanza: medido, con la
+página al 50 % de la escena el `currentTime` de la animación iba por el 20,6 %, y
+a partir de ahí retrocedía. El `offset: ["start start", "end end"]` de
+`useScroll` no llegaba a la animación compilada.
+
+El síntoma en pantalla: filas que se desvanecían después de haber entrado, el
+ruido resucitando y el titular de cierre apagándose justo al final. Todo
+plausible, ninguno visible sin medir.
+
+**Fix**: `src/components/home/scrolly/use-scene-range.ts`. Misma firma, pero pasa
+una **función** a `useTransform` en vez de dos arrays — no queda nada que
+compilar a keyframes, así que el valor se calcula por frame desde el progreso que
+pedimos. Usa `transform` de motion como interpolador, así que unidades y strings
+(`blur(7px)`, `-24vw`, `inset(0 100% 0 0)`) siguen igual.
+
+**No volver a `useTransform` con arrays dentro de un `sticky`.** Es la única
+regla de este directorio.
+
+Segunda trampa, misma familia: **una animación CSS sobre `opacity` gana a un
+estilo inline**, así que `animate-pulse` en el mismo elemento que la opacidad de
+motion se comía la puerta del cursor del terminal. Va en un `<span>` interior; las
+dos opacidades se multiplican.
+
+## Verificación hecha (2026-08-06)
+
+Navegador real, `chromium` 1440×900 y `webkit` 390×844:
+
+- **Progreso real medido** en 6 puntos por escena (`0.05` … `0.99`), comprobando
+  que cada valor es monótono: el ruido entra y no vuelve, las 7 señales entran
+  escalonadas y se quedan en 1, el terminal imprime línea a línea y el cursor solo
+  aparece pasado el final del tecleo.
+- **Reduced-motion**: 0 escenas en el DOM, 0 enlaces de salto, altura de documento
+  5321 px frente a 10959 px. La intro no existe, no está atenuada.
+- **0 errores de consola** y ningún aviso de hidratación, en ambos navegadores.
+- **0 px de overflow horizontal** en móvil y escritorio.
+- Enlace "Saltar intro" aterriza en el masthead con el `h1` en pantalla.
+- `node scripts/geo/audit-ssr.mjs http://localhost:3000` sin problemas, y ninguno
+  de los titulares de hype aparece en el HTML servido.
+- `eslint`, `tsc --noEmit` y `npm run build` limpios.
