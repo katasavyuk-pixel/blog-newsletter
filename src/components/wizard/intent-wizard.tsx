@@ -6,10 +6,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { dismissIntent, useIntentVisible } from "@/hooks/use-intent-wizard";
-import { SubscribeForm } from "@/components/newsletter/subscribe-form";
 import { Mascot } from "@/components/wizard/mascot";
 import {
-  EMAIL_STEP,
   FORMA_OPTIONS,
   INTENT_OPTIONS,
   MASCOT,
@@ -18,8 +16,8 @@ import {
   type IntentOption,
 } from "@/config/intent";
 
-/** 0 intro · 1 intención · 2 formato · 3 email · 4 rumbo */
-const TOTAL = 5;
+/** 0 intro · 1 intención · 2 formato · 3 rumbo */
+const TOTAL = 4;
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -28,7 +26,6 @@ const MASCOT_POSES = [
   { x: 0, y: 0, rotate: 0 },
   { x: 16, y: -8, rotate: -6 },
   { x: -14, y: 6, rotate: 7 },
-  { x: 10, y: 4, rotate: -4 },
   { x: 0, y: -10, rotate: 2 },
 ];
 
@@ -86,12 +83,14 @@ function Step({ step, kicker, title, children, footer, back, onBack, cta }: Step
           <motion.div
             className="h-full rounded-full bg-accent"
             initial={{ width: 0 }}
-            animate={{ width: `${((step - 1) / 4) * 100}%` }}
+            animate={{ width: `${((step - 1) / (TOTAL - 1)) * 100}%` }}
             transition={{ duration: 0.5, ease: EASE }}
           />
         </div>
+        {/* The intro counts as a step, so this is 1/4 … 4/4. It used to read
+            `{step}/{TOTAL - 1}`, which showed "5/4" on the last one. */}
         <span className="font-mono text-xs text-faint">
-          {step}/{TOTAL - 1}
+          {step}/{TOTAL}
         </span>
         {back ? (
           <button
@@ -117,9 +116,10 @@ function Step({ step, kicker, title, children, footer, back, onBack, cta }: Step
 
 /**
  * One-time entry wizard, guided by the site's mascot (Chispa):
- * cinematic flight → panel materializes around her → intent → format → email
- * capture → rumbo. Chispa is a single element that never unmounts, so the
- * entrance and the wizard read as one continuous take. Client-only — renders
+ * cinematic flight → panel materializes around her → intent → format → rumbo.
+ * Chispa is a single element that never unmounts, so the entrance and the wizard
+ * read as one continuous take. It routes, it does not capture: see the note in
+ * `@/config/intent` for why there is no email step. Client-only — renders
  * nothing on the server and nothing under reduced motion (the calm scrollable
  * homepage is the fallback there).
  */
@@ -157,7 +157,6 @@ export function IntentWizard() {
     step === 0 ? MASCOT.lines.intro
     : step === 1 ? MASCOT.lines.intencion
     : step === 2 ? MASCOT.lines.forma
-    : step === 3 ? MASCOT.lines.email
     : MASCOT.lines.rumbo;
 
   return (
@@ -354,41 +353,14 @@ export function IntentWizard() {
                     </Step>
                   ) : null}
 
-                  {step === 3 ? (
-                    <Step
-                      key="email"
-                      step={4}
-                      kicker={EMAIL_STEP.kicker}
-                      title={EMAIL_STEP.title}
-                      back
-                      onBack={() => setStep(2)}
-                    >
-                      <p className="text-sm leading-relaxed text-muted">{EMAIL_STEP.hint}</p>
-                      <div className="mt-4">
-                        <SubscribeForm
-                          source="wizard"
-                          tone="dark"
-                          layout="stacked"
-                          submitLabel={EMAIL_STEP.submit}
-                          doneMessage="¡Casi! Revisa tu correo y confirma (doble opt-in)."
-                        />
-                      </div>
-                      <div className="mt-4">
-                        <Button variant="ghost" size="sm" onClick={() => setStep(4)}>
-                          {EMAIL_STEP.skip} — quiero entrar ya
-                        </Button>
-                      </div>
-                    </Step>
-                  ) : null}
-
-                  {step === 4 && selected ? (
+                  {step === 3 && selected ? (
                     <Step
                       key="rumbo"
-                      step={5}
+                      step={4}
                       kicker="Tu rumbo"
                       title={RUMBO_COPY[selected.id]}
                       back
-                      onBack={() => setStep(3)}
+                      onBack={() => setStep(2)}
                     >
                       <div className="rounded-2xl border border-border bg-surface p-5">
                         <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent-ink">

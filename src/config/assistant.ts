@@ -12,9 +12,11 @@ export const COMPANION = {
   greeting:
     "Soy Chispa, tu fichaje en este rincón. Pregúntame por el blog, los sistemas, el curso, el glosario o el radar.",
   placeholder: "Pregunta a Chispa…",
-  /** Sin API key configurada / local sin clave — mensaje honesto, no un error feo. */
+  /** Sin API key configurada — mensaje honesto, no un error feo. El nombre de la
+   *  variable de entorno vivía aquí (y encima era el de otro proveedor): un
+   *  lector no tiene por qué leer nuestra configuración. */
   offlineMessage:
-    "Todavía no estoy conectada en este entorno. Con OPENROUTER_API_KEY configurado en tu local, esta misma respuesta responde de verdad.",
+    "Todavía no estoy conectada. Mientras tanto tienes el buscador de la casa: el curso en /empieza-aqui, los sistemas en /sistemas y el radar de la semana en /radar.",
   /** Error genérico de la API. */
   errorMessage: "Se me ha cruzado un circuito. Vuelve a intentarlo en un momento.",
   /** Texto accesible del botón flotante. */

@@ -74,7 +74,6 @@ export const MASCOT = {
     intro: "Soy Chispa, tu último fichaje. Te guío un segundo…",
     intencion: "¿Qué te trae hoy?",
     forma: "¿Prefieres leer, ver… o el lío de siempre?",
-    email: "Déjame tu email y te caen los recursos, sin letra pequeña.",
     rumbo: "Listo. Rumbo a tu elección.",
   } as const,
 };
@@ -87,14 +86,15 @@ export const RUMBO_COPY: Record<IntentOption["id"], string> = {
   colaborar: "Suerte con el negocio",
 };
 
-/** Email step wording (the capture itself is the real SubscribeForm). */
-export const EMAIL_STEP = {
-  kicker: "Una última parada",
-  title: "Recursos gratis, tu correo",
-  hint: "La newsletter de Kata: cada sistema nuevo que funciona en su negocio, contado para que lo repliques. Con suerte, plantillas.",
-  submit: "Quiero los recursos",
-  skip: "No, gracias",
-} as const;
+/**
+ * There is deliberately no email step here.
+ *
+ * The wizard used to ask for one before the visitor had read a line. That is the
+ * same landing-page reflex that got the capture form removed from the masthead:
+ * this site does not ask for an address before it has given anything. Capture
+ * lives where the reader has already been served — the article closing,
+ * `/recursos` and the footer. Decision by Kata, 2026-08-06.
+ */
 
 /** sessionStorage key. Versioned: bump to re-shown after a redesign of the steps. */
-export const INTENT_STORAGE_KEY = "kata-intent-v2";
+export const INTENT_STORAGE_KEY = "kata-intent-v3";
