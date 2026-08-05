@@ -103,19 +103,36 @@ export async function POST(request: NextRequest) {
   const token = generateToken();
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
-  await supabase.from("subscribers").upsert(
-    {
-      email: body.email,
-      status: "pending",
-      confirm_token_hash: hashToken(token),
-      confirm_expires_at: expiresAt,
-      consent_ip: ip === "unknown" ? null : ip,
-      source,
-      signup_path: body.signupPath ?? null,
-      locale: siteConfig.locale,
-    },
-    { onConflict: "email" },
-  );
+  const row = {
+    email: body.email,
+    status: "pending",
+    confirm_token_hash: hashToken(token),
+    confirm_expires_at: expiresAt,
+    consent_ip: ip === "unknown" ? null : ip,
+    source,
+    locale: siteConfig.locale,
+  };
+
+  // `signup_path` arrives with migration 0005, which is applied by hand. Deploys
+  // and migrations are not atomic here, so between the two an upsert naming that
+  // column errors — and since the result was never checked, we would happily
+  // send a confirmation email carrying a token that was never stored. The reader
+  // clicks it and gets "enlace no válido", for a subscription that never
+  // existed. Retry without the column rather than lose the signup.
+  let { error } = await supabase
+    .from("subscribers")
+    .upsert({ ...row, signup_path: body.signupPath ?? null }, { onConflict: "email" });
+
+  if (error) {
+    ({ error } = await supabase
+      .from("subscribers")
+      .upsert(row, { onConflict: "email" }));
+  }
+
+  if (error) {
+    console.error("[subscribe] upsert failed:", error);
+    return NextResponse.json({ ok: false, error: "storage_failed" }, { status: 502 });
+  }
 
   const confirmUrl =
     `${siteConfig.url}/api/confirm?token=${token}` +
