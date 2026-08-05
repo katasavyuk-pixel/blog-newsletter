@@ -2,9 +2,9 @@
 
 # CLAUDE.md — Blog + Newsletter de marca personal (IA)
 
-> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Embudo de captación —
-> `/recursos` con imán, secuencia de bienvenida 0/48/96h, CTA inline, GEO parcial y panel**
-> (2026-08-05, segunda sesión del día).
+> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **capa cinemática —
+> wizard de entrada de 4 pasos, Chispa asistente e intro scrollytelling de la home**
+> (2026-08-06).
 
 ## Antes de escribir contenido
 
@@ -334,6 +334,47 @@ confirmar, sin CTA en el cuerpo de los artículos) y de paso cuatro bugs que lle
 - **Pendiente de decisión de Kata**: la frase del masthead. Se propusieron 3 alternativas que
   filtran por promesa en vez de por advertencia; ninguna aplicada.
 
+## Capa cinemática — wizard, Chispa y la intro de la home (2026-08-06) — VIGENTE
+
+Quinto rediseño. Al contrario que la máquina de captación, **este sí toca lo
+visual**, aunque no cambia ni un token: la identidad (negro cálido + rojo, Anton
++ Inter) se queda igual. Specs en `docs/specs/{intent-wizard,chispa-assistant,
+home-scrollytelling}.md`.
+
+- **`IntentWizard`** (`src/components/wizard/`) — overlay de bienvenida una vez
+  por sesión (`sessionStorage`, clave `kata-intent-v3`; `?wizard=1` lo fuerza).
+  Vuelo cinemático de la mascota → 4 pasos: intro · intención · formato · rumbo.
+  **No pide email a propósito** — pedirlo antes de haber dado nada es el mismo
+  reflejo de landing por el que se quitó el formulario del masthead. El porqué
+  está escrito en `src/config/intent.ts`; no volver a añadirlo sin releerlo.
+  Cliente puro: `null` en SSR y `null` con reduced-motion.
+- **Chispa asistente** (`src/components/assistant/`, `src/app/api/assistant/`) —
+  dock global de chat, anclado al índice del sitio (`src/lib/assistant-index.ts`)
+  para que no invente. Proveedor neutro por env (`LLM_BASE_URL` / `LLM_API_KEY` /
+  `LLM_MODEL`, Groq por defecto); sin clave responde un mensaje honesto, nunca un
+  500. **El prompt lleva la regla del singular**: generaba «nuestro sitio» en cada
+  respuesta, que es el plural de cortesía que `QUE_PUEDO_DECIR.md` prohíbe.
+- **Intro scrollytelling de la home** (`src/components/home/scrolly/`) — tres
+  escenas pinned, ruido → señal → sistema, que entregan al masthead. Datos en
+  `src/config/scrolly.ts`; el terminal comparte `getJourneyStatusLines()` con el
+  `JourneyPanel` para no poder contradecirlo. Añade **6,3 pantallas** de scroll
+  antes del `h1` en escritorio (3,9 en móvil), con botón de saltar sticky.
+  **Con reduced-motion no se atenúa: no se monta** — `MotionConfig
+  reducedMotion="user"` mata transform pero deja pasar opacity, así que atenuar
+  dejaría media coreografía viva.
+  - **Los 24 titulares de hype se pintan solo tras hidratar.** No son
+    afirmaciones de Kata, y dejarlas en el HTML servido por delante del `h1` real
+    le da a un crawler de IA dos docenas de frases que atribuir mal — en el único
+    sitio que discute justo eso en público. Arrancar en negro y subirlas es
+    además mejor primer compás. `scripts/geo/audit-ssr.mjs` lo comprueba.
+  - `SIGNAL_ITEMS` son los **7 ítems de `radar-2026-08-04` verbatim**, porque la
+    escena cierra con «de cien ruidos, siete señales». Había cinco decorativos.
+- **`ScrollReveal` tiene variante `blur`** además de `rise` (por defecto).
+  Aplicada a las 4 secciones de la home que no revelaban nada.
+- **Pendiente**: subir `LLM_*` a Vercel (las crea Kata: el sandbox no lee
+  `.env.local`). Y dos decisiones abiertas — si 6,3 pantallas son demasiadas, y si
+  sobra una de las dos intros encadenadas (wizard → escena 1).
+
 ## Diagnóstico estratégico y hoja de ruta de negocio (2026-07-26)
 
 Detalle completo por tema en
@@ -474,6 +515,33 @@ Turbopack ignora plugins MDX con funciones → Velite · Tailwind v4: `darkMode:
   `chrome` no existe en esta máquina → `open --browser webkit` (+ `--mobile`).
 - **CSS sin capa gana a las utilidades de Tailwind v4**: `.headline` define `line-height` fuera de
   `@layer`, así que pisa el que trae `text-3xl`. Es deliberado.
+
+**Añadidos 2026-08-06 (capa cinemática). Los dos primeros animaban «bien» en
+pantalla y estaban mal; solo se vieron midiendo el DOM:**
+
+- **Nunca `useTransform(progress, [a, b], [x, y])` dentro de un `position:
+  sticky`.** Motion v12 lo compila a una animación WAAPI ligada al scroll cuando la
+  propiedad es acelerable (`opacity`/`transform`/`filter`), y el timeline que
+  construye es un **`ViewTimeline` anclado al elemento animado**. Un elemento
+  clavado apenas recorre el viewport, así que su timeline apenas avanza: medido,
+  con la página al 50 % de la escena el `currentTime` iba por el **20,6 %** y a
+  partir de ahí retrocedía; el `offset` de `useScroll` no llegaba a la animación.
+  Fix: `src/components/home/scrolly/use-scene-range.ts` pasa una **función** en vez
+  de dos arrays, así no queda nada que compilar a keyframes.
+- **Una animación CSS sobre `opacity` gana a un estilo inline.** `animate-pulse`
+  en el mismo elemento que una opacidad de motion se come la puerta: el cursor del
+  terminal parpadeaba desde el principio de la escena. Va en un hijo; se multiplican.
+- **Para depurar animaciones de motion, lee `element.getAnimations()`**, no el
+  `style` inline: con la vía acelerada el atributo se queda en el valor
+  renderizado por React mientras el valor real vive en la animación. Comparar
+  `getComputedStyle` con el inline es lo que destapó el bug del ViewTimeline.
+- **`grep -c` sobre el HTML de Next cuenta LÍNEAS, y el HTML va en una sola.**
+  Sirve para presencia/ausencia (0 vs ≥1), nunca para contar. Es distinto del aviso
+  de más arriba (que va de los strings duplicados en el payload de React).
+- **Next 16 no deja levantar un segundo `next dev` para el mismo directorio.**
+  Sale `Another next dev server is already running` con el PID. El `next-server`
+  del 3000 en esta máquina **es de este proyecto**, no de NBI-WEB como decía una
+  nota vieja.
 
 **Añadidos 2026-08-05, segunda sesión (embudo). Todos vistos en vivo:**
 
