@@ -147,8 +147,9 @@ export function CostCalculator({
             ¿Te mando este cálculo por escrito?
           </p>
           <p className="mt-1.5 text-sm leading-relaxed text-muted">
-            Tu desglose con estos números y la plantilla para rehacerlo con los
-            precios y el volumen de tu propio proyecto. Un email, sin más pasos.
+            Tu desglose con estos números y la fórmula, para rehacerlo con los
+            precios y el volumen de tu propio proyecto en una hoja de cálculo.
+            Un email, sin más pasos.
           </p>
           <div className="mt-4">
             <SubscribeForm

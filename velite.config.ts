@@ -63,9 +63,46 @@ const newsletters = defineCollection({
   }),
 });
 
+/**
+ * Onboarding sequence emails. Same reasoning as `newsletters`: plain markdown,
+ * because it renders into an email and `s.markdown()` gives the HTML string a
+ * mail client needs.
+ *
+ * The point of putting these in files is that the copy is editable without
+ * touching TypeScript — it used to live as JSX inside src/emails, where changing
+ * a sentence meant editing a component. `draft` defaults to false here (unlike
+ * an issue): a step that exists is part of the sequence, and the risk being
+ * guarded against is the opposite one — silently dropping a step.
+ *
+ * `delayHours` is capped at 30 days because that is Resend's `scheduledAt`
+ * horizon. A longer delay would be accepted here and then silently rejected at
+ * send time, which is the worst place to find out.
+ */
+const sequenceEmails = defineCollection({
+  name: "SequenceEmail",
+  pattern: "emails/**/*.md",
+  schema: s.object({
+    key: s.string().max(40), // stable id stored in scheduled_emails.email_key
+    sequence: s.string().max(40).default("bienvenida"),
+    order: s.number().int().min(0),
+    delayHours: s.number().int().min(0).max(24 * 30),
+    subject: s.string().max(120),
+    preheader: s.string().max(200),
+    title: s.string().max(120),
+    draft: s.boolean().default(false),
+    // `copyLinkedFiles: false` because links here start with the `{{url_sitio}}`
+    // placeholder, and Velite would otherwise read them as relative paths and
+    // fail trying to open content/emails/%7B%7Burl_sitio%7D%7D/... The
+    // placeholder is what keeps the domain out of the copy: it resolves from
+    // siteConfig, which honours NEXT_PUBLIC_SITE_URL. (The newsletter issues
+    // hardcode the production domain instead — worth fixing, separately.)
+    html: s.markdown({ copyLinkedFiles: false }),
+  }),
+});
+
 export default defineConfig({
   root: "content",
-  collections: { posts, newsletters },
+  collections: { posts, newsletters, sequenceEmails },
   mdx: {
     rehypePlugins: [
       rehypeSlug,

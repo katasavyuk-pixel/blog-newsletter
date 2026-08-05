@@ -2,11 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { createAdminClient, isSupabaseConfigured } from "@/lib/supabase/admin";
 import { hashToken, generateToken } from "@/lib/tokens";
-import { getResend, FROM, REPLY_TO, isEmailConfigured } from "@/lib/email";
-import { WelcomeEmail } from "@/emails/welcome";
 import { scheduleWelcomeSequence } from "@/lib/welcome-sequence";
-import { signedDownloadUrl } from "@/lib/signed-links";
-import { siteConfig } from "@/config/site";
 
 export const runtime = "nodejs";
 
@@ -59,30 +55,20 @@ export async function GET(request: NextRequest) {
     path: "/",
   });
 
-  if (isEmailConfigured()) {
-    await getResend().emails.send({
-      from: FROM,
-      to: sub.email,
-      replyTo: REPLY_TO,
-      subject: `¡Bienvenido a ${siteConfig.name}!`,
-      react: WelcomeEmail({
-        brand: siteConfig.name,
-        // Signed, because the cookie set two lines above lives in the browser
-        // that clicked confirm — not in the mail client that opens this button.
-        downloadUrl: resource
-          ? signedDownloadUrl(siteConfig.url, resource, sub.email) ??
-            `${siteConfig.url}/api/download?slug=${encodeURIComponent(resource)}`
-          : undefined,
-      }),
-    });
-  }
-
-  // Onboarding drip (day 2 / 5 / 8) via Resend scheduledAt. Best-effort: skips
-  // itself while migration 0002 is unapplied and never breaks the redirect.
+  // Onboarding sequence (now / +48h / +96h) via Resend scheduledAt.
+  //
+  // The first step is sent immediately from in here, which is why there is no
+  // longer a separate "welcome" email: that one went out without a
+  // List-Unsubscribe header or a visible unsubscribe link, so the very first
+  // email a subscriber received was the only one that broke RFC 8058.
+  //
+  // Best-effort: skips itself while `scheduled_emails` is missing, and never
+  // breaks this redirect.
   await scheduleWelcomeSequence(supabase, {
     id: sub.id,
     email: sub.email,
     unsubscribeToken,
+    resource,
   });
 
   const dest = resource
