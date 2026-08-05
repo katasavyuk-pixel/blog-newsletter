@@ -5,6 +5,8 @@ import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { glossary } from "@/lib/glossary";
 import { getPost } from "@/lib/posts";
+import { JsonLd } from "@/components/ui/json-ld";
+import { breadcrumbJsonLd, definedTermJsonLd } from "@/lib/jsonld";
 
 export function generateStaticParams() {
   return Object.keys(glossary).map((id) => ({ id }));
@@ -38,6 +40,17 @@ export default async function GlossaryEntryPage({
 
   return (
     <Container className="py-16">
+      {/* DefinedTerm, not FAQPage: this page really is a named concept with a
+          definition inside a set, and that data already exists in glossary.ts. */}
+      <JsonLd
+        data={[
+          definedTermJsonLd({ id, title: entry.title, def: entry.def }),
+          breadcrumbJsonLd([
+            { name: "Glosario", path: "/glosario" },
+            { name: entry.title, path: `/glosario/${id}` },
+          ]),
+        ]}
+      />
       <div className="mx-auto max-w-2xl">
         <Link
           href="/glosario"

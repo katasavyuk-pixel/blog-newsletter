@@ -31,16 +31,22 @@ export function PostMeta({
         className,
       )}
     >
-      <time dateTime={post.date}>
-        {short ? formatDateShort(post.date) : formatDate(post.date)}
-      </time>
+      {/* Labelled in the long form so a bare date cannot be read as "updated".
+          Dense rows stay unlabelled — there the column position says it. */}
+      <span>
+        {short ? null : "Publicado el "}
+        <time dateTime={post.date}>
+          {short ? formatDateShort(post.date) : formatDate(post.date)}
+        </time>
+      </span>
       <span aria-hidden>·</span>
       <span>{post.metadata.readingTime} min{short ? "" : " de lectura"}</span>
       {post.updated ? (
         <>
           <span aria-hidden>·</span>
           <span className="text-accent-ink">
-            actualizado {formatDateShort(post.updated)}
+            actualizado{" "}
+            <time dateTime={post.updated}>{formatDateShort(post.updated)}</time>
           </span>
         </>
       ) : null}

@@ -15,6 +15,8 @@ import { ArticleClosing } from "@/components/blog/article-closing";
 import { PostMeta } from "@/components/content/post-meta";
 import { TagPill } from "@/components/content/tag-pill";
 import { CourseProgressMarker } from "@/components/course/course-progress-marker";
+import { JsonLd } from "@/components/ui/json-ld";
+import { articleJsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
 import { allPosts, getPost } from "@/lib/posts";
 import { siteConfig } from "@/config/site";
 import { FORMATOS, TEMAS } from "@/config/taxonomy";
@@ -68,27 +70,20 @@ export default async function PostPage({
   // hid it on most articles, so the rail sat empty on pages that needed it.
   const showToc = post.toc.length > 1;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.description,
-    datePublished: post.date,
-    dateModified: post.updated ?? post.date,
-    author: { "@type": "Person", name: siteConfig.author.name },
-    publisher: { "@type": "Person", name: siteConfig.author.name },
-    mainEntityOfPage: fullUrl,
-    url: fullUrl,
-  };
-
   return (
     <Container className="py-12">
       <ReadingProgress />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-        }}
+      {/* Article/TechArticle by `formato`, plus the breadcrumb that is already
+          rendered visually below. Escaping lives in the component. */}
+      <JsonLd
+        data={[
+          articleJsonLd(post),
+          breadcrumbJsonLd([
+            { name: "Artículos", path: "/blog" },
+            { name: TEMAS[post.tema], path: `/blog` },
+            { name: post.title, path: post.permalink },
+          ]),
+        ]}
       />
 
       {/* Header and body share one grid column so they sit on the same optical

@@ -7,6 +7,8 @@ import { YouTubeStrip } from "@/components/home/youtube-strip";
 import { ClosingCta } from "@/components/home/closing-cta";
 import { Manifesto } from "@/components/home/manifesto";
 import { getConfirmedSubscriberCount } from "@/lib/subscribers";
+import { JsonLd } from "@/components/ui/json-ld";
+import { websiteJsonLd } from "@/lib/jsonld";
 
 /** Refresh hourly: journey week, subscriber count and radar cadence stay honest. */
 export const revalidate = 3600;
@@ -29,6 +31,9 @@ export default async function Home() {
 
   return (
     <>
+      {/* WebSite only. The Person node with sameAs is episode-1 material — see
+          src/lib/jsonld.ts and docs/geo-checklist.md. */}
+      <JsonLd data={websiteJsonLd()} />
       <Masthead subscriberCount={subscriberCount} />
       <StartHere />
       <LibraryShowcase />
