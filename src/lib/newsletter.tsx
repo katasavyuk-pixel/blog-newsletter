@@ -2,6 +2,7 @@ import { newsletters } from "#site/content";
 import { NewsletterEmail } from "@/emails/newsletter";
 import { getResend, FROM, REPLY_TO, isEmailConfigured } from "@/lib/email";
 import { createAdminClient, isSupabaseConfigured } from "@/lib/supabase/admin";
+import { htmlToText } from "@/lib/email-template";
 import { siteConfig } from "@/config/site";
 
 /** Resend caps a batch at 100 messages. */
@@ -130,6 +131,14 @@ export async function sendIssue(
           showClosing: true,
           children: <div dangerouslySetInnerHTML={{ __html: issue.html }} />,
         }),
+        // See the note in welcome-sequence: HTML-only reads as bulk mail, and a
+        // broadcast is the message that can least afford the Promotions tab.
+        text: [
+          issue.title,
+          "",
+          htmlToText(issue.html),
+          `Cancelar suscripción: ${unsubscribeUrl}`,
+        ].join("\n"),
         headers: {
           "List-Unsubscribe": `<${unsubscribeUrl}>`,
           "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",

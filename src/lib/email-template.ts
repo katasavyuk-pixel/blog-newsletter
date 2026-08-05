@@ -53,6 +53,49 @@ export function renderTemplate(html: string, vars: TemplateVars): string {
   return out;
 }
 
+/**
+ * Plain-text alternative for an email body.
+ *
+ * Every message should carry one. Two reasons, and the first is the one that
+ * costs money: a `text/html`-only email is a bulk-mail signal, and the welcome
+ * sequence was landing in Gmail's Promotions tab. The second is that some clients
+ * block HTML entirely, and for them an HTML-only email is a blank message.
+ *
+ * Derived from the rendered HTML rather than from the markdown source on purpose:
+ * that way it includes the personalised blocks (the reader's own cost breakdown,
+ * the download link) and cannot drift from what the HTML says.
+ *
+ * Links become "texto (url)" because a plain-text reader cannot click anything —
+ * a bare anchor text would leave them with no way to reach the page.
+ */
+export function htmlToText(html: string): string {
+  return (
+    html
+      // Table rows read as "label: value" — that is what the cost breakdown is.
+      .replace(/<\/t[dh]>\s*<t[dh][^>]*>/gi, ": ")
+      .replace(/<\/tr>/gi, "\n")
+      .replace(/<a\b[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, (_m, href, text) => {
+        const label = text.replace(/<[^>]+>/g, "").trim();
+        if (!label) return href;
+        return href.startsWith("mailto:") ? label : `${label} (${href})`;
+      })
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/(p|div|h[1-6]|li|tr|table|section)>/gi, "\n\n")
+      .replace(/<li[^>]*>/gi, "- ")
+      .replace(/<[^>]+>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;|&apos;/g, "'")
+      .replace(/[ \t]+/g, " ")
+      .replace(/ *\n */g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim() + "\n"
+  );
+}
+
 /** Escape text destined for an HTML attribute or text node. */
 export function escapeHtml(value: string): string {
   return value

@@ -3,7 +3,7 @@ import { NewsletterEmail } from "@/emails/newsletter";
 import { getResend, FROM, REPLY_TO, isEmailConfigured } from "@/lib/email";
 import type { createAdminClient } from "@/lib/supabase/admin";
 import { siteConfig } from "@/config/site";
-import { renderTemplate, TemplateError } from "@/lib/email-template";
+import { renderTemplate, htmlToText, TemplateError } from "@/lib/email-template";
 import { openingBlock, downloadBlock } from "@/lib/email-blocks";
 import { getLatestSubmission, type MagnetSubmission } from "@/lib/lead-magnets";
 import { signedDownloadUrl } from "@/lib/signed-links";
@@ -113,6 +113,15 @@ function messageFor(
       unsubscribeUrl,
       children: <div dangerouslySetInnerHTML={{ __html: html }} />,
     }),
+    // Plain-text alternative. An HTML-only email is a bulk-mail signal — the
+    // sequence was landing in Gmail's Promotions tab — and clients that block
+    // HTML show nothing at all without it.
+    text: [
+      step.title,
+      "",
+      htmlToText(html),
+      `Cancelar suscripción: ${unsubscribeUrl}`,
+    ].join("\n"),
     headers: {
       "List-Unsubscribe": `<${unsubscribeUrl}>`,
       "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
