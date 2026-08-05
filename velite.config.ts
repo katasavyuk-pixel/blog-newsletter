@@ -40,9 +40,32 @@ const posts = defineCollection({
     }),
 });
 
+/**
+ * Newsletter issues. Plain markdown, not MDX: this renders into an email, where
+ * interactive widgets cannot run and `s.markdown()` gives us the HTML string an
+ * email client actually needs.
+ *
+ * An issue is a file so it is versioned, reviewable in a PR and diffable —
+ * the same contract as a post. `issue` is the idempotency key: the broadcast
+ * refuses to send one twice.
+ */
+const newsletters = defineCollection({
+  name: "NewsletterIssue",
+  pattern: "newsletters/**/*.md",
+  schema: s.object({
+    issue: s.string().max(60), // stable id, never reuse
+    subject: s.string().max(120),
+    preheader: s.string().max(200),
+    title: s.string().max(120),
+    date: s.isodate(),
+    draft: s.boolean().default(true), // opt IN to sending, never out
+    html: s.markdown(),
+  }),
+});
+
 export default defineConfig({
   root: "content",
-  collections: { posts },
+  collections: { posts, newsletters },
   mdx: {
     rehypePlugins: [
       rehypeSlug,
