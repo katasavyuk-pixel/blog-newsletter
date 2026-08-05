@@ -2,7 +2,8 @@
 
 # CLAUDE.md — Blog + Newsletter de marca personal (IA)
 
-> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Diagnóstico estratégico y retirada de "El Universo"** (2026-07-26).
+> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Rediseño editorial —
+> taxonomía cerrada, sistema de evidencia y tipografía** (2026-08-05).
 
 ## Antes de escribir contenido
 
@@ -26,7 +27,25 @@ pero la parte de pago/auth **no se construye** hasta la Fase 3.
 
 - **Fase 0 — Fundamentos y diseño** ✅ (esta). Scaffolding, design system NBI, layout, componentes base, home placeholder, clients Supabase, este archivo.
 - **Fase 1 — Blog (MVP)** ✅. Pipeline MDX (Velite), listados, página de post (TOC, share, syntax highlighting), tags, "Sobre mí", SEO (OG dinámico `next/og`, sitemap, RSS, JSON-LD BlogPosting). `post_views` (BD) NO implementado — diferido. Publicar = añadir `.mdx` → aparece en listado/sitemap/RSS automáticamente.
-- **Fase 2 — Newsletter y captación** ✅ (código, con *guards*). Form real + doble opt-in (Resend), route handlers `/api/{subscribe,confirm,unsubscribe,download}`, plantillas React Email, lead magnets (`/recursos` + descarga firmada), baja 1-clic (RFC 8058), `/gracias`, `/baja`, `/privacidad`. Migración aplicada en un proyecto Supabase EU dedicado (`kata-ivanovych-blog`, ref `udluclqhfzdgvqpoezoo`, **cuenta separada del NBI**, eu-central-1). **Doble opt-in verificado en vivo (modo test) 2026-06-24**: alta→confirmación→`confirmed`, token sha256 single-use, `consent_ip` guardada. **DEPLOYADO A PRODUCCIÓN 2026-06-24**: vivo en `https://kata.ianexora.com` (Vercel team corporate `nexoraprocesos-boops-projects`, proyecto `kata-ivanovych-blog`, dominio vía A-record en Namecheap → `76.76.21.21`, SSL OK, público). Env de producción en Vercel: `NEXT_PUBLIC_SITE_URL`=`https://kata.ianexora.com`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`. **Seguridad cerrada**: el `service_role` legacy (expuesto en chat) se ROTÓ a una *secret key* nueva (`sb_secret_…`) y la legacy se DESACTIVÓ. **Newsletter LIVE 2026-06-24**: dominio `news.ianexora.com` **verificado** en Resend (DKIM + SPF + MX). El MX requirió pasar Namecheap de "Private Email" a "Custom MX" re-añadiendo los 2 MX de `privateemail.com` (apex, email de empresa intacto) + el MX `send.news`→`feedback-smtp.eu-west-1.amazonses.com`. `RESEND_API_KEY` (key `re_…` nueva, scope sending) + `RESEND_FROM`=`Kata Ivanovych <news@news.ianexora.com>` cargadas en Vercel prod. Flujo de alta probado end-to-end en vivo (POST /api/subscribe → fila `pending` + email de confirmación enviado). **Pendiente menor**: (1) re-añadir en Namecheap los CNAME `autodiscover`/`autoconfig`/`mail`→`privateemail.com` + SRV `_autodiscover._tcp` (los borró el cambio a Custom MX — solo afecta autoconfig de clientes de correo, no a recibir email), (2) Turnstile (anti-spam, vacío), (3) firmar DPAs. Redeploy: `vercel deploy --prod --scope nexoraprocesos-boops-projects`.
+- **Fase 2 — Newsletter y captación** ✅ **en producción y verificada end-to-end.** Doble opt-in,
+  route handlers `/api/{subscribe,confirm,unsubscribe,download,contact}`, React Email, lead
+  magnets con descarga firmada, baja 1-clic (RFC 8058), `/gracias` · `/baja` · `/privacidad`.
+  Infra (no volver a averiguarla):
+  - **Supabase** proyecto EU dedicado `kata-ivanovych-blog`, ref `udluclqhfzdgvqpoezoo`,
+    `eu-central-1`, **cuenta separada de la de NBI** (sin MCP/CLI desde esta máquina).
+    Migraciones `0001`-`0003` aplicadas. El `service_role` legacy se **rotó** a `sb_secret_…` y
+    la legacy quedó desactivada.
+  - **Vercel** team `nexoraprocesos-boops-projects`, proyecto `kata-ivanovych-blog`. Dominio por
+    A-record en Namecheap → `76.76.21.21`. Redeploy manual:
+    `vercel deploy --prod --scope nexoraprocesos-boops-projects` (normalmente no hace falta: cada
+    push a `main` despliega).
+  - **Resend**: `news.ianexora.com` verificado (DKIM+SPF+MX). El MX obligó a pasar Namecheap de
+    "Private Email" a "Custom MX" reañadiendo los 2 MX de `privateemail.com` + el de
+    `send.news`. `RESEND_FROM` = `Kata Ivanovych <news@news.ianexora.com>`.
+  - **Pendientes menores**: los CNAME `autodiscover`/`autoconfig`/`mail` y el SRV
+    `_autodiscover._tcp` que borró el cambio a Custom MX (solo afecta al autoconfig de clientes de
+    correo, no a recibir); **Turnstile sin configurar**; **DPAs sin firmar**; la
+    `publishable key` de Supabase en Vercel es inválida (inocuo hoy porque todo va server-side).
 - **Fase 3 — Comunidad y premium** ⬜ (no construir aún). Supabase Auth, Stripe, gating `premium`, dashboard. Tablas `profiles`, `subscriptions`.
 - **Fase 4 (idea, §8)** 💡. Búsqueda semántica "pregúntale a mi contenido" (embeddings + pgvector). No implementar; ver al final.
 
@@ -51,7 +70,10 @@ pero la parte de pago/auth **no se construye** hasta la Fase 3.
 - **Sin colores/tamaños hex en JSX.** Todo vía design tokens (`@theme` en `globals.css`): `bg-bg`, `text-fg`, `text-muted`, `text-accent-ink`, `bg-accent`, `border-border`. Referenciar tokens con `var(--color-*)` en valores arbitrarios está permitido; literales hex no.
 - **`service_role` solo servidor**, runtime Node, jamás `NEXT_PUBLIC` ni en el cliente.
 - **Gating server-side** (`draft`, `premium`): autorización en el route + `generateStaticParams` + RSS/sitemap; nunca ocultación client-side.
-- **Verificar verde antes de commitear** (`build`/`lint`/tipos). Commits pequeños en español, `git add` específico (no `git add .`).
+- **Taxonomía cerrada**: todo post lleva `tema` y `formato` del vocabulario de `src/config/taxonomy.ts`. Los `tags` libres son keywords secundarias y no generan navegación. Ampliar el vocabulario es una decisión editorial, no un typo.
+- **Las afirmaciones de credibilidad son `Evidencia`, no strings** (`src/lib/evidence.ts`). Si una tarjeta o un post afirma algo comprobable, va con su url/ruta/fuente o con ETA. Los invariantes rompen la build a propósito.
+- **Verificar verde antes de commitear** (`build`/`lint`/tipos). Commits pequeños; **el historial real está en inglés** (esta línea decía "en español" y llevaba semanas contradiciendo al `git log`).
+- **`git add` fichero a fichero.** No basta con evitar `git add .`: **añadir un directorio** (`git add src/app`) arrastra igual el trabajo sin commitear de Kata. Pasó dos veces el 2026-08-05.
 - **Secretos** en Doppler (dev) / `vercel env` (prod). Nunca en código/chat/logs.
 - **Next 16 ≠ el Next que conoces** (ver `@AGENTS.md`): consulta `node_modules/next/dist/docs/` antes de escribir código de framework.
 
@@ -59,16 +81,21 @@ pero la parte de pago/auth **no se construye** hasta la Fase 3.
 
 ```
 content/posts/                 # MDX (Fase 1)
+content/_templates/radar.mdx   # plantilla de edición del Radar (fuera del pattern de Velite)
 src/
   app/{layout,page}.tsx, globals.css
-  components/{ui,layout,newsletter}/
-  config/site.ts               # identidad textual (§1)
+  app/{blog,radar,sistemas,empieza-aqui,glosario,recursos,sobre-mi,trabaja-con-nbi}/
+  components/{ui,layout,home,blog,content,library,course,mdx,newsletter,effects,motion}/
+  config/{site,taxonomy,library,course}.ts   # SSOT: identidad, vocabulario, biblioteca, curso
   lib/
     utils.ts                   # cn()
+    evidence.ts                # tipo Evidencia + invariantes de build
+    posts.ts · radar.ts · format.ts · subscribers.ts · glossary.ts
     supabase/{client,server,middleware}.ts
+scripts/radar/{collect,verify-edition,youtube}.mjs
 middleware.ts                  # refresh de sesión (con guard si faltan env)
 supabase/{schemas,migrations}/ # esquema declarativo (diseño día 1, build por fases)
-next.config.ts · .env.example
+next.config.ts · velite.config.ts · eslint.config.mjs · .env.example
 ```
 
 ## Decisiones de arquitectura
@@ -101,24 +128,37 @@ por CI con **checkpoint humano**: nada se publica sin merge de un PR.
   ventana 7 días, dedupe, decode de entidades, strip `utm_*`) → `scratch/radar-candidates.json`
   (gitignored); (2) **Claude Code Action** redacta la edición usando SOLO ese JSON
   (plantilla `content/_templates/radar.mdx`, fuera del pattern de Velite); (3)
-  `scripts/radar/verify-edition.mjs` — **gate**: cada `<RadarItem>` debe coincidir verbatim
-  (url+title+source+axis) con un candidato o el workflow falla y no hay PR.
+  `scripts/radar/verify-edition.mjs` — **gate**: cada `<RadarItem>` debe coincidir con un
+  candidato o el workflow falla y no hay PR. La **url se compara verbatim** (es la clave de
+  identidad); título/fuente/eje se comparan **normalizando tipografía** (`canonical()`: NFC +
+  comillas curvas, guiones, elipsis y espacios exóticos → ASCII).
+  **Por qué (2026-08-05)**: con `!==` estricto el modelo reescribía `’` como `'` al retipear el
+  titular y el gate lo marcaba como alucinación — **se perdieron las ediciones del 27-jul y del
+  3-ago** mientras la home seguía anunciando cadencia semanal. Al tocar esto, verificar los tres
+  negativos: título reescrito, url inventada y fuente cambiada deben seguir saliendo con exit 1.
 - **Workflows**: `.github/workflows/radar-semanal.yml` (cron lunes 05:00 UTC + dispatch;
   PR vía `peter-evans/create-pull-request`, rama `radar/<fecha>`, body con los titulares) y
   `youtube-nuevo.yml` (cron 6h; lee RSS del canal, compara contra `youtubeId:` en
   `content/posts/**` — idempotente sin estado —, redacta post `draft: true` por vídeo nuevo).
 - **Superficie**: widget `RadarItem` (server component, `src/components/mdx/widgets/radar-item.tsx`);
-  franja "Radar IA" en `/blog` (últimas 3 ediciones, `getPostsByTag("radar")`); las ediciones
-  se **excluyen del grid principal** para no ahogar los artículos de fondo.
+  sección propia `/radar`; `CadenceStrip` en la home con cadencia derivada. Las ediciones
+  aparecen en el archivo de `/blog` identificadas por su columna `formato`, ya no necesitan
+  franja aparte.
+- **El frontmatter de cada edición lleva `tema: contenido` y `formato: radar`** — están en la
+  plantilla y en el prompt del workflow. Sin ellos la build falla (velite `--strict`).
 - **Deploy automático VIVO (2026-07-22)**: GitHub conectado al proyecto Vercel
   `kata-ivanovych-blog` — cada push/merge a `main` despliega solo. Para desbloquearlo en plan
   Hobby, el repo se hizo **público** (historial verificado sin secretos; autoría reescrita a
   `Kata Ivanovych <nexoraprocesos@gmail.com>` con filter-branch + force push; backup local en
   rama `backup-pre-rewrite`). Commits futuros: la config local del repo ya firma como Kata Ivanovych.
-- **Config pendiente del usuario**: (1) secret `CLAUDE_CODE_OAUTH_TOKEN` — correr
-  `claude setup-token` en una Terminal APARTE (es interactivo, `!` no le da TTY) y luego
-  `gh secret set CLAUDE_CODE_OAUTH_TOKEN --repo katasavyuk-pixel/blog-newsletter --body "$(pbpaste)"`;
-  (2) variable `YOUTUBE_CHANNEL_ID` (sin ella, el workflow de YouTube no corre).
+- **Permiso del repo (resuelto 2026-08-05)**: `can_approve_pull_request_reviews` estaba en
+  `false`, así que aunque el workflow declara `pull-requests: write` **Actions no podía abrir el
+  PR** y el job moría después de generar y verificar la edición. Era un segundo bug independiente
+  del gate. Se activó con
+  `gh api -X PUT repos/.../actions/permissions/workflow -F can_approve_pull_request_reviews=true`.
+  El checkpoint humano no se toca: el merge lo sigue haciendo Kata.
+- `CLAUDE_CODE_OAUTH_TOKEN` y `YOUTUBE_CHANNEL_ID` ya están resueltos (el segundo vive dentro de
+  `scripts/radar/youtube.mjs`, no es variable de Vercel — la web no lo lee).
 - **Gotcha Vercel (2026-07-21)**: el proyecto con el dominio es `kata-ivanovych-blog`
   (`prj_1Cx7OZXAthH1N64qhhmpDOiVjTM7`). Si `.vercel/project.json` falta, `vercel deploy` CREA
   un proyecto duplicado con el nombre del directorio y despliega al sitio equivocado (pasó 2
@@ -127,183 +167,134 @@ por CI con **checkpoint humano**: nada se publica sin merge de un PR.
 - Primera edición real publicada: `content/posts/radar-2026-07-21.mdx` (redactada a mano
   siguiendo el mismo pipeline, 7/7 ítems verificados por el gate).
 
-## Retención y descubrimiento (2026-07-22) — PARCIALMENTE SUPERSEDIDO: las secciones de home aquí descritas ya no existen (ver "El Universo"); siguen vivos `/empieza-aqui`, related posts, `radar.ts` y el curso
+## Retención y descubrimiento — lo que sigue vivo
 
-La home ya seguía el layout del diseño `Inicio.dc.html` (proyecto Claude Design
-`d90c113d-…`); esta pasada añadió lo que faltaba, traducido a los tokens rojo/negro:
+- **Curso** `/empieza-aqui`: itinerario de los 6 posts interactivos en orden pedagógico
+  (`src/config/course.ts` = SSOT de slugs), progreso en localStorage (`CourseList` +
+  `CourseProgressMarker` montado en la página del post vía `COURSE_SLUGS`).
+- **`getRelatedPosts()`** (`src/lib/posts.ts`, por tags compartidos, excluye radar) →
+  `RelatedPosts`, ahora dentro de `ArticleClosing`.
+- **`src/lib/radar.ts`** parsea los `<RadarItem>` de la última edición (fs, build-time).
+- **Franja YouTube autoactivable** (`youtube-strip.tsx`): render null hasta que exista un post
+  publicado con `youtubeId`. Miniaturas `i.ytimg.com` whitelisted en `next.config.ts`.
+- OJO: `ViewTransition` de React NO está en react 19.2.4 estable (solo canary) — no intentar
+  `unstable_ViewTransition`; la flag `experimental.viewTransition` está activa pero sin el
+  componente no anima la navegación cliente.
+- **Regla al implementar mocks del proyecto Claude Design**: traen datos fake ("12.400+
+  suscriptores", "Soy Álex") — SIEMPRE sustituir por datos reales y traducir hex → tokens.
 
-- **"Noticias de la semana"** en home: `src/lib/radar.ts` parsea los `<RadarItem>` de la
-  última edición radar (fs, build-time) → cards en `src/components/home/news-today.tsx`.
-- **Curso dinámico** `/empieza-aqui`: itinerario de los 6 posts interactivos en orden
-  pedagógico (`src/config/course.ts` = SSOT de slugs), progreso en localStorage
-  (`CourseList` + `CourseProgressMarker` montado en la página del post vía `COURSE_SLUGS`).
-- **"Sigue leyendo"**: `getRelatedPosts()` en `src/lib/posts.ts` (por tags compartidos,
-  excluye radar) + `RelatedPosts` al final de cada post.
-- **Franja YouTube autoactivable** en home (`youtube-strip.tsx`): posts publicados con
-  `youtubeId`; render null hasta que exista el primero. Miniaturas `i.ytimg.com`
-  whitelisted en `next.config.ts`.
-- Nav ampliada: Noticias (`/blog/tag/radar`) · Blog · Curso (`/empieza-aqui`) · Recursos · Sobre mí.
-- **Hero VIVO (2026-07-22)**: el panel del hero es un tokenizador interactivo real
-  (`src/components/home/hero-tokenizer.tsx`, o200k on-demand) + consola `$ kata --status`
-  con datos build-time. Identidad "laboratorio": eyebrows/footers mono con `▸`, footer
-  "construido en público · build <fecha>". OJO: `ViewTransition` de React NO está en
-  react 19.2.4 estable (solo canary) — no intentar `unstable_ViewTransition`; la flag
-  `experimental.viewTransition` está activa pero sin el componente no anima client-nav.
-- **Regla al implementar diseños del proyecto Claude Design**: los mocks traen datos fake
-  ("12.400+ suscriptores", "Soy Álex") — SIEMPRE sustituir por datos reales/honestos, y
-  traducir hex → tokens.
+## Rediseños retirados (registro)
 
-## Rediseño "EL UNIVERSO" (2026-07-23) — SUPERSEDIDO, retirado 2026-07-26
+- **"El Universo"** (2026-07-23, retirado 2026-07-26): mapa estelar navegable + copiloto NOVA.
+  Feedback de Kata: "no parecía blog profesional". `src/components/{universe,nova}/` y los tokens
+  "Cosmic layer" se eliminaron por completo. Spec:
+  `docs/superpowers/specs/2026-07-23-rediseno-universo-design.md`.
+- **Gotchas que sobrevivieron a su retirada**: `setPointerCapture` en pointerdown se traga los
+  clicks de los hijos; rAF no dispara en pestañas ocultas; el lint prohíbe `ref.current=` en
+  render y `setState` directo en effects (usar `useSyncExternalStore`).
 
-Tercer rediseño, de concepto raíz (a Kata los dos anteriores "no le convencían: sin
-personalidad ni originalidad"). Brainstorming completo + plan aprobado; spec en
-`docs/superpowers/specs/2026-07-23-rediseno-universo-design.md`. **Desplegado a prod
-2026-07-23** (merge fast-forward a `main`, deploy automático verificado en vivo).
+## Rediseño editorial (2026-08-05) — VIGENTE
 
-**Retirado 2026-07-26**: feedback de Kata — "no parecía blog profesional". La home volvió al
-layout editorial de "Biblioteca de Sistemas" (sección siguiente); `src/components/universe/` y
-`src/components/nova/` se eliminaron por completo, igual que los tokens/animaciones "Cosmic
-layer" en `globals.css`. Diagnóstico completo en
-`docs/superpowers/specs/2026-07-26-diagnostico-estrategico-y-monetizacion.md`. El resto de esta
-sección queda como registro histórico de lo que se construyó y por qué.
+Cuarto rediseño, pedido por Kata **pese al congelado de 60-90 días** del diagnóstico del 26-jul.
+A diferencia de los tres anteriores (que fueron cambios de concepto y por eso se cayeron), este
+deriva de reglas editoriales y de datos: la identidad visual (negro cálido + rojo, Anton + Inter)
+no se tocó. Plan completo en `~/.claude/plans/quiero-que-act-es-como-mighty-sparrow.md`.
 
-- **Concepto (idea de Kata)**: la web ES un **universo rojo/negro en expansión** — el universo
-  de NBI construyéndose en público. Big bang = 2026-06-24; anillos = semanas; cada sistema
-  publicado = un sistema estelar que se enciende. Identidad visual previa (tokens, Anton/
-  Montserrat, grano/viñeta) intacta; personalidad elegida: directo sin filtros + explorador
-  en misión + científico juguetón (NO "constructor obsesivo").
-- **Home = mapa estelar navegable** (`src/components/universe/`): cámara pan/zoom/inercia con
-  motion values (`universe-map.tsx`), astros por tipo (`astro-node.tsx`: núcleo NBI,
-  constelación=curso con estrellas que ENCIENDE el progreso real del lector, sistemas,
-  protoestrellas con % formación, púlsar=radar con blips reales, baliza=la Señal con form,
-  sonda=YouTube autoactivable, cometas=posts), panel de foco con CTA "aterrizar"
-  (`astro-panel.tsx`), fondo canvas parallax (`starfield.tsx`). **Capa semántica SSR** bajo el
-  mapa (`semantic-layer.tsx`): h1, enlaces reales, form `#senal` — SEO/a11y/no-JS. Móvil =
-  vuelo guiado (`touch-action: pan-y`, el scroll de página sobrevive; modo libre opt-in).
-- **SSOT**: `src/config/universe.ts` (geometría pura client-safe: tipos, anclas, bandas, hash
-  determinista — cero coordenadas a mano en colecciones) + `src/lib/universe.ts`
-  (`buildUniverse()` server-only desde library/course/posts/radar/journey + `getUniversePulse()`
-  para NOVA). Home con `revalidate=3600`.
-- **Cinemática de entrada** (`entry-sequence.tsx`): negro+logo → vuelo warp → partícula → bloom
-  carmesí → mapa. Solo 1ª visita (localStorage `universe-intro-seen`), saltable siempre,
-  visitas siguientes fundido ~300 ms, reduced-motion estático, `<noscript>` la oculta, dobla
-  como pantalla de carga.
-- **NOVA, la copiloto** (`src/components/nova/`): TODA su voz en `nova-script.ts` (editar ahí).
-  v1 guionizada 0-coste-API (Fase 4 embeddings = darle cerebro). Wizard de llegada tras la
-  cinemática (ruta → email `source: nova-wizard` → vuelo a tu órbita; máx. 1 auto-apertura
-  por sesión, solo en el mapa). Dock brasa en toda la web: llévame a / ¿qué es esto?
-  (contextual por ruta) / mi progreso (★☆ + siguiente lección) / guardar coordenadas
-  (`nova-dock`) / no molestar. "Desde tu última visita" con datos reales (`getUniversePulse`
-  vía layout); celebración al encender estrella (gamificación "Fase C" absorbida).
-- **Rutas**: `/biblioteca` → **`/sistemas`** (308 en `next.config.ts`); nav = Sistemas · Curso ·
-  Radar · Sobre mí; announcement bar y las 11 secciones de la home anterior BORRADAS
-  (`components/home/` ya no existe; también fuera glow-section, brand-visual, typography).
-  Sagrado intacto: URLs de posts, `/recursos`, `/yt`, backend completo, Velite, widgets MDX,
-  Radar CI, RSS/sitemap.
-- **Verificación**: build+lint verdes por commit; e2e con playwright-cli (WebKit): intro
-  1ª/skip/repetida, wizard completo con alta en preview-mode, mapa clic→panel→aterrizaje,
-  vuelo guiado móvil emulado, barrido rutas 200/307/308, form Señal. Prod verificado con curl.
-- **Gotchas nuevos**: (1) `setPointerCapture` en pointerdown se traga los clicks de los hijos —
-  capturar solo al superar el umbral de drag; (2) rAF NO dispara en pestañas ocultas — la
-  decisión post-hidratación de la intro usa `setTimeout(0)`; (3) el lint prohíbe `ref.current=`
-  en render y `setState` directo en effects — patrones: `useSyncExternalStore`
-  (`use-coarse-pointer.ts`) o setTimeout; (4) playwright-cli en esta máquina: canal chrome no
-  existe → `open --browser webkit` (+ `--mobile` para coarse pointer); el Browser-pane del IDE
-  con panel oculto da screenshots negros y throttlea timers — no fiarse para verificar
-  animaciones.
-- **Pendiente de Kata (gusto)**: densidad/posiciones de astros, intensidad de partículas,
-  pulir el guion de NOVA a su voz, sensación del mapa en su móvil real. Técnico pendiente:
-  momento "fin de post → siguiente órbita" (descartado consciente en v1: RelatedPosts ya
-  cubre), rachas del radar, `/stats`.
+**Posicionamiento: sin cambios** (validado ya por tres rediseños) — "construyo NBI en público;
+sistemas replicables probados en un negocio real"; lector nº1 = emprendedor en marcha; NBI jamás
+se vende en la home (solo downstream, email día 8); filtro de identidad en el copy.
 
-## Rediseño "Biblioteca de Sistemas" (2026-07-22) — VIGENTE (El Universo se retiró 2026-07-26; la home volvió a este layout editorial)
+**Copy / compliance**: "una empresa de IA" → **"mi negocio de soluciones de IA"** en `site.ts`,
+masthead y manifesto. `QUE_PUEDO_DECIR.md` prohíbe atribuirse personalidad jurídica hasta que se
+resuelva la capitalización — **revisar este copy cuando se resuelva**.
 
-Pivote de posicionamiento + rediseño de arquitectura (spec completa en
-`docs/superpowers/specs/2026-07-22-rediseno-biblioteca-sistemas-design.md`; brainstorming + 2
-rondas de benchmark de 10 referencias). **Identidad visual intacta** (tokens rojo/negro, Anton +
-Montserrat); lo que cambió es estructura y copy.
+**Nav (6 + CTA)**: `Sistemas · Curso · Radar · Artículos · Recursos · Sobre mí`. `/sistemas` entró
+(no estaba ni en nav ni en footer, siendo el escaparate del posicionamiento); `Blog` se etiqueta
+`Artículos` con la ruta `/blog` intacta.
 
-**Actualización 2026-07-26**: tras retirar "El Universo", la home volvió a este layout, con 2
-ajustes sobre lo descrito abajo: la ruta se renombró `/biblioteca` → `/sistemas` (redirect 308),
-y el nav pasó a `Blog · Curso · Radar · Sobre mí` (antes `Biblioteca · Curso · Noticias · Sobre
-mí`). El resto de la arquitectura de esta sección sigue vigente tal cual.
+**Ruta nueva `/radar`** (qué es la serie + cómo se verifica + ediciones). `/blog/tag/radar` → 308
+→ `/radar`; ese tag sale del sitemap para no listar redirects. Las ediciones conservan
+`/blog/<slug>`.
 
-- **Posicionamiento**: de "aprende IA sin humo" → **"construyo NBI en público; sistemas replicables
-  probados en un negocio real"**. Lector nº 1 = emprendedor ya en marcha (el canal de YouTube
-  tratará emprendimiento/desarrollo/habilidades). NBI jamás se vende en la home — solo downstream
-  (email día 8). Filtro de identidad en el copy ("no encajarás si buscas atajos").
-- **Arquitectura** (patrón Clear/Ness Labs: biblioteca-como-página, home-como-argumento): nav de 4
-  items `Biblioteca (/biblioteca) · Curso · Noticias · Sobre mí` + CTA. `/blog` y `/recursos`
-  siguen vivos fuera de la nav (SEO + embudo `/yt` intactos). **`/biblioteca`** = biblioteca
-  completa por temas con destacados curados. `/sobre-mi` = "el viaje" (identidad → credencial →
-  misión → CTA).
-- **Home** (~7 secciones, exactamente 2 forms): hero captura (form + magnet nombrado) con **panel
-  de estado del viaje** (`JourneyPanel`: consola `kata --status` con misión/semana/sistemas/
-  suscriptores) → **pilar curso** (`CoursePillar`, tokenizador movido aquí como demo) →
-  **biblioteca curada** (`LibraryShowcase` + `LibraryCard`, cards "EN EL TALLER" con barra de
-  progreso = huecos anunciados) → cadencia Radar (`CadenceStrip`) → manifiesto → YouTube strip →
-  cierre que vende contenido FUTURO (`ClosingCta`, ancla `#newsletter`). Eliminados:
-  `blog-highlights`, `interactive-showcase`, `news-today`, `newsletter-cta`, `about-teaser`,
-  `final-cta`.
-- **SSOT nuevo**: `src/config/library.ts` (`LIBRARY_ITEMS` con `status disponible|en-construccion`,
-  temas, proof lines honestas; `COURSE_LESSON_META`). Regla de honestidad: cada item debe ser real.
-  `siteConfig.journey` (`start` = primer commit 2026-06-24, `mission` — actualizar cuando cambie).
-- **Métricas**: `getConfirmedSubscriberCount()` (`src/lib/subscribers.ts`, admin client, degrada a
-  `null`); home con `revalidate = 3600` (ISR). El contador solo se muestra desde
-  `newsletter.showCountFrom` (100).
-- Verificado e2e con Playwright: rutas 200, `/yt` → 307 con utm, form del hero (preview mode),
-  screenshots desktop/móvil. Gotcha lint: `Date.now()` en render viola `react-hooks/purity` →
-  calcular en scope de módulo.
-- **Capa "impacto" (feedback "no me llama la atención" + storyboard partículas del usuario)**:
-  (1) `ParticleField` (`src/components/effects/`, canvas client global en el layout, z-30 bajo
-  viñeta/grano z-40/41): brasas carmesí con estallido inicial que se asienta en deriva, sprites
-  pre-renderizados (nada de shadowBlur por frame), pausa con visibilitychange, `null` bajo
-  reduced-motion; (2) `StatusTicker` — marquesina CSS (`.ticker-track`, contenido duplicado,
-  loop -50%) con datos reales del viaje; (3) biblioteca en **bento asimétrico** con ordinales
-  cromados gigantes (`chrome-text` + Anton) y halo radial en la card destacada (`LibraryCard`
-  props `hero`/`ordinal`); (4) clímax carmesí de vuelta: `ClosingCta` = panel `bg-accent`
-  saturado con card de form espresso flotando; (5) `ScrollReveal` escalonado en hero/parrillas.
-  OJO: los full-page screenshots salen con parrillas "vacías" (whileInView no dispara sin
-  scroll) — verificar scrolleando. El look que quiere Kata: cinematográfico rojo/negro con
-  partículas, momentos "wow" — no minimalismo plano.
+**Taxonomía cerrada** (`src/config/taxonomy.ts`): `tema` (`ia-aplicada` · `captacion` ·
+`contenido` · `operaciones` · `economia`) + `formato` (`sistema` · `radar` · `nota` · `leccion` ·
+`herramienta` · `caso`), **ambos obligatorios** en frontmatter y validados con Zod en
+`velite.config.ts`. Los `tags` libres sobreviven como keywords secundarias y **no generan
+navegación**. Los 11 MDX ya llevan backfill. `RADAR_AXES` también vive aquí (estaba duplicado).
+
+**Evidencia** (`src/lib/evidence.ts`) — el núcleo: los badges de credibilidad son un tipo, no un
+string. `en-produccion | reproducible | medido | experiencia | en-taller`, con invariantes que
+**rompen la build**: ETA obligatoria y no vencida, cifra sin fuente, `en-produccion` sin url, e
+item cuyo `slug` sea draft (antes devolvía `null` y la tarjeta desaparecía en silencio).
+`status` se **deriva** de la evidencia (`libraryStatus()`), ya no se declara al lado y por tanto
+no puede contradecirla. ETAs vigentes: Stack GEO `2026-09`, máquina de bienvenida `2026-10`.
+
+**Cadencia auto-degradante** (`getRadarCadence()`): si la última edición pasa de 10 días, la home
+sustituye sola "Cada lunes · en automático" por "Última edición: <fecha>". El sitio no puede
+mentir sobre su cadencia aunque el CI falle.
+
+**Tipografía — la causa real del "no parece premium"**: `--font-display` y `--font-body` resolvían
+**los dos a Inter**, así que no había ningún contraste tipográfico. Clase `.headline` (Anton) en
+21 titulares grandes. Reglas duras: sentence case (nunca mayúsculas — se comen las tildes),
+`letter-spacing .01em`, `line-height 1.02`, **nunca bajo ~28px ni en cuerpo**. Los h2 de
+subsección a `text-2xl` se quedan en Inter a propósito.
+
+**Home (8 secciones, 2 forms y ambos bajo el fold; antes 3, uno sobre el fold)**: `Masthead` (sin
+formulario, dos enlaces de entrada) → `StartHere` (3 rutas derivadas de contenido real) →
+`LibraryShowcase` → `CadenceStrip` → `HomeArchive` (lista densa) → `YouTubeStrip` → `ClosingCta`
+→ `Manifesto` (al final, y sin el monograma "KI" de `BrandVisual`). `hero.tsx` eliminado.
+
+**Artículo**: cabecera y cuerpo comparten columna del grid — antes eran contenedores distintos
+(`max-w-3xl` centrado sobre un grid `max-w-5xl`) y el `h1` no compartía eje óptico con su texto.
+Medida 70ch (el español corre 15-20% más largo que el inglés). Rail sticky = TOC + compartir.
+Los 4 bloques apilados del final → `ArticleClosing`, **una sola** llamada elegida por `formato`.
+TOC desde >1 heading. `updated` visible vía `PostMeta` (ningún post lo usa todavía).
+
+**Primitivos compartidos** (`src/components/content/`): `PostMeta`, `TagPill`, `ContentRow` +
+`ArchiveList`. Antes había **11 implementaciones de card**, el string canónico copiado a mano en
+8 ficheros, 3 hovers distintos y 3 píldoras de tag no intercambiables.
+
+**Lo que sigue vigente de "Biblioteca de Sistemas" (2026-07-22)**: patrón biblioteca-como-página /
+home-como-argumento; `/sistemas` por temas; `JourneyPanel` (consola `kata --status` con datos de
+build); `LibraryCard` con bento asimétrico, ordinales cromados y halo en la destacada;
+`ClosingCta` carmesí; `ParticleField` + grano + viñeta; `getConfirmedSubscriberCount()` y
+`revalidate = 3600`. Spec: `docs/superpowers/specs/2026-07-22-rediseno-biblioteca-sistemas-design.md`.
 
 ## Diagnóstico estratégico y hoja de ruta de negocio (2026-07-26)
 
-Auditoría completa a petición de Kata ("rediseña el blog como arquitecto senior"): investigación
-de código + `git diff` de las 4 ramas `claude/*` + sitio en vivo + GitHub Actions, antes de
-proponer nada. Spec completa (diagnóstico por sección: estrategia, posicionamiento, monetización,
-newsletter, YouTube, UX, SEO, premium) en
-`docs/superpowers/specs/2026-07-26-diagnostico-estrategico-y-monetizacion.md`.
+Detalle completo por tema en
+`docs/superpowers/specs/2026-07-26-diagnostico-estrategico-y-monetizacion.md`. Lo que hay que
+recordar sin abrirlo:
 
-- **Conclusión central**: posicionamiento, pilares de contenido, newsletter y stack ya están
-  maduros y validados por 2 rediseños — no se tocan. Los huecos reales, verificados con datos, no
-  son de diseño: **precio/alcance de NBI sin definir** (bloquea `/trabaja-con-nbi` y el email día
-  8), **0 vídeos de YouTube reales** (infraestructura lista, falta `YOUTUBE_CHANNEL_ID` y grabar),
-  **volumen editorial bajo** (9 posts, 1 edición de Radar), y **2 promesas "en el taller"
-  abiertas** (Stack GEO, Máquina de bienvenida) sin fecha.
-- **Recomendación explícita: congelar el diseño visual 60-90 días.** 3 rediseños en 5 semanas es
-  hoy el mayor riesgo del proyecto — desplaza tiempo de lo que sí convierte (oferta, contenido,
-  YouTube) a iterar una capa que ya funciona.
-- **Monetización**: 0€ activo ahora (correcto, <100 suscriptores). Orden recomendado: definir
-  precio NBI → primer producto de pago barato (plantilla/checklist, 3-6 meses) → premium/newsletter
-  de pago solo con cadencia semanal sostenida + ~500-1000 suscriptores. Propuesta ligera para
-  entonces: **"NBI Inside"**, 12€/mes o 120€/año, acceso a builds completos + sesión mensual.
-- **Housekeeping del mismo día**: limpiados los tokens/animaciones "Cosmic layer" huérfanos en
-  `globals.css` (Universo ya no tiene componentes que los usen); señaladas sin borrar las 3 ramas
-  `claude/*` superseded (`blog-design-changes-90fd54`, `blog-redesign-from-scratch-e77d7c`,
-  `universo-mapa-intencion-04c032` — esta última, commit idéntico a `main`).
+- **Los huecos son de oferta y volumen, no de diseño**: precio/alcance de NBI sin definir
+  (bloquea `/trabaja-con-nbi` y el email día 8), 0 vídeos reales de YouTube, cadencia editorial
+  baja. Nada de eso se arregla rediseñando.
+- **Se recomendó congelar el diseño 60-90 días** y Kata pidió el 4º rediseño igualmente el
+  2026-08-05 (ver sección "Rediseño editorial"). La recomendación sigue en pie para el 5º.
+- **Monetización**: 0€ activo es lo correcto por debajo de 100 suscriptores. Orden: precio de NBI
+  → primer producto de pago barato → premium solo con cadencia sostenida y ~500-1000
+  suscriptores. Idea aparcada: "NBI Inside", 12€/mes. **Nada de cobrar hasta que se resuelva la
+  capitalización** (`QUE_PUEDO_DECIR.md`).
+- 3 ramas `claude/*` superseded siguen sin borrar (`blog-design-changes-90fd54`,
+  `blog-redesign-from-scratch-e77d7c`, `universo-mapa-intencion-04c032`). La última dejó además
+  un worktree en `.claude/worktrees/` con una copia completa del repo.
 
 ## Embudo y medición (2026-07-22)
 
-Sprint "listo para el episodio 1" (investigación: con <1k subs los referidos no compensan;
-lead magnet específico por vídeo ~30% conversión vs ~2% genérico; secuencia de bienvenida =
-palanca nº1 lector→cliente). Decisiones: oferta = **NBI primero**; analítica = **Vercel WA**.
+Sprint "listo para el episodio 1": con <1k suscriptores los referidos no compensan; el lead
+magnet **por tema** (no por vídeo, que muere por coste de producción) es lo que sostiene; la
+secuencia de bienvenida es la palanca nº1 lector→cliente. Decisiones: oferta = **NBI primero**;
+analítica = **Vercel WA**.
+
+> Aquí ponía *"~30% de conversión por vídeo vs ~2% genérico"*. **Esas cifras no tienen fuente y
+> `EMBUDO.md` las retiró el 2026-07-29**; la dirección era correcta, los números no. La mecánica
+> del embudo manda desde `~/Developer/Marca-Personal/EMBUDO.md`, no desde aquí.
 
 - **Analítica**: `<Analytics/>` (`@vercel/analytics/next`) en el layout. Verificada en dev (debug mode).
 - **`/yt`** → `/recursos?utm_source=youtube` (307, `next.config.ts`) — link para descripción + comentario fijado de cada vídeo.
 - **Secuencia de bienvenida** (día 2 curso / día 5 historia / día 8 pitch NBI suave): contenidos en `src/emails/welcome-sequence.tsx` (reutiliza la carcasa `NewsletterEmail` → footer de baja + `List-Unsubscribe` RFC 8058), lógica en `src/lib/welcome-sequence.ts`. Se programa en `/api/confirm` con `scheduledAt` de Resend (sin cron, máx. 30 días); la baja (`/api/unsubscribe`) cancela pendientes en Resend y borra filas (re-alta = nuevo ciclo de consentimiento). **Best-effort**: si la tabla no existe o Resend falla, el opt-in NUNCA se rompe.
 - **`RESEND_REPLY_TO`** (env, opcional pero importante): el subdominio de envío no recibe correo — sin esta env las respuestas a "responde a este email" (día 5/8) rebotan. Cargar en Vercel un buzón real monitorizado.
-- **Pendiente para activar la secuencia**: (1) aplicar `supabase/migrations/0002_scheduled_emails.sql` en el SQL editor del proyecto del blog (esa cuenta Supabase NO tiene MCP/CLI desde esta máquina), (2) `RESEND_REPLY_TO` en Vercel, (3) e2e en prod: confirmar un alta de test → 3 emails en "Scheduled" de Resend + 3 filas en `scheduled_emails`; baja → cancelados.
+- **Secuencia activa desde 2026-07-29**: migraciones `0001`/`0002`/`0003` aplicadas (la BD de producción estaba **vacía** — no faltaba la secuencia, faltaba `subscribers`), `RESEND_REPLY_TO` = `info@ianexora.com` desplegada. **Sigue sin comprobarse que ese alias llegue a un buzón que Kata lea**: si no llega, las respuestas se pierden en silencio, que es justo el fallo que la variable existía para evitar — y el *reply rate* es la métrica de la fase.
 - **GEO (llms.txt, robots.ts, JSON-LD Person) deliberadamente NO construido**: es el contenido EN CÁMARA del episodio 1 (memoria `guion-episodio-1-geo`) — el 404 de `/llms.txt` es el "antes" del vídeo. No adelantar.
 - Descartado consciente (jul-2026): programa de referidos (<1k subs), comentarios giscus, Discord/Telegram (moderación vs tope 1,5h/sem — revisar a ~500-1k subs), analítica self-host.
 
@@ -355,3 +346,22 @@ Búsqueda semántica / "pregúntale a mi contenido": embeddings de los posts + `
 ## Pitfalls a recordar (de la investigación, ver `tasks/w2wo9hqiz.output`)
 
 Turbopack ignora plugins MDX con funciones → Velite · Tailwind v4: `darkMode:'class'` se ignora (usar `@custom-variant`) · `REVOKE` no-op si PUBLIC retiene grant · token en claro = enumeración · `premium`/`draft` solo en listados = fuga por URL · JSON-LD sin escapar `<` = XSS · OG con `ImageResponse` de `next/og` · `next.config` con plugins ESM-only.
+
+**Añadidos 2026-08-05 (todos vistos en vivo, no teóricos):**
+
+- **Velite salía con 0 ante errores de schema.** Registraba `Invalid enum value` y seguía: el post
+  simplemente desaparecía de la colección, y por tanto de listados, sitemap y RSS, sin romper
+  nada. Aplicaba a **cualquier** campo. Por eso `build:content` lleva ahora `--strict`. No
+  quitarlo.
+- **`npm run lint` estaba inservible**: recorría `.claude/worktrees/`, que son copias completas
+  del repo, y daba 1681 errores de ramas abandonadas. `.claude/**` está en `globalIgnores`.
+- **Verificar con el servidor equivocado.** `pkill -f "next-server (v16"` no mata nada: el
+  paréntesis es un metacarácter de regex. `npm start` falla entonces con `EADDRINUSE` **en
+  segundo plano**, y `curl` sigue respondiendo — desde un build anterior cuyo chunk de CSS ya
+  borró `--clean`, así que la página sale sin estilos y parece un bug de CSS. Matar por PID
+  (`lsof -t -iTCP:<puerto> -sTCP:LISTEN`) y **comprobar `EADDRINUSE` en el log** antes de creerse
+  una captura. Ojo también: hay un `next-server` ajeno (NBI-WEB) ocupando el 3000.
+- **Capturas de pantalla**: `whileInView` no dispara sin scroll (parrillas vacías) y el canal
+  `chrome` no existe en esta máquina → `open --browser webkit` (+ `--mobile`).
+- **CSS sin capa gana a las utilidades de Tailwind v4**: `.headline` define `line-height` fuera de
+  `@layer`, así que pisa el que trae `text-3xl`. Es deliberado.
