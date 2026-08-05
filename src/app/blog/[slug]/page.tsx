@@ -117,10 +117,12 @@ export default async function PostPage({
               <span className="font-mono text-xs text-fg">
                 {siteConfig.author.name}
               </span>
-              <span aria-hidden className="text-faint">
+              {/* Hidden on mobile: with the meta row wrapping, the separator
+                  ended up dangling at the end of the author line. */}
+              <span aria-hidden className="hidden text-faint sm:inline">
                 ·
               </span>
-              <PostMeta post={post} />
+              <PostMeta post={post} className="w-full sm:w-auto" />
               {post.tags.length > 0 ? (
                 <div className="flex flex-wrap gap-1.5 sm:ml-auto">
                   {post.tags.map((tag) => (
