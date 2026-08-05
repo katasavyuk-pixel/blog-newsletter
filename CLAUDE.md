@@ -2,8 +2,9 @@
 
 # CLAUDE.md — Blog + Newsletter de marca personal (IA)
 
-> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Rediseño editorial —
-> taxonomía cerrada, sistema de evidencia y tipografía** (2026-08-05).
+> Documento vivo. Se mantiene al cerrar cada fase. Última actualización: **Embudo de captación —
+> `/recursos` con imán, secuencia de bienvenida 0/48/96h, CTA inline, GEO parcial y panel**
+> (2026-08-05, segunda sesión del día).
 
 ## Antes de escribir contenido
 
@@ -32,9 +33,10 @@ pero la parte de pago/auth **no se construye** hasta la Fase 3.
   magnets con descarga firmada, baja 1-clic (RFC 8058), `/gracias` · `/baja` · `/privacidad`.
   Infra (no volver a averiguarla):
   - **Supabase** proyecto EU dedicado `kata-ivanovych-blog`, ref `udluclqhfzdgvqpoezoo`,
-    `eu-central-1`, **cuenta separada de la de NBI** (sin MCP/CLI desde esta máquina).
-    Migraciones `0001`-`0003` aplicadas. El `service_role` legacy se **rotó** a `sb_secret_…` y
-    la legacy quedó desactivada.
+    `eu-central-1`, **cuenta separada de la de NBI** (sin MCP/CLI desde esta máquina — el MCP de
+    Supabase solo ve `Maître-prod` y `NbiOps`, así que **desde aquí no se puede verificar el
+    esquema**: hay que fiarse de lo que diga Kata). Migraciones `0001`-`0005` aplicadas. El
+    `service_role` legacy se **rotó** a `sb_secret_…` y la legacy quedó desactivada.
   - **Vercel** team `nexoraprocesos-boops-projects`, proyecto `kata-ivanovych-blog`. Dominio por
     A-record en Namecheap → `76.76.21.21`. Redeploy manual:
     `vercel deploy --prod --scope nexoraprocesos-boops-projects` (normalmente no hace falta: cada
@@ -45,7 +47,13 @@ pero la parte de pago/auth **no se construye** hasta la Fase 3.
   - **Pendientes menores**: los CNAME `autodiscover`/`autoconfig`/`mail` y el SRV
     `_autodiscover._tcp` que borró el cambio a Custom MX (solo afecta al autoconfig de clientes de
     correo, no a recibir); **Turnstile sin configurar**; **DPAs sin firmar**; la
-    `publishable key` de Supabase en Vercel es inválida (inocuo hoy porque todo va server-side).
+    `publishable key` de Supabase en Vercel es inválida (inocuo hoy porque todo va server-side —
+    y `src/lib/resources.ts` ya lee con `createAdminClient()` justo por esto).
+  - **Envs de Vercel (producción)**: `DOWNLOAD_LINK_SECRET` ✅ · `RESEND_REPLY_TO` ✅ ·
+    `NEWSLETTER_SEND_SECRET` y `ADMIN_PANEL_SECRET` **las crea Kata a mano**, porque las usa desde
+    un terminal y Vercel guarda como *Sensitive* lo que crea el agente (no se puede volver a leer).
+    Ojo: **`.env.example` no es legible desde este sandbox** (Read y `grep` denegados), así que la
+    lista de envs vive aquí, no solo ahí.
 - **Fase 3 — Comunidad y premium** ⬜ (no construir aún). Supabase Auth, Stripe, gating `premium`, dashboard. Tablas `profiles`, `subscriptions`.
 - **Fase 4 (idea, §8)** 💡. Búsqueda semántica "pregúntale a mi contenido" (embeddings + pgvector). No implementar; ver al final.
 
@@ -81,20 +89,31 @@ pero la parte de pago/auth **no se construye** hasta la Fase 3.
 
 ```
 content/posts/                 # MDX (Fase 1)
+content/newsletters/*.md       # ediciones del boletín (draft: true por defecto)
+content/emails/*.md            # copy de la secuencia de bienvenida — editable sin tocar TS
 content/_templates/radar.mdx   # plantilla de edición del Radar (fuera del pattern de Velite)
 src/
   app/{layout,page}.tsx, globals.css
-  app/{blog,radar,sistemas,empieza-aqui,glosario,recursos,sobre-mi,trabaja-con-nbi}/
-  components/{ui,layout,home,blog,content,library,course,mdx,newsletter,effects,motion}/
-  config/{site,taxonomy,library,course}.ts   # SSOT: identidad, vocabulario, biblioteca, curso
+  app/{blog,radar,sistemas,empieza-aqui,glosario,recursos,sobre-mi,trabaja-con-nbi,panel}/
+  api/{subscribe,confirm,unsubscribe,download,contact}/
+  api/{newsletter/send,welcome-sequence/test,panel/login}/
+  components/{ui,layout,home,blog,content,library,course,mdx,newsletter,contact,effects,motion}/
+  config/{site,taxonomy,library,course,cierre,cta-inline}.ts   # SSOT
   lib/
-    utils.ts                   # cn()
     evidence.ts                # tipo Evidencia + invariantes de build
-    posts.ts · radar.ts · format.ts · subscribers.ts · glossary.ts
-    supabase/{client,server,middleware}.ts
+    cost-model.ts              # aritmética de la calculadora, SIN "use client" (la usan email y API)
+    lead-magnets.ts · signed-links.ts       # captura+RGPD · HMAC de descarga
+    email-template.ts · email-blocks.ts     # placeholders {{…}} (lanzan) · bloques HTML del email
+    jsonld.ts · funnel.ts · panel-auth.ts
+    utils.ts · posts.ts · radar.ts · format.ts · subscribers.ts · glossary.ts
+    newsletter.tsx · welcome-sequence.tsx   # .tsx: llevan JSX de React Email
+    supabase/{client,server,admin,middleware}.ts
 scripts/radar/{collect,verify-edition,youtube}.mjs
+scripts/geo/audit-ssr.mjs      # ¿el texto sustantivo está en el HTML servido?
 middleware.ts                  # refresh de sesión (con guard si faltan env)
-supabase/{schemas,migrations}/ # esquema declarativo (diseño día 1, build por fases)
+supabase/migrations/           # 0001-0005, aplicadas a mano en el SQL editor
+supabase/seeds/resources.sql   # altas de recursos (contenido, no migración)
+docs/geo-checklist.md
 next.config.ts · velite.config.ts · eslint.config.mjs · .env.example
 ```
 
@@ -208,9 +227,14 @@ se vende en la home (solo downstream, email día 8); filtro de identidad en el c
 masthead y manifesto. `QUE_PUEDO_DECIR.md` prohíbe atribuirse personalidad jurídica hasta que se
 resuelva la capitalización — **revisar este copy cuando se resuelva**.
 
-**Nav (6 + CTA)**: `Sistemas · Curso · Radar · Artículos · Recursos · Sobre mí`. `/sistemas` entró
-(no estaba ni en nav ni en footer, siendo el escaparate del posicionamiento); `Blog` se etiqueta
-`Artículos` con la ruta `/blog` intacta.
+**Nav (6 + CTA)**: `/sistemas` entró (no estaba ni en nav ni en footer, siendo el escaparate del
+posicionamiento); `Blog` se etiqueta `Artículos` con la ruta `/blog` intacta.
+**Orden actual, reordenado el 2026-08-05 (segunda sesión)**:
+`Curso · Recursos · Artículos · Sistemas · Radar · Sobre mí`. Curso primero por ser el activo
+diferencial; Recursos sube al 2º ahora que sirve algo (antes iba 5º apuntando a un estado vacío);
+Sistemas baja al 4º mientras 2 de sus 5 items sigan `en-taller`. **Radar se queda en la nav**: se
+consideró bajarlo al footer y se descartó — es lo único del sitio que demostrablemente funciona solo,
+y `getRadarCadence()` ya degrada la promesa si se para.
 
 **Ruta nueva `/radar`** (qué es la serie + cómo se verifica + ediciones). `/blog/tag/radar` → 308
 → `/radar`; ese tag sale del sitemap para no listar redirects. Las ediciones conservan
@@ -260,6 +284,47 @@ build); `LibraryCard` con bento asimétrico, ordinales cromados y halo en la des
 `ClosingCta` carmesí; `ParticleField` + grano + viñeta; `getConfirmedSubscriberCount()` y
 `revalidate = 3600`. Spec: `docs/superpowers/specs/2026-07-22-rediseno-biblioteca-sistemas-design.md`.
 
+## Máquina de captación (2026-08-05, segunda sesión) — VIGENTE
+
+Cinco fases en producción. **No es un rediseño**: no se tocó ni un token visual. Cerró las tres
+fugas del diagnóstico del 26-jul (`/recursos` vacía recibiendo tráfico, sin entrega inmediata al
+confirmar, sin CTA en el cuerpo de los artículos) y de paso cuatro bugs que llevaban vivos semanas.
+
+- **`/recursos`** ya no es un estado vacío: calculadora con captura + el PDF "25 datos" + "En el
+  taller" **derivado de `LIBRARY_ITEMS`** (no escrito a mano, así no puede contradecir a `/sistemas`
+  ni caducar en silencio — `assertEvidencia` rompe la build). Lee `?need_email` y explica el rebote.
+- **La calculadora se usa entera sin registrarse.** No negociable: el sitio promete "sin registro" y
+  el argumento del blog es que los números se comprueban. El email compra **entrega** (el desglose
+  por escrito + la fórmula), no acceso. `captureMode` apagado por defecto → el artículo que la aloja
+  renderiza **igual byte a byte**.
+- **`<SuscripcionInline/>` en el cuerpo de los 9 artículos.** Copy desde `cta_inline` en frontmatter,
+  fallback por `formato` (`src/config/cta-inline.ts`). **El cuerpo MDX no ve su propio frontmatter**:
+  `blog/[slug]/page.tsx` liga el componente al post al construir el mapa de `components`; por eso NO
+  está en `widgets/index.ts`. En `cuanto-cuesta-la-ia` no hay formulario aparte, se enciende la
+  captura de la calculadora. En el Radar va **entre dos `</RadarItem>` y `<RadarItem`, nunca
+  dentro**: los dos parsers leen esas etiquetas y rompería la verificación (está en la plantilla con
+  la restricción escrita).
+- **`CierreEstandar` mató el switch por `formato`** de `ArticleClosing`: tres salidas fijas siempre
+  (curso · trabajar conmigo · responder), y `formato` solo decide cuál se destaca. El switch no era
+  incorrecto, era **inmedible** — nadie veía dos veces el mismo cierre. Copy en
+  `src/config/cierre.ts`, compartido con la versión email — **strings sí, JSX no**: uno es Tailwind y
+  el otro sobrevive a Outlook. `NewsletterEmail` lo pinta con `showClosing` (true en boletines, false
+  en la secuencia, cuyo email 3 ya *es* la oferta).
+- **La salida 2 NO dice "diagnóstico".** `EMBUDO.md` es explícito: *"Diagnóstico con entregable por
+  encima de la charla gratis. **Hoy no se ofrece.**"* No hay alcance, precio ni entregable detrás de
+  la palabra, y la primera conversación de venta es en septiembre. La petición es que describan su
+  proceso, que además es la métrica declarada de la fase. **Revisar cuando se defina el precio de
+  NBI**; el destino vive en `siteConfig` para cambiarlo en una línea.
+- **`/panel`** (no `/admin`, que es lo que escanean los bots): 6 tablas, sin gráficas, tras
+  contraseña con cookie firmada por HMAC. El gate va **en la página, no en `middleware.ts`**, porque
+  el middleware corre en Edge y ahí no existe `node:crypto`. Agregación en TypeScript sobre selects
+  planos, con `ROW_CAP` como aviso de cuándo moverla a SQL.
+  Dos métricas etiquetadas con cuidado: **"desgloses pedidos", no "usos"** (usar la calculadora no
+  toca el servidor; el uso está en Vercel WA, evento `calculadora_usada`), y **sin open rate**
+  (necesita webhook de Resend, y Apple Mail precarga los píxeles).
+- **Pendiente de decisión de Kata**: la frase del masthead. Se propusieron 3 alternativas que
+  filtran por promesa en vez de por advertencia; ninguna aplicada.
+
 ## Diagnóstico estratégico y hoja de ruta de negocio (2026-07-26)
 
 Detalle completo por tema en
@@ -292,10 +357,41 @@ analítica = **Vercel WA**.
 
 - **Analítica**: `<Analytics/>` (`@vercel/analytics/next`) en el layout. Verificada en dev (debug mode).
 - **`/yt`** → `/recursos?utm_source=youtube` (307, `next.config.ts`) — link para descripción + comentario fijado de cada vídeo.
-- **Secuencia de bienvenida** (día 2 curso / día 5 historia / día 8 pitch NBI suave): contenidos en `src/emails/welcome-sequence.tsx` (reutiliza la carcasa `NewsletterEmail` → footer de baja + `List-Unsubscribe` RFC 8058), lógica en `src/lib/welcome-sequence.ts`. Se programa en `/api/confirm` con `scheduledAt` de Resend (sin cron, máx. 30 días); la baja (`/api/unsubscribe`) cancela pendientes en Resend y borra filas (re-alta = nuevo ciclo de consentimiento). **Best-effort**: si la tabla no existe o Resend falla, el opt-in NUNCA se rompe.
-- **`RESEND_REPLY_TO`** (env, opcional pero importante): el subdominio de envío no recibe correo — sin esta env las respuestas a "responde a este email" (día 5/8) rebotan. Cargar en Vercel un buzón real monitorizado.
+- **Secuencia de bienvenida — 0h / 48h / 96h** (`w1-bienvenida` / `w2-historia` / `w3-sistema`).
+  **El copy vive en `content/emails/*.md`** (colección Velite `sequenceEmails`) y se edita sin
+  tocar TS; la lógica en `src/lib/welcome-sequence.tsx`. Se programa en `/api/confirm` con
+  `scheduledAt` de Resend (sin cron, máx. 30 días → `delayHours` está topado en el schema para no
+  fallar en el envío); la baja cancela pendientes y borra filas. **Best-effort**: si la tabla no
+  existe o Resend falla, el opt-in NUNCA se rompe.
+  - **El paso 0 se envía inmediato y entrega algo**: `{{apertura_personalizada}}` renderiza el
+    desglose de la calculadora **recalculado en servidor** desde `lead_magnet_submissions`, o si no
+    hay, la lección más fuerte. Placeholders en `src/lib/email-template.ts` — **un nombre
+    desconocido LANZA** y el paso se salta, porque un `{{typo}}` enviado no se puede deshacer.
+  - **El guard anti-duplicado mira si hay CUALQUIER fila** en `scheduled_emails`, no clave por
+    clave. Comparar por clave solo era seguro mientras las claves no cambiaran: al renombrar
+    `d2-curso`→`w2-historia` todos los suscriptores existentes habrían parecido no inscritos.
+  - **Modo prueba**: `POST /api/welcome-sequence/test` (Bearer `NEWSLETTER_SEND_SECRET`, reutilizado
+    a propósito). Manda los 3 de golpe con asunto `[PRUEBA]`, no escribe nada, y con `dryRun`
+    devuelve el HTML. Es la única forma de revisar un cambio de copy sin esperar 4 días.
+  - Sustituyó a `d2-curso`/`d5-historia`/`d8-nbi` y a `src/emails/welcome.tsx`, **ambos borrados**.
+    Ese `welcome.tsx` iba **sin `List-Unsubscribe` ni enlace de baja** — el único de los cuatro que
+    incumplía RFC 8058, y el primero que recibía cualquiera. Y `d8-nbi` decía *"montamos sistemas
+    de IA"*, plural de cortesía que `QUE_PUEDO_DECIR.md` prohíbe. Al reescribir se cerraron los dos.
+- **`RESEND_REPLY_TO`** (env, opcional pero importante): el subdominio de envío no recibe correo — sin esta env las respuestas a "responde a este email" rebotan. Cargar en Vercel un buzón real monitorizado. `siteConfig.replyEmail` es el mismo buzón en versión pública (para `mailto:`), porque una env de servidor no sirve en un enlace.
 - **Secuencia activa desde 2026-07-29**: migraciones `0001`/`0002`/`0003` aplicadas (la BD de producción estaba **vacía** — no faltaba la secuencia, faltaba `subscribers`), `RESEND_REPLY_TO` = `info@ianexora.com` desplegada. **Sigue sin comprobarse que ese alias llegue a un buzón que Kata lea**: si no llega, las respuestas se pierden en silencio, que es justo el fallo que la variable existía para evitar — y el *reply rate* es la métrica de la fase.
-- **GEO (llms.txt, robots.ts, JSON-LD Person) deliberadamente NO construido**: es el contenido EN CÁMARA del episodio 1 (memoria `guion-episodio-1-geo`) — el 404 de `/llms.txt` es el "antes" del vídeo. No adelantar.
+- **GEO: construido a medias, y el corte es deliberado** (2026-08-05). **SÍ hay**:
+  `TechArticle`/`Article` por `formato`, `BreadcrumbList`, `DefinedTerm` en el glosario, `WebSite`
+  en la home, `lastmod` real en el sitemap, fechas visibles, `AuthorBio` al pie,
+  `scripts/geo/audit-ssr.mjs` y `docs/geo-checklist.md`.
+  **NO hay, y no se adelanta**: `robots.ts`, `llms.txt` y el nodo `Person` con `sameAs` en
+  `/sobre-mi` — es el contenido EN CÁMARA del episodio 1 (memoria `guion-episodio-1-geo`) y el 404
+  de `/llms.txt` es la toma del "antes".
+  **Tampoco** `SearchAction` (no hay buscador) ni `FAQPage` en ninguna página: `faqJsonLd()` existe
+  sin llamadores esperando el primer `## Preguntas frecuentes` real. Los `<Quiz>` son ejercicios, no
+  FAQ, y marcarlos así sería spam estructurado.
+  **Consecuencia útil**: al no existir `robots.txt`, **no hay ningún crawler de IA bloqueado**. El
+  requisito "verificar que no se bloquea a GPTBot/OAI-SearchBot/PerplexityBot/ClaudeBot" se cumple
+  hoy sin escribir nada, y el script lo comprueba y lo dice.
 - Descartado consciente (jul-2026): programa de referidos (<1k subs), comentarios giscus, Discord/Telegram (moderación vs tope 1,5h/sem — revisar a ~500-1k subs), analítica self-host.
 
 ## Modelo de datos (diseñado día 1, construido por fases)
@@ -304,11 +400,15 @@ analítica = **Vercel WA**.
 `SECURITY DEFINER` (`SET search_path=''`, esquema no expuesto, `REVOKE EXECUTE
 FROM PUBLIC` + `GRANT` explícito, verificar con `has_function_privilege`).
 
-**`subscribers`** (Fase 2) — `id uuid pk`, `email citext unique`, `status enum(pending|confirmed|unsubscribed)`, `confirm_token_hash` (solo `sha256`; el token claro solo viaja en el email), `confirm_expires_at`, `confirmed_at`, `unsubscribe_token unique`, `unsubscribed_at`, `consent_ip`, `source` (p.ej. `footer`, `lead_magnet:guia-rag`, `popup`), `locale default 'es'`, `created_at`.
-RLS: **sin** policies anon/authenticated. Alta vía Route Handler con `service_role` + verificación Turnstile + rate-limit. Token CSPRNG, single-use, compare en tiempo constante. Respuesta 200 genérica (anti-enumeración).
+**`subscribers`** (Fase 2) — `id uuid pk`, `email citext unique`, `status enum(pending|confirmed|unsubscribed)`, `confirm_token_hash` (solo `sha256`; el token claro solo viaja en el email), `confirm_expires_at`, `confirmed_at`, `unsubscribe_token unique`, `unsubscribed_at`, `consent_ip`, `source` (el **cubo semántico**: `footer`, `post-inline`, `lead_magnet:<slug>`, con sufijo `:<utm_source>` cuando lo hay), `signup_path` (migración `0005`, la **ruta literal** del alta: `/recursos`, `/blog/que-es-rag` — responde "qué artículo capta", que `source` no puede sin volverse una segunda taxonomía ambigua), `locale default 'es'`, `created_at`.
+RLS: **sin** policies anon/authenticated. Alta vía Route Handler con `service_role` + verificación Turnstile + rate-limit. Token CSPRNG, single-use, compare en tiempo constante. Respuesta 200 genérica (anti-enumeración). **El `consent` del checkbox se valida en servidor** desde 2026-08-05: antes el `required` era solo del navegador y un POST a mano suscribía sin dejar rastro de consentimiento, que es justo la prueba de base legal.
 
-**`scheduled_emails`** (2026-07-22, migración `0002`) — `id uuid pk`, `subscriber_id fk → subscribers on delete cascade`, `email_key` (`d2-curso`/`d5-historia`/`d8-nbi`), `resend_email_id` (para cancelar), `scheduled_at`, `created_at`, `unique(subscriber_id, email_key)`.
+**`scheduled_emails`** (2026-07-22, migración `0002`) — `id uuid pk`, `subscriber_id fk → subscribers on delete cascade`, `email_key` (`w1-bienvenida`/`w2-historia`/`w3-sistema`; las viejas `d2-curso`/`d5-historia`/`d8-nbi` pueden seguir en filas antiguas), `resend_email_id` (para cancelar), `scheduled_at`, `created_at`, `unique(subscriber_id, email_key)`.
 RLS: sin policies (solo `service_role`). Filas borradas al darse de baja.
+
+**`lead_magnet_submissions`** (2026-08-05, migración `0005`) — `id uuid pk`, `email citext` (**sin FK**: la fila se escribe ANTES de que exista el suscriptor), `magnet_slug`, `payload jsonb`, `source_path`, `created_at`. Índices por `(email, created_at desc)` y `(magnet_slug, created_at desc)`.
+RLS: sin policies (solo `service_role`). **El payload se recalcula en servidor**, nunca se guarda como lo mandó el cliente: el email 1 cita esas cifras y una cifra de origen cliente es una afirmación que no respalda nada.
+**RGPD — ojo**: está claveada por email, es dato personal, y **al no haber FK el borrado no cascadea**. La baja llama a `deleteSubmissions()`, y una petición de supresión necesita los dos `delete`. La política de privacidad ya afirma que se borran con la dirección: si se quita ese `delete`, la política pasa a describir algo que no ocurre.
 
 **`resources`** (Fase 2) — `id uuid pk`, `slug unique`, `title`, `description`, `file_path` (Storage), `requires_email bool default true`, `download_count int default 0`, `published bool default false`, `created_at`.
 RLS: `SELECT USING (published = true)` para anon/authenticated. `download_count` vía RPC `increment_download_count`. Descarga: bucket **privado** + `createSignedUrl(path, 300, {download})` tras verificar email confirmado; policies de `storage.objects` con filtro `bucket_id`.
@@ -365,3 +465,38 @@ Turbopack ignora plugins MDX con funciones → Velite · Tailwind v4: `darkMode:
   `chrome` no existe en esta máquina → `open --browser webkit` (+ `--mobile`).
 - **CSS sin capa gana a las utilidades de Tailwind v4**: `.headline` define `line-height` fuera de
   `@layer`, así que pisa el que trae `text-3xl`. Es deliberado.
+
+**Añadidos 2026-08-05, segunda sesión (embudo). Todos vistos en vivo:**
+
+- **No cuentes nada con `grep -c` sobre el HTML de Next.** El payload de React (los
+  `self.__next_f.push`) vuelve a incluir los mismos strings de atributos, así que todo sale
+  duplicado: contando `data-cierre` salían 6 donde el DOM tiene 3. Para contar elementos, usa el
+  DOM (Playwright) o quita los `<script>` antes. Es el mismo motivo por el que
+  `scripts/geo/audit-ssr.mjs` los borra primero: sin eso, una página que solo funciona con JS
+  parecería correcta.
+- **Para comprobar "no he cambiado nada visible"**: captura el HTML servido antes y después y
+  diffea **normalizando los hashes de chunk y el build id de Next** (`"b":"…"`). Sin normalizar
+  salen ~100 KB de diferencias que son solo del build; con normalización, el artículo de la
+  calculadora salió idéntico byte a byte.
+- **`s.markdown()` de Velite resuelve los enlaces como ficheros locales.** Un `[x]({{url_sitio}}/y)`
+  muere con `ENOENT … content/emails/%7B%7Burl_sitio%7D%7D/y`. Fix: `s.markdown({ copyLinkedFiles:
+  false })`. Es lo que permite que el copy no lleve el dominio a fuego (las ediciones de
+  `content/newsletters/` sí lo llevan — pendiente de arreglar).
+- **YAML: un valor sin comillas que contenga `: ` rompe la build** con *"Nested mappings are not
+  allowed in compact mappings"*. Pasó con un `preheader`. En `content/emails/` van entrecomillados
+  `subject`/`preheader`/`title` a propósito: es copy que se edita a mano.
+- **Un `upsert` con una columna que aún no existe falla, y nadie se enteraba.** El resultado no se
+  comprobaba, así que se seguía enviando el email de confirmación con un token que nunca se guardó:
+  el lector pulsa y ve "enlace no válido". Despliegue y migración-a-mano **no son atómicos**, así
+  que `/api/subscribe` reintenta sin la columna nueva y ahora sí comprueba el error.
+- **Ejecutar TS del repo en un script suelto**: `./node_modules/.bin/esbuild fichero.ts --bundle
+  --platform=node --format=esm --alias:@=./src --alias:#site/content=./.velite/index.js`. El
+  `--outfile` **tiene que caer dentro del repo** o los `--external` (react, @react-email/render) no
+  resuelven. Útil para probar funciones puras sin montar un framework de test.
+- **Playwright solo está instalado global** (`~/.local/share/fnm/aliases/default/lib/node_modules/`).
+  En ESM hay que importarlo por **ruta absoluta**: `NODE_PATH` no funciona para módulos ESM.
+- **`.env.example` no se puede leer desde el sandbox** (Read y `grep` denegados). La lista de envs
+  vive en este fichero.
+- **El proyecto Supabase del blog no está en la cuenta del MCP** (solo `Maître-prod` y `NbiOps`).
+  Desde aquí **no se puede verificar el esquema ni contar filas**: o lo confirma Kata, o se diseña
+  para degradar (que es lo que hacen la secuencia y la captura).
