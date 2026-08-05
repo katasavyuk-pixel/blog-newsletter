@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 # Verificación del embudo contra producción.
 #
-# Pide el secreto una vez y no lo imprime nunca (`read -rs`), así que se puede
-# ejecutar dentro de una sesión de Claude Code sin que el valor acabe en el
-# contexto ni en el historial del shell.
-#
 #   bash scripts/verificar-embudo.sh [email-de-pruebas]
+#
+# El secreto NUNCA se pasa como argumento ni se imprime, para que se pueda
+# ejecutar dentro de una sesión de Claude Code sin que acabe en la transcripción.
+# Se busca, en este orden:
+#
+#   1. La variable NEWSLETTER_SEND_SECRET, si está exportada.
+#   2. El PORTAPAPELES (macOS). Copia el secreto de tu gestor y ejecuta esto.
+#      Es la vía dentro de una sesión de agente: el `!` corre sin terminal
+#      interactiva, así que un `read` no recibiría nada.
+#   3. El teclado, solo si hay terminal de verdad.
 #
 # Sin argumento usa nexoraprocesos+verif@gmail.com. Usa un alias con "+" para
 # poder borrar la fila después: en `subscribers`, filtra por ese email.
@@ -16,10 +22,31 @@ BASE="https://kata.ianexora.com"
 CORREO="${1:-nexoraprocesos+verif@gmail.com}"
 RECURSO="25-datos-emails-logisticos"
 
-printf 'Secreto (NEWSLETTER_SEND_SECRET): '
-read -rs SECRETO
-echo
-[ -z "$SECRETO" ] && { echo "Sin secreto, nada que hacer."; exit 1; }
+if [ -n "${NEWSLETTER_SEND_SECRET:-}" ]; then
+  SECRETO="$NEWSLETTER_SEND_SECRET"; ORIGEN="variable de entorno"
+elif [ -t 0 ]; then
+  printf 'Secreto (NEWSLETTER_SEND_SECRET): '; read -rs SECRETO; echo
+  ORIGEN="teclado"
+elif command -v pbpaste >/dev/null 2>&1; then
+  SECRETO="$(pbpaste | tr -d '\r\n')"; ORIGEN="portapapeles"
+else
+  SECRETO=""; ORIGEN="ninguna"
+fi
+
+if [ -z "$SECRETO" ]; then
+  cat <<'FIN'
+No he encontrado el secreto (fuentes probadas: variable de entorno, teclado,
+portapapeles).
+
+Dentro de una sesión de Claude Code no hay terminal interactiva, así que la vía
+es el portapapeles: copia NEWSLETTER_SEND_SECRET de tu gestor de contraseñas y
+vuelve a ejecutar esto. El valor no se imprime en ningún momento.
+FIN
+  exit 1
+fi
+
+# Longitud, nunca el valor: confirma que se leyó algo plausible sin exponerlo.
+echo "Secreto leído del $ORIGEN (${#SECRETO} caracteres)."
 
 ok()   { printf '  \033[32m✓\033[0m %s\n' "$1"; }
 bad()  { printf '  \033[31m✗\033[0m %s\n' "$1"; FALLOS=$((FALLOS+1)); }
