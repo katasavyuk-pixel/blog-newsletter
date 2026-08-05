@@ -8,6 +8,9 @@ tema: contenido
 formato: radar
 tags:
   - radar
+cta_inline:
+  gancho: "Esta edición la genera un sistema, no yo"
+  promesa: "Te cuento cómo está montado y cómo evita inventarse titulares, con el código delante."
 draft: false
 premium: false
 ---
@@ -35,6 +38,14 @@ política. Si el titular está en inglés, el análisis lo contextualiza en espa
 </RadarItem>
 
 {{FIN_DEL_LOOP}}
+
+{{COLOCA UN SOLO <SuscripcionInline /> ENTRE DOS </RadarItem> Y <RadarItem, hacia
+la mitad de la lista (tras el 3º o 4º ítem). Nunca dentro de un <RadarItem>: los
+dos parsers del Radar (el gate anti-alucinación y la tira de la home) leen esas
+etiquetas, y meterlo dentro rompería la verificación. El copy sale de
+`cta_inline`, no se escribe aquí.}}
+
+<SuscripcionInline />
 
 ---
 
