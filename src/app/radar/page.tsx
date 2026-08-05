@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { ArchiveList } from "@/components/content/content-row";
 import { getPostsByTag } from "@/lib/posts";
 import { getRadarCadence } from "@/lib/radar";
@@ -26,50 +27,59 @@ export default function RadarPage() {
 
   return (
     <Container className="py-16">
-      <header className="max-w-2xl">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent-ink">
-          {cadence?.label ?? "Serie semanal"}
-        </p>
-        <h1 className="headline mt-2 text-4xl text-fg sm:text-5xl">Radar IA</h1>
-        <p className="mt-3 text-lg leading-relaxed text-muted">
-          Lo que ha pasado en IA, negocio y geopolítica, con una línea sobre por
-          qué importa. Sin superlativos y sin predicciones.
-        </p>
-      </header>
+      <ScrollReveal variant="blur">
+        <header className="max-w-2xl">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent-ink">
+            {cadence?.label ?? "Serie semanal"}
+          </p>
+          <h1 className="headline mt-2 text-4xl text-fg sm:text-5xl">
+            Radar IA
+          </h1>
+          <p className="mt-3 text-lg leading-relaxed text-muted">
+            Lo que ha pasado en IA, negocio y geopolítica, con una línea sobre
+            por qué importa. Sin superlativos y sin predicciones.
+          </p>
+        </header>
+      </ScrollReveal>
 
-      <section
-        aria-labelledby="como-se-hace"
+      <ScrollReveal
+        variant="blur"
         className="mt-10 max-w-2xl rounded-2xl border border-border bg-surface p-6 sm:p-8"
       >
-        <h2
-          id="como-se-hace"
-          className="font-mono text-xs uppercase tracking-[0.15em] text-accent-ink"
-        >
-          Cómo se hace
-        </h2>
-        <p className="mt-3 leading-relaxed text-muted">
-          Un recolector lee los feeds y guarda los titulares tal cual, sin
-          modelo de por medio. La redacción solo puede elegir entre esos
-          titulares. Después, un verificador comprueba que cada enlace, título y
-          fuente coinciden <strong className="text-fg">carácter a carácter</strong>{" "}
-          con lo recolectado: si algo no cuadra, no se publica. Nada llega aquí
-          sin que yo lo apruebe antes.
-        </p>
-      </section>
+        <section aria-labelledby="como-se-hace">
+          <h2
+            id="como-se-hace"
+            className="font-mono text-xs uppercase tracking-[0.15em] text-accent-ink"
+          >
+            Cómo se hace
+          </h2>
+          <p className="mt-3 leading-relaxed text-muted">
+            Un recolector lee los feeds y guarda los titulares tal cual, sin
+            modelo de por medio. La redacción solo puede elegir entre esos
+            titulares. Después, un verificador comprueba que cada enlace, título
+            y fuente coinciden{" "}
+            <strong className="text-fg">carácter a carácter</strong> con lo
+            recolectado: si algo no cuadra, no se publica. Nada llega aquí sin
+            que yo lo apruebe antes.
+          </p>
+        </section>
+      </ScrollReveal>
 
       {editions.length > 0 ? (
-        <section aria-labelledby="ediciones" className="mt-14">
-          <h2
-            id="ediciones"
-            className="font-mono text-xs uppercase tracking-[0.2em] text-accent-ink"
-          >
-            Ediciones
-          </h2>
-          <ArchiveList
-            posts={editions}
-            className="mt-4 border-t border-border"
-          />
-        </section>
+        <ScrollReveal variant="blur" className="mt-14">
+          <section aria-labelledby="ediciones">
+            <h2
+              id="ediciones"
+              className="font-mono text-xs uppercase tracking-[0.2em] text-accent-ink"
+            >
+              Ediciones
+            </h2>
+            <ArchiveList
+              posts={editions}
+              className="mt-4 border-t border-border"
+            />
+          </section>
+        </ScrollReveal>
       ) : (
         <p className="mt-12 text-muted">Aún no hay ediciones publicadas.</p>
       )}

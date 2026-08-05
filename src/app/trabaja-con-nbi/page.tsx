@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Prose } from "@/components/ui/prose";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { ContactForm } from "@/components/contact/contact-form";
 import { siteConfig } from "@/config/site";
 
@@ -21,26 +22,31 @@ export default function WorkWithNbiPage() {
   return (
     <Container className="py-16">
       <div className="mx-auto max-w-2xl">
-        <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
-          NBI
-        </p>
-        <h1 className="mt-2 headline text-4xl text-fg sm:text-5xl">
-          Trabaja con NBI
-        </h1>
-        <Prose className="mt-6">
-          <p>
-            Estoy construyendo NBI en público: cada sistema del blog sale de
-            algo que implementé de verdad, con sus números y sus errores. Si
-            tienes un negocio en marcha y quieres que implemente algo parecido
-            en el tuyo, hablemos.
+        <ScrollReveal variant="blur">
+          <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-accent-ink">
+            NBI
           </p>
-          <p>
-            Cuéntame tu caso — qué proceso te está costando tiempo o dinero —
-            y te digo si tiene sentido y por dónde empezaríamos.
-          </p>
-        </Prose>
+          <h1 className="mt-2 headline text-4xl text-fg sm:text-5xl">
+            Trabaja con NBI
+          </h1>
+          <Prose className="mt-6">
+            <p>
+              Estoy construyendo NBI en público: cada sistema del blog sale de
+              algo que implementé de verdad, con sus números y sus errores. Si
+              tienes un negocio en marcha y quieres que implemente algo parecido
+              en el tuyo, hablemos.
+            </p>
+            <p>
+              Cuéntame tu caso — qué proceso te está costando tiempo o dinero —
+              y te digo si tiene sentido y por dónde empezaríamos.
+            </p>
+          </Prose>
+        </ScrollReveal>
 
-        <div className="mt-10 rounded-2xl border border-border bg-surface p-6 sm:p-8">
+        <ScrollReveal
+          variant="blur"
+          className="mt-10 rounded-2xl border border-border bg-surface p-6 sm:p-8"
+        >
           <h2 className="font-display text-lg font-semibold text-fg">
             Cuéntame tu caso
           </h2>
@@ -50,7 +56,7 @@ export default function WorkWithNbiPage() {
           <div className="mt-4">
             <ContactForm />
           </div>
-        </div>
+        </ScrollReveal>
 
         <p className="mt-6 text-sm text-muted">
           También puedes escribir directamente a{" "}

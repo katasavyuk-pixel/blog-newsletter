@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { Button } from "@/components/ui/button";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { CourseList, type CourseItem } from "@/components/course/course-list";
 import { COURSE_SLUGS } from "@/config/course";
 import { getPost } from "@/lib/posts";
@@ -31,24 +32,29 @@ export default function EmpiezaAquiPage() {
 
   return (
     <Container className="py-16">
-      <header className="max-w-2xl">
-        <Eyebrow>El pilar de la biblioteca · gratis · a tu ritmo</Eyebrow>
-        <h1 className="mt-3 headline text-4xl text-fg sm:text-5xl">
-          Empieza aquí: entiende la IA tocándola
-        </h1>
-        <p className="mt-4 text-lg leading-relaxed text-muted">
-          Seis lecciones interactivas en el orden que tiene sentido: primero qué
-          es un token, al final la vida completa de un prompt. Cada lección se
-          manipula, no solo se lee. Tu progreso se guarda en este navegador —
-          sin cuentas, sin registro.
-        </p>
-      </header>
+      <ScrollReveal variant="blur">
+        <header className="max-w-2xl">
+          <Eyebrow>El pilar de la biblioteca · gratis · a tu ritmo</Eyebrow>
+          <h1 className="mt-3 headline text-4xl text-fg sm:text-5xl">
+            Empieza aquí: entiende la IA tocándola
+          </h1>
+          <p className="mt-4 text-lg leading-relaxed text-muted">
+            Seis lecciones interactivas en el orden que tiene sentido: primero
+            qué es un token, al final la vida completa de un prompt. Cada
+            lección se manipula, no solo se lee. Tu progreso se guarda en este
+            navegador — sin cuentas, sin registro.
+          </p>
+        </header>
+      </ScrollReveal>
 
-      <div className="mt-12 max-w-3xl">
+      <ScrollReveal className="mt-12 max-w-3xl" delay={0.1}>
         <CourseList items={items} />
-      </div>
+      </ScrollReveal>
 
-      <div className="mt-14 max-w-3xl rounded-2xl border border-border bg-surface p-7">
+      <ScrollReveal
+        variant="blur"
+        className="mt-14 max-w-3xl rounded-2xl border border-border bg-surface p-7"
+      >
         <h2 className="font-display text-xl font-medium text-fg">
           ¿Terminaste el itinerario?
         </h2>
@@ -59,7 +65,7 @@ export default function EmpiezaAquiPage() {
         <div className="mt-5">
           <Button href="/#newsletter">Suscríbete gratis</Button>
         </div>
-      </div>
+      </ScrollReveal>
     </Container>
   );
 }

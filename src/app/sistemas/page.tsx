@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { WorkWithNbiCta } from "@/components/blog/work-with-nbi-cta";
 import {
   LibraryCard,
@@ -39,39 +40,49 @@ export default async function BibliotecaPage() {
 
   return (
     <Container size="wide" className="py-16">
-      <header className="max-w-2xl">
-        <Eyebrow>Gratis · probado · replicable</Eyebrow>
-        <h1 className="mt-3 headline text-4xl text-fg sm:text-5xl">
-          La Biblioteca de Sistemas
-        </h1>
-        <p className="mt-4 text-lg leading-relaxed text-muted">
-          Todo lo que ya funciona en un negocio real, listo para que lo copies
-          en el tuyo. Lo que está en el taller se construye a la vista — cada
-          pieza llega con su guía, y los suscriptores la reciben primero.
-        </p>
-      </header>
+      <ScrollReveal variant="blur">
+        <header className="max-w-2xl">
+          <Eyebrow>Gratis · probado · replicable</Eyebrow>
+          <h1 className="mt-3 headline text-4xl text-fg sm:text-5xl">
+            La Biblioteca de Sistemas
+          </h1>
+          <p className="mt-4 text-lg leading-relaxed text-muted">
+            Todo lo que ya funciona en un negocio real, listo para que lo copies
+            en el tuyo. Lo que está en el taller se construye a la vista — cada
+            pieza llega con su guía, y los suscriptores la reciben primero.
+          </p>
+        </header>
+      </ScrollReveal>
 
       {themes.map((block) => (
         <section key={block.label} className="mt-14">
-          <h2 className="font-display text-2xl font-medium text-fg">
-            {block.label}
-          </h2>
+          <ScrollReveal variant="blur">
+            <h2 className="font-display text-2xl font-medium text-fg">
+              {block.label}
+            </h2>
+          </ScrollReveal>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {block.items.map((item) => (
-              <LibraryCard key={item.id} item={item} />
+            {/* `h-full` on the wrapper, same as LibraryShowcase: the card
+                stretches to the grid row, and the reveal must not eat that. */}
+            {block.items.map((item, i) => (
+              <ScrollReveal key={item.id} delay={i * 0.07} className="h-full">
+                <LibraryCard item={item} />
+              </ScrollReveal>
             ))}
           </div>
         </section>
       ))}
 
       <section className="mt-14">
-        <h2 className="font-display text-2xl font-medium text-fg">
-          Recursos descargables
-        </h2>
+        <ScrollReveal variant="blur">
+          <h2 className="font-display text-2xl font-medium text-fg">
+            Recursos descargables
+          </h2>
+        </ScrollReveal>
         {resources.length === 0 ? (
           <p className="mt-4 max-w-prose text-muted">
-            Las primeras guías descargables llegan con los sistemas que están
-            en el taller.{" "}
+            Las primeras guías descargables llegan con los sistemas que están en
+            el taller.{" "}
             <Link
               href="/recursos"
               className="text-accent-ink underline transition-colors hover:text-accent-strong"
@@ -105,17 +116,21 @@ export default async function BibliotecaPage() {
         )}
       </section>
 
-      <p className="mt-16 border-t border-border pt-8 text-sm text-muted">
-        ¿Buscas algo que no está aquí? El archivo cronológico completo vive en{" "}
-        <Link
-          href="/blog"
-          className="text-accent-ink underline transition-colors hover:text-accent-strong"
-        >
-          el blog →
-        </Link>
-      </p>
+      <ScrollReveal>
+        <p className="mt-16 border-t border-border pt-8 text-sm text-muted">
+          ¿Buscas algo que no está aquí? El archivo cronológico completo vive en{" "}
+          <Link
+            href="/blog"
+            className="text-accent-ink underline transition-colors hover:text-accent-strong"
+          >
+            el blog →
+          </Link>
+        </p>
+      </ScrollReveal>
 
-      <WorkWithNbiCta />
+      <ScrollReveal variant="blur">
+        <WorkWithNbiCta />
+      </ScrollReveal>
     </Container>
   );
 }
