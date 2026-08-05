@@ -3,7 +3,12 @@
 import { motion, type MotionValue } from "motion/react";
 import { useRef } from "react";
 import { useSceneRange } from "./use-scene-range";
-import { SCENE_COPY, SIGNAL_ITEMS, type SignalItem } from "@/config/scrolly";
+import {
+  SCENE_COPY,
+  SCENE_TRACK,
+  SIGNAL_ITEMS,
+  type SignalItem,
+} from "@/config/scrolly";
 import { MASCOT } from "@/config/intent";
 import { Mascot } from "@/components/wizard/mascot";
 import { useMounted } from "@/hooks/use-mounted";
@@ -70,7 +75,11 @@ function SignalRow({
 
   const opacity = useSceneRange(progress, [start, end], [0, 1]);
   const x = useSceneRange(progress, [start, end], [-26, 0]);
-  const filter = useSceneRange(progress, [start, end], ["blur(7px)", "blur(0px)"]);
+  const filter = useSceneRange(
+    progress,
+    [start, end],
+    ["blur(7px)", "blur(0px)"],
+  );
 
   return (
     <motion.li
@@ -105,7 +114,11 @@ export function SignalScene() {
   const progress = useSceneProgress(ref);
   const mounted = useMounted();
 
-  const chispaX = useSceneRange(progress, [SWEEP_START, SWEEP_END], ["-24vw", "112vw"]);
+  const chispaX = useSceneRange(
+    progress,
+    [SWEEP_START, SWEEP_END],
+    ["-24vw", "112vw"],
+  );
   const chispaOpacity = useSceneRange(
     progress,
     [SWEEP_START, SWEEP_START + 0.05, SWEEP_END - 0.06, SWEEP_END],
@@ -115,7 +128,7 @@ export function SignalScene() {
   const closing = useSceneRange(progress, [0.74, 0.88, 0.97], [0, 1, 1]);
 
   return (
-    <section ref={ref} aria-hidden className="relative h-[160vh] sm:h-[240vh]">
+    <section ref={ref} aria-hidden className={`relative ${SCENE_TRACK.senal}`}>
       <div className="sticky top-0 flex h-svh flex-col items-center justify-center overflow-hidden bg-dark">
         {mounted
           ? RESIDUE.map((item) => (
@@ -135,14 +148,21 @@ export function SignalScene() {
           className="relative w-full max-w-2xl px-6"
         >
           {SIGNAL_ITEMS.map((item, i) => (
-            <SignalRow key={item.title} item={item} index={i} progress={progress} />
+            <SignalRow
+              key={item.title}
+              item={item}
+              index={i}
+              progress={progress}
+            />
           ))}
         </motion.ol>
 
         <SceneKicker>{SCENE_COPY.senal.kicker}</SceneKicker>
 
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <SceneClosing opacity={closing}>{SCENE_COPY.senal.closing}</SceneClosing>
+          <SceneClosing opacity={closing}>
+            {SCENE_COPY.senal.closing}
+          </SceneClosing>
         </div>
       </div>
     </section>

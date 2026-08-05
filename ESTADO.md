@@ -3,24 +3,36 @@
 > Última actualización: 2026-08-06, al cerrar la capa cinemática (F1 + F2).
 > Lo de arriba es lo que toca ahora, en orden. Lo de abajo es contexto.
 
-## Lo primero, y solo lo puedes hacer tú (2 min)
+## Lo primero, y solo lo puedes hacer tú (1 min, un comando)
 
-**Las tres variables de Chispa no están en Vercel.** El dock de chat sale en
-producción diciendo «Todavía no estoy conectada». La clave ya la tienes en
-`.env.local`; desde una sesión de agente no se puede leer ese fichero, así que:
+**Chispa no tiene su clave en Vercel**, así que el dock de chat sale en producción
+diciendo «Todavía no estoy conectada». Es lo único que le falta: `LLM_BASE_URL` y
+`LLM_MODEL` **tienen valor por defecto en el propio código**
+(`src/app/api/assistant/route.ts`), así que no hay que subirlas — solo la clave, y
+solo tú puedes, porque un secreto no viaja por el chat y el sandbox no lee
+`.env.local`.
 
 ```
-vercel env add LLM_BASE_URL production --scope nexoraprocesos-boops-projects   # https://api.groq.com/openai/v1
-vercel env add LLM_API_KEY  production --scope nexoraprocesos-boops-projects   # la de console.groq.com/keys
-vercel env add LLM_MODEL    production --scope nexoraprocesos-boops-projects   # llama-3.3-70b-versatile
+vercel env add LLM_API_KEY production --scope nexoraprocesos-boops-projects
 ```
 
-Después, un push cualquiera (o redeploy desde el dashboard) para que las coja.
+Pega la clave de `console.groq.com/keys` cuando la pida. Después, un redeploy
+desde el dashboard (o cualquier push) para que la coja. Para comprobarlo:
+
+```
+curl -s -X POST https://kata.ianexora.com/api/assistant \
+  -H 'Content-Type: application/json' -d '{"query":"¿Qué es el Radar?"}'
+```
+
+Si responde con texto, está viva. Si devuelve `"unconfigured":true`, aún no.
+
+**Solo si quieres cambiar de proveedor** (Gemini, Cloudflare) hacen falta las
+otras dos. Alternativas documentadas en `.env.example`.
 
 ## Ya verificado end-to-end (2026-08-05)
 
 - ✅ **Alta real → confirmación → PDF descargado.** El camino completo del embudo, recorrido en
-  producción con `nexoraprocesos+e2e@gmail.com`.
+  producción con un alias `+e2e` del buzón personal.
 - ✅ **La respuesta llega a `info@ianexora.com`.** Era el último eslabón sin comprobar y el que
   sostiene la métrica de la fase (*reply rate*). Llevaba dos sesiones abierto.
 - ✅ **Los 3 emails de la secuencia llegan**, con desglose, fórmula y enlace de baja visible. Caen
@@ -39,9 +51,15 @@ Después, un push cualquiera (o redeploy desde el dashboard) para que las coja.
 
 ## Ahora, en este orden
 
-**1. Limpiar las filas de prueba** en `subscribers` cuando quieras: `source = prueba-reply-to`
-(pending, caduca sola), `nexoraprocesos+e2e@gmail.com` y `nexoraprocesos+turnstile@gmail.com` (confirmadas — a esa le llegan aún el email
-de 48h y el de 96h, que no está mal como prueba de la temporización).
+**1. Limpiar las filas de prueba** en `subscribers` cuando quieras: la de
+`source = prueba-reply-to` (pending, caduca sola) y las dos confirmadas con alias
+`+e2e` y `+turnstile` de tu buzón personal — a esas les siguen llegando el email
+de 48h y el de 96h, que no está mal como prueba de la temporización. Búscalas con
+`select email, source, status from subscribers order by created_at desc;`.
+
+> Las direcciones completas ya no se escriben aquí: **este repo es público** desde
+> que se conectó el deploy automático, así que en estos documentos van descritas,
+> no literales.
 
 **2. Ensayo en seco de la newsletter.** (1 min) Dice a cuánta gente llegaría, sin enviar nada:
 ```

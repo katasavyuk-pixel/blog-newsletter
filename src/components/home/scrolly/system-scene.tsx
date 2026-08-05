@@ -2,7 +2,7 @@
 
 import { motion, type MotionValue } from "motion/react";
 import { useRef } from "react";
-import { SCENE_COPY } from "@/config/scrolly";
+import { SCENE_COPY, SCENE_TRACK } from "@/config/scrolly";
 import { SceneKicker } from "./scene-chrome";
 import { useSceneProgress } from "./use-scene-progress";
 import { useSceneRange } from "./use-scene-range";
@@ -62,12 +62,24 @@ export function SystemScene({ statusLines }: { statusLines: string[] }) {
   const ref = useRef<HTMLElement>(null);
   const progress = useSceneProgress(ref);
 
-  const panelOpacity = useSceneRange(progress, [0, 0.08, 0.86, 1], [0, 1, 1, 0]);
+  const panelOpacity = useSceneRange(
+    progress,
+    [0, 0.08, 0.86, 1],
+    [0, 1, 1, 0],
+  );
   const panelScale = useSceneRange(progress, [0.86, 1], [1, 1.06]);
-  const caretOpacity = useSceneRange(progress, [TYPING_END, TYPING_END + 0.04], [0, 1]);
+  const caretOpacity = useSceneRange(
+    progress,
+    [TYPING_END, TYPING_END + 0.04],
+    [0, 1],
+  );
 
   return (
-    <section ref={ref} aria-hidden className="relative h-[130vh] sm:h-[190vh]">
+    <section
+      ref={ref}
+      aria-hidden
+      className={`relative ${SCENE_TRACK.sistema}`}
+    >
       <div className="sticky top-0 flex h-svh items-center justify-center overflow-hidden bg-dark">
         <SceneKicker>{SCENE_COPY.sistema.kicker}</SceneKicker>
 

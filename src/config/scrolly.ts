@@ -3,6 +3,25 @@
  * Narrative: ruido → señal → sistema, landing on the masthead.
  */
 
+/**
+ * How long each act lasts, as the height of its scroll track.
+ *
+ * A scene is pinned to a full-height viewport, so a `200vh` track spends one
+ * screenful of scrolling going from progress 0 to 1 — the track height *is* the
+ * pacing dial, and it is the one number anyone will want to argue with. Tune it
+ * here; the three scenes read it and nothing else does.
+ *
+ * At 630vh the intro put 6.3 screens between the visitor and the h1, which was
+ * a lot to ask of someone who just wanted the archive. Now 500vh on desktop,
+ * 350vh on phones. Whole class strings on purpose: Tailwind reads source files
+ * literally and would not generate a class it never sees spelled out.
+ */
+export const SCENE_TRACK = {
+  ruido: "h-[110vh] sm:h-[160vh]",
+  senal: "h-[130vh] sm:h-[190vh]",
+  sistema: "h-[110vh] sm:h-[150vh]",
+} as const;
+
 export const SCENE_COPY = {
   ruido: {
     kicker: "el ruido",
@@ -69,12 +88,14 @@ export const SIGNAL_ITEMS: SignalItem[] = [
     date: "2026-08-04",
   },
   {
-    title: "Open-weight AI models are catching up to the frontier. The safety gap remains.",
+    title:
+      "Open-weight AI models are catching up to the frontier. The safety gap remains.",
     source: "TechCrunch AI",
     date: "2026-08-04",
   },
   {
-    title: "Trump administration reportedly drafting ban on Chinese datacenter components",
+    title:
+      "Trump administration reportedly drafting ban on Chinese datacenter components",
     source: "The Guardian AI",
     date: "2026-08-04",
   },
@@ -89,7 +110,8 @@ export const SIGNAL_ITEMS: SignalItem[] = [
     date: "2026-08-03",
   },
   {
-    title: "Claude published malicious code to the Internet and attacked 3 real companies",
+    title:
+      "Claude published malicious code to the Internet and attacked 3 real companies",
     source: "Ars Technica",
     date: "2026-07-31",
   },

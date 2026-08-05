@@ -3,7 +3,7 @@
 import { motion, type MotionValue } from "motion/react";
 import { useRef } from "react";
 import { useSceneRange } from "./use-scene-range";
-import { SCENE_COPY } from "@/config/scrolly";
+import { SCENE_COPY, SCENE_TRACK } from "@/config/scrolly";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useMounted } from "@/hooks/use-mounted";
 import { NOISE_LAYOUT, type NoiseWord } from "./noise-layout";
@@ -72,7 +72,7 @@ export function NoiseScene() {
   const closing = useSceneRange(progress, [0.66, 0.82, 0.97], [0, 1, 1]);
 
   return (
-    <section ref={ref} aria-hidden className="relative h-[130vh] sm:h-[200vh]">
+    <section ref={ref} aria-hidden className={`relative ${SCENE_TRACK.ruido}`}>
       {/* Perspective belongs on the parent: it shapes how children are projected,
           so putting it on the rotating element itself would do nothing. */}
       <div
@@ -85,13 +85,19 @@ export function NoiseScene() {
         >
           {mounted
             ? NOISE_LAYOUT.map((item) => (
-                <NoiseHeadline key={item.word} item={item} progress={progress} />
+                <NoiseHeadline
+                  key={item.word}
+                  item={item}
+                  progress={progress}
+                />
               ))
             : null}
         </motion.div>
 
         <SceneKicker>{SCENE_COPY.ruido.kicker}</SceneKicker>
-        <SceneClosing opacity={closing}>{SCENE_COPY.ruido.closing}</SceneClosing>
+        <SceneClosing opacity={closing}>
+          {SCENE_COPY.ruido.closing}
+        </SceneClosing>
       </div>
     </section>
   );
