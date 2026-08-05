@@ -35,13 +35,19 @@ export function Masthead({ subscriberCount }: { subscriberCount: number | null }
             <span className="text-accent">Llévatelos.</span>
           </h1>
 
+          {/* The filter used to be "te servirá si ya ejecutas — si buscas
+              atajos, no": a warning aimed at the reader, which implies whoever
+              does not fit is lazy. It now filters through the product instead —
+              the promise is specific, and the filter falls out of it. Same
+              audience, no insult, and it is the claim the evidence system on
+              this site already backs. Chosen by Kata, 2026-08-05. */}
           <p className="mt-6 max-w-lg text-lg leading-relaxed text-on-dark-muted">
             Documento cada sistema que monto para mi negocio de soluciones de
             IA: qué hace, qué me costó y cómo replicarlo.{" "}
             <strong className="font-semibold text-on-dark">
-              Te servirá si ya ejecutas
+              Cada uno viene con su factura y con lo que se rompió
             </strong>{" "}
-            — si buscas atajos, no.
+            — por eso sirve para montarlo, no solo para leerlo.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm">
