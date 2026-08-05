@@ -304,6 +304,49 @@
   pointer-events: none;
 }
 
+/* --- Wizard mascot ("Chispa"): pure-CSS breathing ember core --- */
+@keyframes ember-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+.ember-orb {
+  animation: ember-float 3.4s ease-in-out infinite;
+}
+@keyframes ember-eye {
+  0%,
+  90%,
+  100% {
+    transform: scaleY(1);
+  }
+  94%,
+  96% {
+    transform: scaleY(0.12);
+  }
+}
+.ember-eye {
+  transform-origin: center;
+  animation: ember-eye 4.6s ease-in-out infinite;
+}
+@keyframes ember-spark {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.ember-spark {
+  animation: ember-spark 2.6s ease-in-out infinite;
+}
+
 /* Reading-progress bar driven purely by scroll position (zero JS). */
 .reading-progress {
   transform: scaleX(0);

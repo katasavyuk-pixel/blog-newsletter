@@ -1,14 +1,6 @@
-import { allPosts, getPostsByTag } from "@/lib/posts";
-import { LIBRARY_ITEMS, libraryStatus } from "@/config/library";
-import { siteConfig } from "@/config/site";
+import { getJourneyStatusLines, JOURNEY_WEEK } from "@/lib/journey";
 
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-
-/** Journey week, frozen per build/revalidation (module scope keeps render pure). */
-export const JOURNEY_WEEK =
-  Math.floor(
-    (Date.now() - new Date(siteConfig.journey.start).getTime()) / WEEK_MS,
-  ) + 1;
+export { JOURNEY_WEEK };
 
 /**
  * The journey status panel — the old `kata --status` lab console promoted to
@@ -21,26 +13,7 @@ export function JourneyPanel({
 }: {
   subscriberCount: number | null;
 }) {
-  const week = JOURNEY_WEEK;
-  const published = LIBRARY_ITEMS.filter(
-    (i) => libraryStatus(i) === "disponible",
-  ).length;
-  const building = LIBRARY_ITEMS.filter(
-    (i) => libraryStatus(i) === "en-construccion",
-  ).length;
-  const latestRadar = getPostsByTag("radar")[0];
-  const showCount =
-    subscriberCount !== null &&
-    subscriberCount >= siteConfig.newsletter.showCountFrom;
-
-  const statusLines = [
-    `misión: ${siteConfig.journey.mission}`,
-    `semana ${week} · construyendo en público`,
-    `sistemas: ${published} publicados · ${building} en el taller`,
-    `${allPosts.length} artículos · ${getPostsByTag("interactivo").length} interactivos`,
-    latestRadar ? `radar: edición ${latestRadar.date.slice(0, 10)} ✓` : null,
-    showCount ? `suscriptores: ${subscriberCount}` : null,
-  ].filter(Boolean) as string[];
+  const statusLines = getJourneyStatusLines(subscriberCount);
 
   return (
     <div className="relative rounded-3xl border border-dark-border-2 bg-dark-input/60 p-5 shadow-card sm:p-6">

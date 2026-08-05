@@ -6,6 +6,8 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { ParticleField } from "@/components/effects/particle-field";
+import { IntentWizard } from "@/components/wizard/intent-wizard";
+import { AssistantDock } from "@/components/assistant/assistant-dock";
 import { siteConfig } from "@/config/site";
 
 // UI / cuerpo / titulares — Inter, la misma que el vídeo (brandCine.ts).
@@ -65,6 +67,8 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col bg-bg text-fg antialiased">
         <MotionProvider>
           <ParticleField />
+          <IntentWizard />
+          <AssistantDock />
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
