@@ -121,7 +121,9 @@ del embudo: la home ahora abre con una intro de tres actos.
   saltar pegado abajo durante todo el recorrido. Con `prefers-reduced-motion` la
   intro **no existe** (documento de 10959px → 5321px).
 - Las 4 secciones de la home que no revelaban nada ya lo hacen (`ScrollReveal`
-  gana variante `blur`).
+  gana variante `blur`), **y las 7 páginas que no tenían movimiento ninguno
+  tampoco están planas ya**: el rediseño solo había tocado la portada, así que el
+  sitio animaba delante y se moría al primer clic.
 
 **Tres cosas que estaban mal y no se veían mirando:**
 

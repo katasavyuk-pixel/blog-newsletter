@@ -370,7 +370,14 @@ home-scrollytelling}.md`.
   - `SIGNAL_ITEMS` son los **7 ítems de `radar-2026-08-04` verbatim**, porque la
     escena cierra con «de cien ruidos, siete señales». Había cinco decorativos.
 - **`ScrollReveal` tiene variante `blur`** además de `rise` (por defecto).
-  Aplicada a las 4 secciones de la home que no revelaban nada.
+  Aplicada a las 4 secciones de la home que no revelaban nada **y a las 7 páginas
+  que no tenían movimiento ninguno** (`/sistemas`, `/radar`, `/empieza-aqui`,
+  `/recursos`, `/glosario`, `/sobre-mi`, `/trabaja-con-nbi`): el rediseño solo
+  había tocado la portada, así que el sitio animaba delante y se moría al primer
+  clic. Aperturas de sección en `blur`, rejillas de tarjetas escalonadas a
+  `i * 0.07`. Dos detalles que cuestan un rato descubrir: el reveal va **dentro**
+  del `<li>` (un `<div>` no es hijo válido de `<ul>`) y las rejillas necesitan
+  `h-full` en el wrapper o la tarjeta deja de estirarse a su fila.
 - **Pendiente**: subir `LLM_*` a Vercel (las crea Kata: el sandbox no lee
   `.env.local`). Y dos decisiones abiertas — si 6,3 pantallas son demasiadas, y si
   sobra una de las dos intros encadenadas (wizard → escena 1).
