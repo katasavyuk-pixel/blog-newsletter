@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { createAdminClient, isSupabaseConfigured } from "@/lib/supabase/admin";
+import { verifyDownloadSignature } from "@/lib/signed-links";
 
 export const runtime = "nodejs";
 
@@ -22,7 +23,24 @@ export async function GET(request: NextRequest) {
   if (!resource) return NextResponse.json({ error: "not found" }, { status: 404 });
 
   if (resource.requires_email) {
-    const email = (await cookies()).get("nbi_subscriber")?.value;
+    // Two ways in, one authorisation check.
+    //
+    // A signature in the URL is what makes the button in an email work: the
+    // cookie is bound to the browser that clicked the confirmation link, which
+    // is routinely not the one opening the mail. Whichever path identifies the
+    // reader, the status is still read live from the database, so a link held
+    // by someone who has since unsubscribed stops working.
+    const params = request.nextUrl.searchParams;
+    const signedEmail = params.get("e");
+    const email = verifyDownloadSignature(
+      slug,
+      signedEmail ?? "",
+      params.get("exp"),
+      params.get("sig"),
+    )
+      ? signedEmail
+      : (await cookies()).get("nbi_subscriber")?.value;
+
     let confirmed = false;
     if (email) {
       const { data: sub } = await supabase

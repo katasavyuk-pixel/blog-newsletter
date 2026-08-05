@@ -5,6 +5,7 @@ import { hashToken, generateToken } from "@/lib/tokens";
 import { getResend, FROM, REPLY_TO, isEmailConfigured } from "@/lib/email";
 import { WelcomeEmail } from "@/emails/welcome";
 import { scheduleWelcomeSequence } from "@/lib/welcome-sequence";
+import { signedDownloadUrl } from "@/lib/signed-links";
 import { siteConfig } from "@/config/site";
 
 export const runtime = "nodejs";
@@ -66,8 +67,11 @@ export async function GET(request: NextRequest) {
       subject: `¡Bienvenido a ${siteConfig.name}!`,
       react: WelcomeEmail({
         brand: siteConfig.name,
+        // Signed, because the cookie set two lines above lives in the browser
+        // that clicked confirm — not in the mail client that opens this button.
         downloadUrl: resource
-          ? `${siteConfig.url}/api/download?slug=${encodeURIComponent(resource)}`
+          ? signedDownloadUrl(siteConfig.url, resource, sub.email) ??
+            `${siteConfig.url}/api/download?slug=${encodeURIComponent(resource)}`
           : undefined,
       }),
     });
