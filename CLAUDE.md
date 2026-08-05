@@ -46,10 +46,19 @@ pero la parte de pago/auth **no se construye** hasta la Fase 3.
     `send.news`. `RESEND_FROM` = `Kata Ivanovych <news@news.ianexora.com>`.
   - **Pendientes menores**: los CNAME `autodiscover`/`autoconfig`/`mail` y el SRV
     `_autodiscover._tcp` que borró el cambio a Custom MX (solo afecta al autoconfig de clientes de
-    correo, no a recibir); **Turnstile sin configurar**; **DPAs sin firmar**; la
+    correo, no a recibir); **DPAs sin firmar**; la
     `publishable key` de Supabase en Vercel es inválida (inocuo hoy porque todo va server-side —
     y `src/lib/resources.ts` ya lee con `createAdminClient()` justo por esto).
+  - **Turnstile ACTIVO desde 2026-08-05** (widget `0x4AAAAAAEHSqgI-UocUPzyT`, Managed, hostname
+    `kata.ianexora.com`). Verificado: `/api/subscribe` sin token devuelve `400 captcha` — antes
+    devolvía 200 porque `verifyTurnstile()` da `true` cuando falta el secreto. Un navegador
+    automatizado no consigue token ni en modo headed, que es lo buscado; el corolario es que **los
+    flujos de alta no se pueden probar con Playwright**, hay que hacerlo a mano.
+    El script se carga `afterInteractive` (no `lazyOnload`) y el formulario **se niega a enviar sin
+    token** con un mensaje propio: con el secreto puesto, el hueco entre formulario usable y widget
+    listo era un hueco en el que se perdía el alta con un "algo falló" genérico.
   - **Envs de Vercel (producción)**: `DOWNLOAD_LINK_SECRET` ✅ · `RESEND_REPLY_TO` ✅ ·
+    `NEXT_PUBLIC_TURNSTILE_SITE_KEY` ✅ · `TURNSTILE_SECRET_KEY` ✅ ·
     `NEWSLETTER_SEND_SECRET` y `ADMIN_PANEL_SECRET` **las crea Kata a mano**, porque las usa desde
     un terminal y Vercel guarda como *Sensitive* lo que crea el agente (no se puede volver a leer).
     Ojo: **`.env.example` no es legible desde este sandbox** (Read y `grep` denegados), así que la
