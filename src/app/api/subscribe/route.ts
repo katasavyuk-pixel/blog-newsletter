@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { createAdminClient, isSupabaseConfigured } from "@/lib/supabase/admin";
 import { generateToken, hashToken } from "@/lib/tokens";
-import { getResend, FROM, isEmailConfigured } from "@/lib/email";
+import { getResend, FROM, REPLY_TO, isEmailConfigured } from "@/lib/email";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { rateLimit } from "@/lib/ratelimit";
 import { ConfirmOptInEmail } from "@/emails/confirm-opt-in";
@@ -85,6 +85,10 @@ export async function POST(request: NextRequest) {
     const { error } = await getResend().emails.send({
       from: FROM,
       to: body.email,
+      // FROM is a send-only subdomain: without this, a reply to the very first
+      // email anyone gets from the site goes nowhere. Only the welcome sequence
+      // set it, so the two emails that arrive before it were silent dead ends.
+      replyTo: REPLY_TO,
       subject: `Confirma tu suscripción a ${siteConfig.name}`,
       react: ConfirmOptInEmail({ confirmUrl, brand: siteConfig.name }),
     });

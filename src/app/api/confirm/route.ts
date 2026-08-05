@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { createAdminClient, isSupabaseConfigured } from "@/lib/supabase/admin";
 import { hashToken, generateToken } from "@/lib/tokens";
-import { getResend, FROM, isEmailConfigured } from "@/lib/email";
+import { getResend, FROM, REPLY_TO, isEmailConfigured } from "@/lib/email";
 import { WelcomeEmail } from "@/emails/welcome";
 import { scheduleWelcomeSequence } from "@/lib/welcome-sequence";
 import { siteConfig } from "@/config/site";
@@ -62,6 +62,7 @@ export async function GET(request: NextRequest) {
     await getResend().emails.send({
       from: FROM,
       to: sub.email,
+      replyTo: REPLY_TO,
       subject: `¡Bienvenido a ${siteConfig.name}!`,
       react: WelcomeEmail({
         brand: siteConfig.name,
