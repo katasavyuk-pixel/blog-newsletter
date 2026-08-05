@@ -28,21 +28,40 @@ const tones: Record<Tone, { input: string; help: string; link: string; status: s
 };
 
 /**
- * Newsletter capture form (footer, home, /recursos, embeddable).
+ * Newsletter capture form (footer, home, /recursos, article body, embeddable).
  * Posts to /api/subscribe → double opt-in. `resource` turns it into a lead-magnet
  * capture (source becomes `lead_magnet:<resource>`). `tone` adapts presentation to
  * light cream or dark espresso surfaces; `layout` stacks the field + button.
+ *
+ * One typed field, always. Every surface that captures email goes through this
+ * component rather than growing its own: the consent checkbox, the Turnstile
+ * gate and the anti-enumeration contract with the route handler are things that
+ * must not exist in three slightly different versions.
+ *
+ * `magnetSlug` + `payload` let a widget attach what the reader just produced
+ * (the cost breakdown, for instance) so the first onboarding email can deliver
+ * it back. `payload` is a thunk so it is read at submit time, not at render.
  */
 export function SubscribeForm({
   source = "footer",
   resource,
   tone = "light",
   layout = "inline",
+  magnetSlug,
+  payload,
+  submitLabel = "Suscribirme",
+  doneMessage,
+  consentLabel,
 }: {
   source?: string;
   resource?: string;
   tone?: Tone;
   layout?: Layout;
+  magnetSlug?: string;
+  payload?: () => Record<string, unknown>;
+  submitLabel?: string;
+  doneMessage?: string;
+  consentLabel?: React.ReactNode;
 }) {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<FormState>("idle");
@@ -67,6 +86,16 @@ export function SubscribeForm({
           resource,
           utmSource: utm ?? undefined,
           turnstileToken,
+          // Which page the signup happened on — `source` is the semantic bucket
+          // ("footer", "lead_magnet:x"), this is the literal route, so the funnel
+          // panel can answer "which article captures".
+          signupPath: window.location.pathname,
+          // The checkbox is `required`, so reaching here means it was ticked.
+          // Sending it lets the server refuse a signup that never showed consent
+          // — until now the checkbox was purely decorative to the backend.
+          consent: true,
+          magnetSlug,
+          payload: payload?.(),
         }),
       });
       if (!res.ok) {
@@ -83,7 +112,8 @@ export function SubscribeForm({
   if (state === "done") {
     return (
       <p className={cn("text-sm", t.status)} role="status">
-        ¡Casi! Revisa tu correo y confirma la suscripción (doble opt-in).
+        {doneMessage ??
+          "¡Casi! Revisa tu correo y confirma la suscripción (doble opt-in)."}
       </p>
     );
   }
@@ -117,7 +147,7 @@ export function SubscribeForm({
           )}
         />
         <Button type="submit" size="md" disabled={state === "loading"}>
-          {state === "loading" ? "Enviando…" : "Suscribirme"}
+          {state === "loading" ? "Enviando…" : submitLabel}
         </Button>
       </div>
 
@@ -130,11 +160,16 @@ export function SubscribeForm({
           className="mt-0.5 accent-[var(--color-accent)]"
         />
         <span>
-          Acepto recibir la newsletter y la{" "}
-          <a href="/privacidad" className={t.link}>
-            política de privacidad
-          </a>
-          . Te enviaremos un email para confirmar tu suscripción (doble opt-in).
+          {consentLabel ?? (
+            <>
+              Acepto recibir la newsletter y la{" "}
+              <a href="/privacidad" className={t.link}>
+                política de privacidad
+              </a>
+              . Te enviaremos un email para confirmar tu suscripción (doble
+              opt-in).
+            </>
+          )}
         </span>
       </label>
 

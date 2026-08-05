@@ -7,6 +7,7 @@ import { verifyTurnstile } from "@/lib/turnstile";
 import { rateLimit } from "@/lib/ratelimit";
 import { ConfirmOptInEmail } from "@/emails/confirm-opt-in";
 import { siteConfig } from "@/config/site";
+import { recordSubmission } from "@/lib/lead-magnets";
 
 export const runtime = "nodejs";
 
@@ -16,6 +17,21 @@ const BodySchema = z.object({
   resource: z.string().max(80).optional(),
   utmSource: z.string().max(80).optional(),
   turnstileToken: z.string().optional(),
+  /** Literal route the signup happened on, e.g. "/blog/que-es-rag". */
+  signupPath: z
+    .string()
+    .max(120)
+    .regex(/^\/[\w\-/]*$/)
+    .optional(),
+  /** The separate, non-prechecked consent box (RGPD art. 6.1.a, Planet49). */
+  consent: z.literal(true).optional(),
+  /** Lead magnet this capture belongs to, when a widget produced something. */
+  magnetSlug: z.string().max(80).optional(),
+  /**
+   * Whatever the widget wants remembered. Deliberately `unknown`: it is parsed
+   * and *recomputed* per magnet in `recordSubmission`, never written as sent.
+   */
+  payload: z.unknown().optional(),
 });
 
 const ok = () => NextResponse.json({ ok: true });
@@ -39,18 +55,38 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "captcha" }, { status: 400 });
   }
 
+  // The checkbox has always been `required` in the markup, but the value never
+  // reached the server, so a hand-rolled POST could subscribe an address with no
+  // consent recorded anywhere. Double opt-in is our proof of lawful basis; it
+  // should not rest on client-side validation alone.
+  if (body.consent !== true) {
+    return NextResponse.json({ ok: false, error: "consent" }, { status: 400 });
+  }
+
   // Scaffolding mode (no Supabase/Resend yet): report preview so the UI flow works.
   if (!isSupabaseConfigured() || !isEmailConfigured()) {
     return NextResponse.json({ ok: true, preview: true });
   }
 
   const supabase = createAdminClient();
-  const baseSource = body.resource
-    ? `lead_magnet:${body.resource}`
-    : body.source ?? "site";
+  const magnet = body.resource ?? body.magnetSlug;
+  const baseSource = magnet ? `lead_magnet:${magnet}` : body.source ?? "site";
   const source = body.utmSource
     ? `${baseSource}:${body.utmSource}`
     : baseSource;
+
+  // Recorded before touching `subscribers` so a fast confirm always finds it:
+  // the welcome email looks this up by email to quote the reader's own numbers.
+  // Best-effort, like the onboarding sequence — a capture must never be the
+  // reason a subscription fails.
+  if (body.magnetSlug) {
+    await recordSubmission(supabase, {
+      email: body.email,
+      magnetSlug: body.magnetSlug,
+      payload: body.payload,
+      sourcePath: body.signupPath,
+    });
+  }
 
   const { data: existing } = await supabase
     .from("subscribers")
@@ -59,6 +95,9 @@ export async function POST(request: NextRequest) {
     .maybeSingle();
 
   // Already confirmed → don't resend; respond generically (anti-enumeration).
+  // The submission above is still recorded: someone who consented months ago and
+  // now asks for a breakdown has asked for something, and the delivery path for
+  // that case is the immediate onboarding email (see /api/confirm).
   if (existing?.status === "confirmed") return ok();
 
   const token = generateToken();
@@ -72,6 +111,7 @@ export async function POST(request: NextRequest) {
       confirm_expires_at: expiresAt,
       consent_ip: ip === "unknown" ? null : ip,
       source,
+      signup_path: body.signupPath ?? null,
       locale: siteConfig.locale,
     },
     { onConflict: "email" },
