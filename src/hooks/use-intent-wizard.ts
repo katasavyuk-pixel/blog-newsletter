@@ -1,20 +1,46 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { INTENT_STORAGE_KEY } from "@/config/intent";
 
 const EVENT = "kata:intent-wizard";
 
-/** sessionStorage-backed "has the visitor seen the wizard?" — via useSyncExternalStore. */
-function readSeen(): boolean {
-  try {
-    // `?wizard=1` forces the wizard (review/dev), even if already seen this session.
-    if (new URLSearchParams(window.location.search).has("wizard")) return false;
-    return window.sessionStorage.getItem(INTENT_STORAGE_KEY) === "seen";
-  } catch {
-    // storage unavailable — treat as seen so nothing blocks the site
-    return true;
+/**
+ * Is the entry wizard open right now?
+ *
+ * It used to be "has this session seen it?", backed by `sessionStorage`, and it
+ * opened itself on arrival. Two problems with that, and the second is the one
+ * that settled it:
+ *
+ * 1. It is a modal over an opaque backdrop, so nothing else on the site exists
+ *    until it is dismissed — and it asked for twenty seconds and four clicks
+ *    before the visitor had read a line of Kata's. That is the same
+ *    landing-page reflex that got the capture form pulled off the masthead and
+ *    the email step left out of this very wizard.
+ * 2. `sessionStorage` is cleared when the tab closes, so "once per session" was
+ *    in practice *once per visit*. The reader who comes back every Monday for
+ *    the Radar paid the 4.6s flight and the four steps every single time. That
+ *    is not a welcome, it is a recurring toll.
+ *
+ * So it is opt-in now: `?wizard=1`, or Chispa offering it from her dock. Nothing
+ * about the wizard itself changed — routing people is still its job, it just no
+ * longer stands in the doorway. `StartHere` and the nav already route, in page,
+ * without blocking, and after the `h1`.
+ *
+ * No persistence: the only ways in are deliberate, so there is nothing to
+ * remember and nothing to nag about. Decision by Kata, 2026-08-06.
+ */
+let open: boolean | null = null;
+let openCount = 0;
+
+function isOpen(): boolean {
+  if (open === null) {
+    try {
+      open = new URLSearchParams(window.location.search).has("wizard");
+    } catch {
+      open = false;
+    }
   }
+  return open;
 }
 
 function subscribe(onChange: () => void): () => void {
@@ -22,22 +48,38 @@ function subscribe(onChange: () => void): () => void {
   return () => window.removeEventListener(EVENT, onChange);
 }
 
-/**
- * SSR-safe visibility flag for the entry wizard. Server and reduced-motion-safe
- * callers read `false` (never a hydration mismatch); after hydration it flips
- * to `true` for a first-time session visitor. `dismissIntent()` marks it seen.
- */
+/** SSR-safe: `false` on the server, so there is never a hydration mismatch. */
 export function useIntentVisible(): boolean {
-  const seen = useSyncExternalStore(subscribe, readSeen, () => true);
-  return !seen;
+  return useSyncExternalStore(subscribe, isOpen, () => false);
 }
 
-/** Mark the wizard as dismissed for this session and notify subscribers. */
+/**
+ * How many times it has been opened — used as a React `key`, so every opening
+ * gets a fresh mount.
+ *
+ * Without it the wizard is a long-lived component in the layout and keeps its
+ * last state: open it from the dock a second time and you land back on "Tu
+ * rumbo" with the choice you already made. Remounting also replays the flight,
+ * which is the right call — a stale confirmation screen is worse than a
+ * four-second entrance you can skip after one.
+ */
+export function useIntentOpenCount(): number {
+  return useSyncExternalStore(
+    subscribe,
+    () => openCount,
+    () => 0,
+  );
+}
+
+/** Open the wizard on purpose — Chispa's dock, or anything else that asks. */
+export function openIntent(): void {
+  open = true;
+  openCount += 1;
+  window.dispatchEvent(new Event(EVENT));
+}
+
+/** Close it. Sticks for the rest of the page, `?wizard=1` in the URL included. */
 export function dismissIntent(): void {
-  try {
-    window.sessionStorage.setItem(INTENT_STORAGE_KEY, "seen");
-  } catch {
-    // ignore
-  }
+  open = false;
   window.dispatchEvent(new Event(EVENT));
 }

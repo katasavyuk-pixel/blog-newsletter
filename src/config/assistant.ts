@@ -21,6 +21,9 @@ export const COMPANION = {
   errorMessage: "Se me ha cruzado un circuito. Vuelve a intentarlo en un momento.",
   /** Texto accesible del botón flotante. */
   ctaLabel: "Abrir Chispa, la asistente del sitio",
+  /** Abre el wizard de intención. Es la única puerta al wizard además de
+   *  `?wizard=1`: dejó de abrirse solo al entrar (ver `use-intent-wizard`). */
+  routeMeLabel: "¿Te pongo en ruta?",
 } as const;
 
 export type CompanionQuick = {

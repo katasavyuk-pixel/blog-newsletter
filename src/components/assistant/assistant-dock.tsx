@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mascot } from "@/components/wizard/mascot";
+import { openIntent } from "@/hooks/use-intent-wizard";
 import { COMPANION, QUICK_ACTIONS, type CompanionQuick } from "@/config/assistant";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -172,8 +173,20 @@ export function AssistantDock() {
               ) : null}
             </div>
 
-            {/* Quick actions */}
+            {/* Quick actions. The router goes first and wears the accent: the
+                wizard stopped opening itself on arrival, so this and `?wizard=1`
+                are the only ways in — see `use-intent-wizard`. */}
             <div className="flex flex-wrap gap-1.5 px-4 pb-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  openIntent();
+                }}
+                className="rounded-full border border-accent/50 px-3 py-1 text-xs text-accent-ink transition-colors hover:border-accent hover:bg-accent/10"
+              >
+                {COMPANION.routeMeLabel}
+              </button>
               {QUICK_ACTIONS.map((q) => (
                 <button
                   key={q.label}

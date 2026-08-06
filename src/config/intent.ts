@@ -96,5 +96,10 @@ export const RUMBO_COPY: Record<IntentOption["id"], string> = {
  * `/recursos` and the footer. Decision by Kata, 2026-08-06.
  */
 
-/** sessionStorage key. Versioned: bump to re-shown after a redesign of the steps. */
-export const INTENT_STORAGE_KEY = "kata-intent-v3";
+/**
+ * There is deliberately no storage key here either.
+ *
+ * The wizard no longer opens itself on arrival, so there is no "has this visitor
+ * seen it" to persist: the only ways in are `?wizard=1` and Chispa offering it.
+ * The reasoning is in `@/hooks/use-intent-wizard`. Decision by Kata, 2026-08-06.
+ */

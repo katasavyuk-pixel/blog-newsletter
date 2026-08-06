@@ -11,7 +11,11 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { dismissIntent, useIntentVisible } from "@/hooks/use-intent-wizard";
+import {
+  dismissIntent,
+  useIntentOpenCount,
+  useIntentVisible,
+} from "@/hooks/use-intent-wizard";
 import { Mascot } from "@/components/wizard/mascot";
 import {
   FORMA_OPTIONS,
@@ -132,7 +136,16 @@ type StepProps = {
 };
 
 /** Shared chrome of a wizard step: kicker, Anton title, progress bar, footer, CTA. */
-function Step({ step, kicker, title, children, footer, back, onBack, cta }: StepProps) {
+function Step({
+  step,
+  kicker,
+  title,
+  children,
+  footer,
+  back,
+  onBack,
+  cta,
+}: StepProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 22 }}
@@ -165,7 +178,9 @@ function Step({ step, kicker, title, children, footer, back, onBack, cta }: Step
         ) : null}
       </div>
 
-      <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent-ink">{kicker}</p>
+      <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent-ink">
+        {kicker}
+      </p>
       <h2 className="headline mt-2 text-3xl text-fg sm:text-4xl">{title}</h2>
 
       <div className="mt-6">{children}</div>
@@ -177,18 +192,38 @@ function Step({ step, kicker, title, children, footer, back, onBack, cta }: Step
 }
 
 /**
- * One-time entry wizard, guided by the site's mascot (Chispa):
- * cinematic flight → panel materializes around her → intent → format → rumbo.
- * Chispa is a single element that never unmounts, so the entrance and the wizard
- * read as one continuous take. It routes, it does not capture: see the note in
- * `@/config/intent` for why there is no email step. Client-only — renders
- * nothing on the server and nothing under reduced motion (the calm scrollable
- * homepage is the fallback there).
+ * Entry wizard, guided by the site's mascot (Chispa): cinematic flight → panel
+ * materializes around her → intent → format → rumbo.
+ *
+ * **Opt-in.** It no longer opens itself on arrival — `?wizard=1` or Chispa's
+ * dock, and the reasoning is in `@/hooks/use-intent-wizard`. Client-only:
+ * renders nothing on the server and nothing under reduced motion (the calm
+ * scrollable homepage is the fallback there).
  */
 export function IntentWizard() {
-  const router = useRouter();
   const reduced = useReducedMotion();
   const visible = useIntentVisible();
+  const openCount = useIntentOpenCount();
+
+  if (reduced) return null;
+
+  // Keyed so each opening is a fresh mount: this component lives in the layout
+  // and would otherwise hand the next visit whatever state the last one left.
+  return (
+    <AnimatePresence>
+      {visible ? <WizardFlow key={openCount} /> : null}
+    </AnimatePresence>
+  );
+}
+
+/**
+ * One run of the wizard. Chispa is a single element that never unmounts within
+ * a run, so the entrance and the steps read as one continuous take. It routes,
+ * it does not capture: see the note in `@/config/intent` for why there is no
+ * email step.
+ */
+function WizardFlow() {
+  const router = useRouter();
 
   const [phase, setPhase] = useState<"entering" | "wizard">("entering");
   const [step, setStep] = useState(0);
@@ -205,287 +240,322 @@ export function IntentWizard() {
   };
 
   useEffect(() => {
-    if (!visible) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") dismiss();
+      if (e.key === "Escape") dismissIntent();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [visible]);
-
-  if (reduced) return null;
+  }, []);
 
   const line =
-    step === 0 ? MASCOT.lines.intro
-    : step === 1 ? MASCOT.lines.intencion
-    : step === 2 ? MASCOT.lines.forma
-    : MASCOT.lines.rumbo;
+    step === 0
+      ? MASCOT.lines.intro
+      : step === 1
+        ? MASCOT.lines.intencion
+        : step === 2
+          ? MASCOT.lines.forma
+          : MASCOT.lines.rumbo;
 
   return (
-    <AnimatePresence>
-      {visible ? (
-        <motion.div
-          key="wizard-root"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Entrar con Kata"
-          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-bg"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.35 }}
-        >
-          {/* Resplandor ambiental. Se queda oscuro durante la órbita y florece
+    <motion.div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Entrar con Kata"
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-bg"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.35 }}
+    >
+      {/* Resplandor ambiental. Se queda oscuro durante la órbita y florece
               con la aproximación, de modo que alcanza su pico justo cuando ella
               se desvanece: Chispa no desaparece, se disuelve en su propia luz.
               Después baja sola durante el aterrizaje — mismo elemento, sin
               corte. Es hermano del vuelo, nunca su padre: dos capas con blur
               pueden convivir, anidarlas es lo que ensuciaba la imagen. */}
+      <motion.div
+        aria-hidden
+        className="glow-layer left-1/2 top-1/2 h-[70vmin] w-[70vmin] -translate-x-1/2 -translate-y-1/2 bg-accent/25"
+        animate={
+          entering
+            ? { opacity: [0.1, 0.13, 0.5], scale: [0.5, 0.65, 1.5] }
+            : { opacity: 0.16, scale: 1 }
+        }
+        transition={
+          entering
+            ? {
+                duration: FLIGHT_DURATION,
+                times: [0, 0.7, 1],
+                ease: "easeInOut",
+              }
+            : { duration: 1.1, ease: EASE }
+        }
+      />
+
+      <div className="relative mx-4 w-full max-w-lg">
+        {!entering ? (
+          <button
+            type="button"
+            onClick={dismiss}
+            className="absolute -top-10 right-0 font-mono text-xs text-faint transition-colors hover:text-fg"
+          >
+            Saltar ↩
+          </button>
+        ) : null}
+
+        {/* Chispa: un solo elemento para todo el recorrido — vuelo,
+                aterrizaje y poses por paso (el pose va en un wrapper interno). */}
+        <div className="mb-7 flex items-center gap-4">
           <motion.div
-            aria-hidden
-            className="glow-layer left-1/2 top-1/2 h-[70vmin] w-[70vmin] -translate-x-1/2 -translate-y-1/2 bg-accent/25"
-            animate={
-              entering
-                ? { opacity: [0.1, 0.13, 0.5], scale: [0.5, 0.65, 1.5] }
-                : { opacity: 0.16, scale: 1 }
-            }
+            initial={{
+              x: "-58vw",
+              y: "-32vh",
+              scale: 0.09,
+              opacity: 0,
+              rotate: -16,
+              filter: "blur(0px)",
+              "--mascot-halo": 1,
+            }}
+            animate={entering ? FLIGHT : LAND}
             transition={
               entering
-                ? { duration: FLIGHT_DURATION, times: [0, 0.7, 1], ease: "easeInOut" }
-                : { duration: 1.1, ease: EASE }
+                ? {
+                    duration: FLIGHT_DURATION,
+                    times: FLIGHT_TIMES,
+                    ease: FLIGHT_EASE,
+                  }
+                : {
+                    duration: 0.75,
+                    ease: EASE,
+                    scale: { type: "spring", stiffness: 180, damping: 16 },
+                    opacity: { duration: 0.45, ease: EASE },
+                  }
             }
-          />
-
-          <div className="relative mx-4 w-full max-w-lg">
-            {!entering ? (
-              <button
-                type="button"
-                onClick={dismiss}
-                className="absolute -top-10 right-0 font-mono text-xs text-faint transition-colors hover:text-fg"
-              >
-                Saltar ↩
-              </button>
-            ) : null}
-
-            {/* Chispa: un solo elemento para todo el recorrido — vuelo,
-                aterrizaje y poses por paso (el pose va en un wrapper interno). */}
-            <div className="mb-7 flex items-center gap-4">
-              <motion.div
-                initial={{
-                  x: "-58vw",
-                  y: "-32vh",
-                  scale: 0.09,
-                  opacity: 0,
-                  rotate: -16,
-                  filter: "blur(0px)",
-                  "--mascot-halo": 1,
-                }}
-                animate={entering ? FLIGHT : LAND}
-                transition={
-                  entering
-                    ? {
-                        duration: FLIGHT_DURATION,
-                        times: FLIGHT_TIMES,
-                        ease: FLIGHT_EASE,
-                      }
-                    : {
-                        duration: 0.75,
-                        ease: EASE,
-                        scale: { type: "spring", stiffness: 180, damping: 16 },
-                        opacity: { duration: 0.45, ease: EASE },
-                      }
-                }
-                onAnimationComplete={() => {
-                  if (entering) setPhase("wizard");
-                }}
-              >
-                <motion.div
-                  animate={MASCOT_POSES[step] ?? MASCOT_POSES[0]}
-                  transition={{ type: "spring", stiffness: 160, damping: 14 }}
-                >
-                  {/* Nativa a 360 px durante el vuelo, para llegar al primer
+            onAnimationComplete={() => {
+              if (entering) setPhase("wizard");
+            }}
+          >
+            <motion.div
+              animate={MASCOT_POSES[step] ?? MASCOT_POSES[0]}
+              transition={{ type: "spring", stiffness: 160, damping: 14 }}
+            >
+              {/* Nativa a 360 px durante el vuelo, para llegar al primer
                       plano encogiendo y no ampliando. El cambio de caja ocurre
                       en el salto de fase, con ella a opacidad 0. */}
-                  <Mascot name={MASCOT.name} size={entering ? "hero" : "md"} />
-                </motion.div>
-              </motion.div>
+              <Mascot name={MASCOT.name} size={entering ? "hero" : "md"} />
+            </motion.div>
+          </motion.div>
 
-              {!entering ? (
-                <motion.div
-                  className="flex-1 border-l border-dark-border-2 pl-4"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.55, delay: 0.28, ease: EASE }}
-                >
-                  <motion.p
-                    key={line}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, ease: EASE }}
-                    className="text-sm leading-relaxed text-muted"
-                  >
-                    <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-accent-ink">
-                      {MASCOT.name} ·
-                    </span>{" "}
-                    {line}
-                  </motion.p>
-                </motion.div>
-              ) : null}
-            </div>
+          {!entering ? (
+            <motion.div
+              className="flex-1 border-l border-dark-border-2 pl-4"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.55, delay: 0.28, ease: EASE }}
+            >
+              <motion.p
+                key={line}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: EASE }}
+                className="text-sm leading-relaxed text-muted"
+              >
+                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-accent-ink">
+                  {MASCOT.name} ·
+                </span>{" "}
+                {line}
+              </motion.p>
+            </motion.div>
+          ) : null}
+        </div>
 
-            {/* El contenido del wizard se materializa alrededor de Chispa
+        {/* El contenido del wizard se materializa alrededor de Chispa
                 mientras ella aterriza. Sin `filter`: el panel y el bocadillo
                 también entraban desenfocándose, con curvas distintas entre sí y
                 distintas de la de ella, y el ojo se quedaba con tres focos que
                 resolver a la vez. Un desplazamiento y un pelo de escala dan la
                 misma sensación de materialización sin competir. */}
-            {!entering ? (
-              <motion.div
-                initial={{ opacity: 0, y: 14, scale: 0.985 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.7, delay: 0.14, ease: EASE }}
-              >
-                <AnimatePresence mode="wait">
-                  {step === 0 ? (
-                    <Step key="intro" step={1} kicker="Bienvenido" title="Dame 20 segundos y te pongo en ruta.">
-                      <Button size="lg" onClick={() => setStep(1)}>
-                        Empezar
-                      </Button>
-                      <p className="mt-4 font-mono text-xs text-faint">
-                        Solo te pregunto un par de cosas. Se queda en tu navegador, no en mi base de datos.
+        {!entering ? (
+          <motion.div
+            initial={{ opacity: 0, y: 14, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.14, ease: EASE }}
+          >
+            <AnimatePresence mode="wait">
+              {step === 0 ? (
+                <Step
+                  key="intro"
+                  step={1}
+                  kicker="Bienvenido"
+                  title="Dame 20 segundos y te pongo en ruta."
+                >
+                  <Button size="lg" onClick={() => setStep(1)}>
+                    Empezar
+                  </Button>
+                  <p className="mt-4 font-mono text-xs text-faint">
+                    Solo te pregunto un par de cosas. Se queda en tu navegador,
+                    no en mi base de datos.
+                  </p>
+                </Step>
+              ) : null}
+
+              {step === 1 ? (
+                <Step
+                  key="intent"
+                  step={2}
+                  kicker="Hola, soy Kata"
+                  title="¿Qué te trae hoy?"
+                  footer={
+                    <p className="font-mono text-xs text-faint">
+                      Solo te pregunto una vez. Queda en tu navegador, no en mi
+                      base de datos.
+                    </p>
+                  }
+                >
+                  <div className="grid grid-cols-2 gap-3">
+                    {INTENT_OPTIONS.map((opt, i) => (
+                      <motion.button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => setSelected(opt)}
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: 0.08 + i * 0.06,
+                          duration: 0.3,
+                          ease: EASE,
+                        }}
+                        whileHover={{ y: -3 }}
+                        className={`flex flex-col rounded-2xl border bg-surface p-4 text-left transition-colors hover:bg-surface-2 ${
+                          selected?.id === opt.id
+                            ? "border-accent bg-accent/10"
+                            : "border-border hover:border-accent/40"
+                        }`}
+                      >
+                        <span className="font-punch text-lg text-fg">
+                          {opt.label}
+                        </span>
+                        <span className="mt-1 text-sm leading-snug text-muted">
+                          {opt.hint}
+                        </span>
+                      </motion.button>
+                    ))}
+                  </div>
+                  <div className="mt-6">
+                    <Button
+                      size="lg"
+                      disabled={!selected}
+                      onClick={() => setStep(2)}
+                    >
+                      {selected ? "Seguir" : "Elige una opción"}
+                    </Button>
+                  </div>
+                </Step>
+              ) : null}
+
+              {step === 2 ? (
+                <Step
+                  key="forma"
+                  step={3}
+                  kicker="Una pista más"
+                  title="¿Cómo prefieres consumirlo?"
+                  back
+                  onBack={() => setStep(1)}
+                >
+                  <div className="grid grid-cols-3 gap-3">
+                    {FORMA_OPTIONS.map((f, i) => (
+                      <motion.button
+                        key={f.id}
+                        type="button"
+                        onClick={() => setForma(f)}
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: 0.06 + i * 0.05,
+                          duration: 0.3,
+                          ease: EASE,
+                        }}
+                        whileHover={{ y: -3 }}
+                        className={`flex flex-col rounded-2xl border bg-surface p-4 text-left transition-colors hover:bg-surface-2 ${
+                          forma?.id === f.id
+                            ? "border-accent bg-accent/10"
+                            : "border-border hover:border-accent/40"
+                        }`}
+                      >
+                        <span className="font-punch text-lg text-fg">
+                          {f.label}
+                        </span>
+                        <span className="mt-1 text-sm leading-snug text-muted">
+                          {f.hint}
+                        </span>
+                      </motion.button>
+                    ))}
+                  </div>
+                  <div className="mt-6">
+                    <Button
+                      size="lg"
+                      disabled={!forma}
+                      onClick={() => setStep(3)}
+                    >
+                      {forma ? "Seguir" : "Elige una opción"}
+                    </Button>
+                  </div>
+                </Step>
+              ) : null}
+
+              {step === 3 && selected ? (
+                <Step
+                  key="rumbo"
+                  step={4}
+                  kicker="Tu rumbo"
+                  title={RUMBO_COPY[selected.id]}
+                  back
+                  onBack={() => setStep(2)}
+                >
+                  <div className="rounded-2xl border border-border bg-surface p-5">
+                    <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent-ink">
+                      Destino
+                    </p>
+                    <p className="mt-2 font-punch text-2xl text-fg">
+                      {selected.label}
+                    </p>
+                    <p className="mt-1 text-sm leading-relaxed text-muted">
+                      {selected.hint}
+                    </p>
+                    {forma ? (
+                      <p className="mt-3 border-t border-border pt-3 font-mono text-xs text-faint">
+                        Preferencia guardada: {forma.label.toLowerCase()} ·{" "}
+                        {forma.hint.toLowerCase()}
                       </p>
-                    </Step>
-                  ) : null}
+                    ) : null}
+                  </div>
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <Button size="lg" onClick={() => goToRoute(selected.route)}>
+                      Ir a {selected.label}
+                    </Button>
+                    <Button variant="ghost" size="lg" onClick={dismiss}>
+                      Seguir en la portada
+                    </Button>
+                  </div>
+                </Step>
+              ) : null}
+            </AnimatePresence>
+          </motion.div>
+        ) : null}
+      </div>
 
-                  {step === 1 ? (
-                    <Step
-                      key="intent"
-                      step={2}
-                      kicker="Hola, soy Kata"
-                      title="¿Qué te trae hoy?"
-                      footer={
-                        <p className="font-mono text-xs text-faint">
-                          Solo te pregunto una vez. Queda en tu navegador, no en mi base de datos.
-                        </p>
-                      }
-                    >
-                      <div className="grid grid-cols-2 gap-3">
-                        {INTENT_OPTIONS.map((opt, i) => (
-                          <motion.button
-                            key={opt.id}
-                            type="button"
-                            onClick={() => setSelected(opt)}
-                            initial={{ opacity: 0, y: 14 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.08 + i * 0.06, duration: 0.3, ease: EASE }}
-                            whileHover={{ y: -3 }}
-                            className={`flex flex-col rounded-2xl border bg-surface p-4 text-left transition-colors hover:bg-surface-2 ${
-                              selected?.id === opt.id
-                                ? "border-accent bg-accent/10"
-                                : "border-border hover:border-accent/40"
-                            }`}
-                          >
-                            <span className="font-punch text-lg text-fg">{opt.label}</span>
-                            <span className="mt-1 text-sm leading-snug text-muted">{opt.hint}</span>
-                          </motion.button>
-                        ))}
-                      </div>
-                      <div className="mt-6">
-                        <Button size="lg" disabled={!selected} onClick={() => setStep(2)}>
-                          {selected ? "Seguir" : "Elige una opción"}
-                        </Button>
-                      </div>
-                    </Step>
-                  ) : null}
-
-                  {step === 2 ? (
-                    <Step
-                      key="forma"
-                      step={3}
-                      kicker="Una pista más"
-                      title="¿Cómo prefieres consumirlo?"
-                      back
-                      onBack={() => setStep(1)}
-                    >
-                      <div className="grid grid-cols-3 gap-3">
-                        {FORMA_OPTIONS.map((f, i) => (
-                          <motion.button
-                            key={f.id}
-                            type="button"
-                            onClick={() => setForma(f)}
-                            initial={{ opacity: 0, y: 14 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.06 + i * 0.05, duration: 0.3, ease: EASE }}
-                            whileHover={{ y: -3 }}
-                            className={`flex flex-col rounded-2xl border bg-surface p-4 text-left transition-colors hover:bg-surface-2 ${
-                              forma?.id === f.id
-                                ? "border-accent bg-accent/10"
-                                : "border-border hover:border-accent/40"
-                            }`}
-                          >
-                            <span className="font-punch text-lg text-fg">{f.label}</span>
-                            <span className="mt-1 text-sm leading-snug text-muted">{f.hint}</span>
-                          </motion.button>
-                        ))}
-                      </div>
-                      <div className="mt-6">
-                        <Button size="lg" disabled={!forma} onClick={() => setStep(3)}>
-                          {forma ? "Seguir" : "Elige una opción"}
-                        </Button>
-                      </div>
-                    </Step>
-                  ) : null}
-
-                  {step === 3 && selected ? (
-                    <Step
-                      key="rumbo"
-                      step={4}
-                      kicker="Tu rumbo"
-                      title={RUMBO_COPY[selected.id]}
-                      back
-                      onBack={() => setStep(2)}
-                    >
-                      <div className="rounded-2xl border border-border bg-surface p-5">
-                        <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent-ink">
-                          Destino
-                        </p>
-                        <p className="mt-2 font-punch text-2xl text-fg">{selected.label}</p>
-                        <p className="mt-1 text-sm leading-relaxed text-muted">{selected.hint}</p>
-                        {forma ? (
-                          <p className="mt-3 border-t border-border pt-3 font-mono text-xs text-faint">
-                            Preferencia guardada: {forma.label.toLowerCase()} · {forma.hint.toLowerCase()}
-                          </p>
-                        ) : null}
-                      </div>
-                      <div className="mt-6 flex flex-wrap gap-3">
-                        <Button size="lg" onClick={() => goToRoute(selected.route)}>
-                          Ir a {selected.label}
-                        </Button>
-                        <Button variant="ghost" size="lg" onClick={dismiss}>
-                          Seguir en la portada
-                        </Button>
-                      </div>
-                    </Step>
-                  ) : null}
-                </AnimatePresence>
-              </motion.div>
-            ) : null}
-          </div>
-
-          {entering ? (
-            <motion.button
-              type="button"
-              onClick={() => setPhase("wizard")}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-              className="absolute right-6 top-6 font-mono text-xs text-faint transition-colors hover:text-fg"
-            >
-              Saltar intro →
-            </motion.button>
-          ) : null}
-        </motion.div>
+      {entering ? (
+        <motion.button
+          type="button"
+          onClick={() => setPhase("wizard")}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="absolute right-6 top-6 font-mono text-xs text-faint transition-colors hover:text-fg"
+        >
+          Saltar intro →
+        </motion.button>
       ) : null}
-    </AnimatePresence>
+    </motion.div>
   );
 }
