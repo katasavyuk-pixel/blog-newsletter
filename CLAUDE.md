@@ -341,8 +341,17 @@ visual**, aunque no cambia ni un token: la identidad (negro cálido + rojo, Anto
 + Inter) se queda igual. Specs en `docs/specs/{intent-wizard,chispa-assistant,
 home-scrollytelling}.md`.
 
-- **`IntentWizard`** (`src/components/wizard/`) — overlay de bienvenida una vez
-  por sesión (`sessionStorage`, clave `kata-intent-v3`; `?wizard=1` lo fuerza).
+- **`IntentWizard`** (`src/components/wizard/`) — enrutador de intención
+  **opt-in**. **Dejó de abrirse solo el 2026-08-06**: las dos únicas puertas son
+  `?wizard=1` y el chip «¿Te pongo en ruta?» del dock de Chispa. Se quitó de la
+  entrada porque (a) es un modal opaco que bloquea el sitio entero pidiendo 20 s
+  y 4 clics **antes de dar nada** — el mismo reflejo por el que se quitó el
+  formulario del masthead — y (b) `sessionStorage` se borra al cerrar la pestaña,
+  así que «una vez por sesión» era **una vez por visita**: el lector que vuelve
+  cada lunes a por el Radar lo pagaba entero cada vez. Rutear sigue siendo su
+  trabajo, pero eso ya lo hacen `StartHere` y la nav sin bloquear. **Sin
+  persistencia** (las dos entradas son deliberadas) y **cada apertura remonta**
+  (`key={openCount}`), o reabrirlo devolvía la elección anterior ya hecha.
   Vuelo cinemático de la mascota → 4 pasos: intro · intención · formato · rumbo.
   **El vuelo se recoreografió el 2026-08-06** (Kata: «se ve como un doble
   difuminado y queda feo»): converge a su hueco, **se acerca nítida hasta llenar
@@ -397,9 +406,11 @@ home-scrollytelling}.md`.
   del `<li>` (un `<div>` no es hijo válido de `<ul>`) y las rejillas necesitan
   `h-full` en el wrapper o la tarjeta deja de estirarse a su fila.
 - **Pendiente**: subir `LLM_*` a Vercel (las crea Kata: el sandbox no lee
-  `.env.local`). Sigue abierto si sobra una de las dos intros encadenadas
-  (wizard → escena 1): hoy un visitante nuevo se come las dos seguidas. Lo de las
-  pantallas se cerró en `b772c44` (500vh/350vh) y el segundo pase **no lo movió**.
+  `.env.local`) — hasta entonces el chip «¿Te pongo en ruta?» funciona igual (es
+  el wizard, no el LLM), pero el chat responde el mensaje honesto de sin-clave.
+  **Las dos decisiones abiertas están cerradas**: las pantallas, en `b772c44`
+  (500vh/350vh, y el segundo pase no las movió); las intros encadenadas, sacando
+  el wizard de la puerta.
 
 ## Diagnóstico estratégico y hoja de ruta de negocio (2026-07-26)
 

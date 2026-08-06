@@ -11,18 +11,23 @@
 
 ## Qué es
 
-Overlay de bienvenida **de una sola visita por sesión** que pregunta a quién
-entra qué viene a buscar y le rutea a la sección correspondiente. Aparece solo
-la primera vez (guardado en `sessionStorage`, clave `kata-intent-v3`; `?wizard=1` lo fuerza); después
-nunca, hasta cerrar la pestaña. Lo dirige **Chispa**, la mascota de la casa: un
+Enrutador de intención **opt-in**: pregunta qué vienes a buscar y te lleva a la
+sección correspondiente. **Ya no se abre solo al entrar** (2026-08-06). Las dos
+únicas puertas son `?wizard=1` y el chip «¿Te pongo en ruta?» del dock de
+Chispa. Lo dirige **Chispa**, la mascota de la casa: un
 núcleo de ascua con ojos que respira (CSS puro, paleta roja) y suelta una línea
 por paso.
 
 ## Cómo se comporta
 
-- **Visibilidad**: solo cliente. En SSR renderiza `null` (cero hydration
-  mismatch). Con `prefers-reduced-motion` no aparece nunca: la home con scroll
-  es el fallback tranquilo.
+- **Visibilidad**: solo cliente, y **cerrado por defecto**. En SSR renderiza
+  `null` (cero hydration mismatch). Con `prefers-reduced-motion` no aparece
+  nunca: la home con scroll es el fallback tranquilo.
+- **Cada apertura es un montaje nuevo** (`key={openCount}`): el componente vive
+  en el layout, así que sin eso reabrirlo desde el dock te devolvía a «Tu rumbo»
+  con la elección anterior ya hecha. Remontar replica el vuelo, que es lo
+  correcto — una pantalla de confirmación caducada es peor que una entrada de
+  cuatro segundos que puedes saltar al primero.
 - **Flujo (4 pasos)**, precedido del vuelo de entrada:
   0. **Intro** — Chispa se presenta y propone guiarte (`Empezar`).
   1. **Intención** — 4 tarjetas que rutean: aprender (`/empieza-aqui`),
@@ -108,3 +113,38 @@ React mientras el valor real vive en la animación.
 
 Personalidad y copy de Chispa, y si sobra una de las dos intros encadenadas
 (wizard → escena 1 del scrollytelling): hoy un visitante nuevo ve las dos.
+
+## Por qué dejó de ser la puerta (2026-08-06)
+
+Se abría solo en la primera visita, encima del scrollytelling, que a su vez
+precede al `h1`. Un visitante nuevo pagaba el vuelo de 4,6 s, cuatro pasos y
+cinco pantallas antes de leer una frase de Kata. Los dos motivos, y el segundo
+es el que lo decidió:
+
+1. **Bloquea.** Es un modal `fixed inset-0 z-[100]` con fondo opaco: hasta
+   cerrarlo no existe nada más del sitio. Y pedía veinte segundos y cuatro clics
+   antes de haber dado nada — el mismo reflejo de landing por el que se quitó el
+   formulario del masthead y por el que este wizard no pide email.
+2. **`sessionStorage` se borra al cerrar la pestaña**, así que «una vez por
+   sesión» era en la práctica **una vez por visita**: el lector que vuelve cada
+   lunes a por el Radar se lo comía entero cada vez. Eso no es una bienvenida,
+   es un peaje recurrente.
+
+Rutear sigue siendo su trabajo; simplemente ya no se pone en el marco de la
+puerta. `StartHere` (3 rutas derivadas de contenido real) y la nav hacen ese
+trabajo en página, sin bloquear y después del `h1`.
+
+No se borró ni una línea del wizard, y no hay persistencia: como las dos entradas
+son deliberadas, no hay nada que recordar ni de lo que avisar.
+
+**Honestidad sobre la decisión**: es criterio, no dato. Con <100 suscriptores no
+hay tráfico para un A/B que lo resuelva.
+
+### Verificado en navegador (webkit)
+
+Visita limpia y recarga → 0 overlays, `h1` presente · el chip del dock la abre y
+cierra el panel de chat · Escape la cierra · reabrir arranca de cero (medido:
+antes iba por 2/4, al reabrir 0 indicadores y vuelve a volar) · `?wizard=1` la
+sigue forzando y, una vez cerrada, **no** se reabre con el parámetro en la url ·
+la salida sigue animando tras el refactor (opacidad 1 → 0,67 → 0,41 → 0,19 →
+0,05), que era el riesgo de meter un componente hijo dentro de `AnimatePresence`.
