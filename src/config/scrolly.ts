@@ -15,11 +15,15 @@
  * a lot to ask of someone who just wanted the archive. Now 500vh on desktop,
  * 350vh on phones. Whole class strings on purpose: Tailwind reads source files
  * literally and would not generate a class it never sees spelled out.
+ *
+ * The totals have not moved since. Act three now draws a machine instead of
+ * reprinting the masthead's console, so it takes the room act one gave back —
+ * act one earns its beats faster now that its headlines are staged in depth.
  */
 export const SCENE_TRACK = {
-  ruido: "h-[110vh] sm:h-[160vh]",
+  ruido: "h-[100vh] sm:h-[140vh]",
   senal: "h-[130vh] sm:h-[190vh]",
-  sistema: "h-[110vh] sm:h-[150vh]",
+  sistema: "h-[120vh] sm:h-[170vh]",
 } as const;
 
 export const SCENE_COPY = {
@@ -36,6 +40,31 @@ export const SCENE_COPY = {
     liveTag: "EN DIRECTO — estado del viaje",
   },
 } as const;
+
+/**
+ * The Radar pipeline, drawn in act three.
+ *
+ * Every line here is a claim about a machine that exists, so every line is
+ * checkable against the repo: ten feeds in `config/radar-sources.json` gathered
+ * by `scripts/radar/collect.mjs` with no model in the loop, the url compared
+ * verbatim by `scripts/radar/verify-edition.mjs` before a PR can open, and the
+ * merge done by hand. If any of those stop being true, this copy is wrong and
+ * the scene is the lie on the page.
+ */
+export const PIPELINE_STEPS = [
+  { id: "recolecta", label: "recolecta", detail: "10 fuentes · sin LLM" },
+  { id: "verifica", label: "verifica", detail: "url verbatim, o no hay PR" },
+  { id: "publica", label: "publica", detail: "PR · lo mergeo yo" },
+] as const;
+
+/**
+ * What the gate throws out.
+ *
+ * Not a hypothetical: retyping a headline turned `’` into `'`, the check was a
+ * strict `!==`, and two editions died on it. The rejection is the interesting
+ * half of the machine, so it is the half that gets animated.
+ */
+export const PIPELINE_REJECT = "título reescrito";
 
 /** Hype headlines floating in scene 1. Pure noise, all hat, no cattle. */
 export const NOISE_WORDS = [

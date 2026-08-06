@@ -3,7 +3,7 @@
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { NoiseScene } from "./noise-scene";
 import { SignalScene } from "./signal-scene";
-import { SystemScene } from "./system-scene";
+import { PipelineScene } from "./pipeline-scene";
 
 /**
  * The three-act intro to the homepage: noise → signal → system, handing over to
@@ -29,7 +29,7 @@ export function ScrollyIntro({ statusLines }: { statusLines: string[] }) {
       <div aria-hidden>
         <NoiseScene />
         <SignalScene />
-        <SystemScene statusLines={statusLines} />
+        <PipelineScene statusLines={statusLines} />
       </div>
 
       {/* Sticky rather than fixed, and last in the flow, so it rides along for

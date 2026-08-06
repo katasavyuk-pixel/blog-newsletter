@@ -20,11 +20,21 @@ import { transform, useTransform, type MotionValue } from "motion/react";
  * into keyframes, so the value is computed per frame from the progress value we
  * actually asked for. `transform` is motion's own interpolator, so numbers,
  * units and complex strings like `blur(7px)` behave exactly as before.
+ *
+ * `ease` is optional and defaults to linear, which is what every call did
+ * implicitly before it existed — nothing changes shape unless a scene asks. It
+ * takes one easing function, or one per segment (`input.length - 1` of them),
+ * and it is the difference between a move that was authored and a move that just
+ * happens: linear interpolation starts and stops dead, and three scenes of it in
+ * a row is most of why the intro read as flat.
  */
 export function useSceneRange<T>(
   progress: MotionValue<number>,
   input: number[],
   output: T[],
+  ease?: EasingFunction | EasingFunction[],
 ): MotionValue<T> {
-  return useTransform(progress, (v) => transform(v, input, output));
+  return useTransform(progress, (v) => transform(v, input, output, { ease }));
 }
+
+type EasingFunction = (v: number) => number;
