@@ -405,12 +405,13 @@ home-scrollytelling}.md`.
   `i * 0.07`. Dos detalles que cuestan un rato descubrir: el reveal va **dentro**
   del `<li>` (un `<div>` no es hijo válido de `<ul>`) y las rejillas necesitan
   `h-full` en el wrapper o la tarjeta deja de estirarse a su fila.
-- **Pendiente**: subir `LLM_*` a Vercel (las crea Kata: el sandbox no lee
-  `.env.local`) — hasta entonces el chip «¿Te pongo en ruta?» funciona igual (es
-  el wizard, no el LLM), pero el chat responde el mensaje honesto de sin-clave.
-  **Las dos decisiones abiertas están cerradas**: las pantallas, en `b772c44`
-  (500vh/350vh, y el segundo pase no las movió); las intros encadenadas, sacando
-  el wizard de la puerta.
+- **Nada pendiente.** `LLM_API_KEY` está en producción desde el 2026-08-06
+  (verificado con `vercel env ls production`), y es la **única** que hace falta:
+  `LLM_BASE_URL` y `LLM_MODEL` tienen valor por defecto en
+  `src/app/api/assistant/route.ts` (Groq + `llama-3.3-70b-versatile`), así que
+  solo se suben si se cambia de proveedor. **Las dos decisiones abiertas también
+  están cerradas**: las pantallas, en `b772c44` (500vh/350vh, y el segundo pase
+  no las movió); las intros encadenadas, sacando el wizard de la puerta.
 
 ## Diagnóstico estratégico y hoja de ruta de negocio (2026-07-26)
 
