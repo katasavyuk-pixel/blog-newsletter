@@ -344,6 +344,11 @@ home-scrollytelling}.md`.
 - **`IntentWizard`** (`src/components/wizard/`) — overlay de bienvenida una vez
   por sesión (`sessionStorage`, clave `kata-intent-v3`; `?wizard=1` lo fuerza).
   Vuelo cinemático de la mascota → 4 pasos: intro · intención · formato · rumbo.
+  **El vuelo se recoreografió el 2026-08-06** (Kata: «se ve como un doble
+  difuminado y queda feo»): converge a su hueco, **se acerca nítida hasta llenar
+  el cuadro** (≈560 px medidos), sostiene un beat y solo entonces se desenfoca al
+  pasar la cámara. Un único desenfoque en toda la secuencia, verificado
+  muestreando `getComputedStyle`. El porqué del bug, en `docs/specs/intent-wizard.md`.
   **No pide email a propósito** — pedirlo antes de haber dado nada es el mismo
   reflejo de landing por el que se quitó el formulario del masthead. El porqué
   está escrito en `src/config/intent.ts`; no volver a añadirlo sin releerlo.
@@ -357,8 +362,21 @@ home-scrollytelling}.md`.
 - **Intro scrollytelling de la home** (`src/components/home/scrolly/`) — tres
   escenas pinned, ruido → señal → sistema, que entregan al masthead. Datos en
   `src/config/scrolly.ts`; el terminal comparte `getJourneyStatusLines()` con el
-  `JourneyPanel` para no poder contradecirlo. Añade **6,3 pantallas** de scroll
-  antes del `h1` en escritorio (3,9 en móvil), con botón de saltar sticky.
+  `JourneyPanel` para no poder contradecirlo. Añade **5,0 pantallas** de scroll
+  antes del `h1` en escritorio (3,5 en móvil), con botón de saltar sticky.
+  **Segundo pase el 2026-08-06** (Kata: «muy simplón»), sin mover el dial:
+  easing de verdad (`useSceneRange` acepta `ease`; la constante de la casa
+  llevaba semanas exportada **sin un solo consumidor**, así que todo interpolaba
+  linealmente), `SceneAtmosphere` para que el negro deje de ser un vacío, tres
+  planos de profundidad en el ruido, y **la escena 2 por fin es causal**: Chispa
+  barre, gira y baja por el lateral encendiendo cada fila al llegar a su altura
+  — antes las filas corrían con un temporizador propio mientras ella volaba por
+  otro lado. La **escena 3 es ahora el pipeline del Radar**
+  (`pipeline-scene.tsx`, sustituye a `system-scene.tsx`): `recolecta → verifica
+  → publica` trazado con `pathLength`, y en el gate un ítem sale rebotado con ✗
+  y su razón. Era el mismo panel `kata --status` del masthead 300 px más abajo;
+  ahora el terminal es la *salida* de la máquina. Detalle en
+  `docs/specs/home-scrollytelling.md`.
   **Con reduced-motion no se atenúa: no se monta** — `MotionConfig
   reducedMotion="user"` mata transform pero deja pasar opacity, así que atenuar
   dejaría media coreografía viva.
@@ -379,8 +397,9 @@ home-scrollytelling}.md`.
   del `<li>` (un `<div>` no es hijo válido de `<ul>`) y las rejillas necesitan
   `h-full` en el wrapper o la tarjeta deja de estirarse a su fila.
 - **Pendiente**: subir `LLM_*` a Vercel (las crea Kata: el sandbox no lee
-  `.env.local`). Y dos decisiones abiertas — si 6,3 pantallas son demasiadas, y si
-  sobra una de las dos intros encadenadas (wizard → escena 1).
+  `.env.local`). Sigue abierto si sobra una de las dos intros encadenadas
+  (wizard → escena 1): hoy un visitante nuevo se come las dos seguidas. Lo de las
+  pantallas se cerró en `b772c44` (500vh/350vh) y el segundo pase **no lo movió**.
 
 ## Diagnóstico estratégico y hoja de ruta de negocio (2026-07-26)
 
@@ -549,6 +568,42 @@ pantalla y estaban mal; solo se vieron midiendo el DOM:**
   Sale `Another next dev server is already running` con el PID. El `next-server`
   del 3000 en esta máquina **es de este proyecto**, no de NBI-WEB como decía una
   nota vieja.
+
+**Añadidos 2026-08-06, segundo pase (Chispa + scrollytelling):**
+
+- **Un `filter` en un ancestro vuelve a difuminar el subárbol ya rasterizado, y
+  se aplica ANTES del transform.** Es la causa del «doble difuminado» del wizard:
+  `blur(30px)` en el wrapper que contiene el `.glow-layer blur(80px)` del
+  `Mascot`, todo multiplicado por `scale: 9` → ≈270 px encima de ≈720 px. Regla:
+  capas con blur **hermanas, nunca anidadas**. Para poder apagar el halo desde
+  fuera se usa `--mascot-halo`, y **va en un padre**, no en el elemento con
+  `glow-pulse` — una animación CSS sobre `opacity` se come el estilo inline (es
+  la misma trampa del cursor del terminal; anidadas se multiplican).
+- **Para descartar un estado de animación sin que se vea, usa keyframes.** Motion
+  salta al primer valor de un array de inmediato. El aterrizaje del wizard pone
+  *todas* las propiedades como keyframes, así el `scale 6.8 / blur(12px)` se tira
+  con ella a `opacity: 0` en vez de destejerse — que es lo que producía el
+  segundo desenfoque.
+- **`transform()` de motion acepta `{ ease }`** (una función o una por tramo,
+  `input.length - 1`), y `cubicBezier`/`easeIn`/`easeOut`/`easeInOut` se exportan
+  desde `motion/react`. Usar **funciones y no tuplas** en un array evita pelearse
+  con el tipo `Easing`. Sin esto todo interpola lineal y arranca y para en seco.
+- **`pathLength` es un valor de primera clase de Motion en SVG** (lo compila a
+  `stroke-dashoffset`). En cambio `cx`/`cy` van **como props, no en `style`**:
+  las propiedades geométricas CSS del mismo nombre no son algo en lo que apoyarse.
+- **`offsetTop` no sirve para saltar a un progreso de escena.** Las escenas viven
+  dentro del `<div className="relative">` de `ScrollyIntro`, que es su
+  `offsetParent`. Las primeras capturas salieron a un progreso menor del pedido y
+  parecía que el pipeline no avanzaba. `getBoundingClientRect().top + scrollY`.
+- **El texto SVG no se ajusta solo.** Dos cadenas se salieron de su caja
+  (escritorio) y del viewBox (móvil). Al tocar `PIPELINE_STEPS` hay que volver a
+  medir el ancho contra la cadena más larga.
+- **Una captura a 1× no vale para juzgar nitidez.** Un primer plano parecía
+  rasterizado y blando en las dos versiones; a `deviceScaleFactor: 2` salía
+  nítido en ambas. Casi lleva a "arreglar" un bug inexistente.
+- **La herramienta de lectura de imágenes cachea por ruta.** Dos capturas
+  distintas del mismo fichero se leyeron idénticas y parecía que el build no
+  había entrado. Escribir a un nombre nuevo, o confirmar contra el DOM.
 
 **Añadidos 2026-08-05, segunda sesión (embudo). Todos vistos en vivo:**
 
