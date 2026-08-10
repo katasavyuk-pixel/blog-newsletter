@@ -10,7 +10,10 @@
     "build:content": "velite build --clean --strict",
     "build:next": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --no-warnings --experimental-strip-types --import ./tests/alias-hook.ts --test 'tests/**/*.test.ts'",
+    "verify": "npm run typecheck && npm run lint && npm run test"
   },
   "imports": {
     "#site/content": "./.velite/index.js"

@@ -1,0 +1,44 @@
+name: CI
+
+# Este repo llevaba Supabase con RLS, tabla de suscriptores (RGPD) y envío de
+# emails a producción sin un solo test ni typecheck, y con deploy automático en
+# cada push a main. Era el mayor desajuste riesgo/verificación del conjunto.
+#
+# `npm run verify` = typecheck (152 ficheros, strict) + eslint + tests.
+# El build va aparte porque velite --strict caza MDX roto, que es el fallo real
+# al escribir contenido y no lo ve ninguna de las tres cosas anteriores.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # 22.6+ por --experimental-strip-types, que es lo que permite tener
+          # tests en TypeScript sin bundler ni runner extra.
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: typecheck + lint + tests
+        run: npm run verify
+
+      - name: build (velite --strict caza el MDX roto)
+        run: npm run build
+        env:
+          # El build no debe necesitar secretos reales. Si algún día falla aquí
+          # por falta de una variable, el fallo es del build, no del CI: nada
+          # que se ejecute en un runner público puede depender de un secreto.
+          NEXT_TELEMETRY_DISABLED: '1'
