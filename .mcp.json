@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "graphify": {
+      "command": "graphify-mcp",
+      "args": ["graphify-out/graph.json"]
+    },
+    "notebooklm": {
+      "type": "http",
+      "url": "http://127.0.0.1:8180/mcp"
+    }
+  }
+}
