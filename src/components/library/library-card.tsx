@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { IconChip } from "@/components/ui/icon-chip";
+import { TiltCard } from "@/components/motion/tilt-card";
 import { cn } from "@/lib/utils";
 import type { LibraryItem } from "@/config/library";
 import { evidenciaLabel } from "@/lib/evidence";
@@ -123,40 +124,42 @@ export function LibraryCard({
   }
 
   return (
-    <Link
-      href={item.href ?? "/sistemas"}
-      className={cn(
-        "group",
-        cardClasses,
-        "transition-all hover:-translate-y-0.5 hover:border-accent hover:shadow-card-hover",
-        hero && "p-8 sm:p-10",
-      )}
-    >
-      {hero ? <Halo /> : null}
-      {ordinal ? <Ordinal value={ordinal} /> : null}
-      <IconChip color={item.color}>{item.glyph}</IconChip>
-      <h3
+    <TiltCard>
+      <Link
+        href={item.href ?? "/sistemas"}
         className={cn(
-          "mt-4 font-display font-medium text-fg group-hover:text-accent-ink",
-          hero ? "text-2xl sm:text-3xl" : "text-xl",
+          "group",
+          cardClasses,
+          "transition-[border-color,box-shadow] hover:border-accent hover:shadow-card-hover",
+          hero && "p-8 sm:p-10",
         )}
       >
-        {item.title}
-      </h3>
-      <p
-        className={cn(
-          "mt-2 flex-1 leading-relaxed text-muted",
-          hero ? "max-w-xl text-base" : "text-sm",
-        )}
-      >
-        {item.blurb}
-      </p>
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <Badge tone="blue">{item.format}</Badge>
-        <span className="font-mono text-xs text-faint">
-          ▸ {evidenciaLabel(item.evidencia)}
-        </span>
-      </div>
-    </Link>
+        {hero ? <Halo /> : null}
+        {ordinal ? <Ordinal value={ordinal} /> : null}
+        <IconChip color={item.color}>{item.glyph}</IconChip>
+        <h3
+          className={cn(
+            "mt-4 font-display font-medium text-fg group-hover:text-accent-ink",
+            hero ? "text-2xl sm:text-3xl" : "text-xl",
+          )}
+        >
+          {item.title}
+        </h3>
+        <p
+          className={cn(
+            "mt-2 flex-1 leading-relaxed text-muted",
+            hero ? "max-w-xl text-base" : "text-sm",
+          )}
+        >
+          {item.blurb}
+        </p>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <Badge tone="blue">{item.format}</Badge>
+          <span className="font-mono text-xs text-faint">
+            ▸ {evidenciaLabel(item.evidencia)}
+          </span>
+        </div>
+      </Link>
+    </TiltCard>
   );
 }

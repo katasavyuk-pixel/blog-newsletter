@@ -28,6 +28,12 @@ export type NoiseWord = {
   /** 0 = far, 1 = near. Drives parallax and how loud the word reads. */
   depth: number;
   /**
+   * Distance behind the screen plane, in px (−200 near … −1100 far). The act
+   * one camera travels past every headline, so this — not a scale trick — is
+   * the depth: near words blow past the lens early, far ones late.
+   */
+  z: number;
+  /**
    * `depth` bucketed into three planes.
    *
    * Depth used to change only how far a word travelled, so every headline was
@@ -62,6 +68,7 @@ export const NOISE_LAYOUT: NoiseWord[] = (() => {
       // multiplying the two put the near plane somewhere off the screen.
       scale: 0.85 + depth * 0.35,
       depth,
+      z: Math.round(-(200 + depth * 900)),
       band: depth < 0.34 ? "far" : depth < 0.67 ? "mid" : "near",
       loud: rand() > 0.82,
       mobile: i % 3 === 0,

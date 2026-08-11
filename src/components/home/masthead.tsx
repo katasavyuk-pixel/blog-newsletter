@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { GlowSection } from "@/components/ui/glow-section";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
+import { TiltCard } from "@/components/motion/tilt-card";
 import { JourneyPanel } from "@/components/home/journey-panel";
 
 /**
@@ -69,11 +70,13 @@ export function Masthead({ subscriberCount }: { subscriberCount: number | null }
         </ScrollReveal>
 
         <ScrollReveal delay={0.15} className="relative mx-auto w-full max-w-md">
-          <div
-            aria-hidden
-            className="absolute -inset-3 rounded-3xl border border-dark-border-2"
-          />
-          <JourneyPanel subscriberCount={subscriberCount} />
+          <TiltCard max={6} glareClassName="rounded-3xl">
+            <div
+              aria-hidden
+              className="absolute -inset-3 rounded-3xl border border-dark-border-2"
+            />
+            <JourneyPanel subscriberCount={subscriberCount} />
+          </TiltCard>
         </ScrollReveal>
       </Container>
     </GlowSection>

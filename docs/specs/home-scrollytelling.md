@@ -160,3 +160,60 @@ Petición de Kata. El diagnóstico, mirando el código y no la pantalla:
   su caja en escritorio y `título reescrito` se salía del viewBox en móvil. Las
   dos geometrías llevan ahora el ancho calculado contra la cadena más larga; al
   tocar el copy de `PIPELINE_STEPS` hay que volver a mirarlo.
+
+## Pase 3 (2026-08-11): 3D real, apertura directa, intro de un solo uso
+
+Tres peticiones de Kata: menos "vacio" al arrancar, movimiento 3D de verdad, y que el intro no se
+repita.
+
+### Apertura directa + túnel 3D (`noise-scene.tsx`, `noise-layout.ts`)
+
+- La profundidad ya no es fingida. Cada titular lleva un `transform-style: preserve-3d` en el
+  campo y un `translateZ` por banda (`noise-layout.ts`: −200 cerca … −1100 lejos, determinista
+  como siempre). La cámara recorre el campo: cada palabra viaja `+1250px` con la misma curva
+  `RUSH`, y la **perspectiva hace el parallax** — la cercana pasa por el objetivo pronto y gigante,
+  la lejana, tarde y pequeña. Se eliminó el parallax manual x/y: era el doblete del dolly.
+- Morirse al pasar la cámara: `useSceneRange(z, [-260, 140], [1, 0])`, encadenada a la voz de cada
+  palabra. Sin esto un titular a z>0 se renderizaría gigante e invertido.
+- **La pared está desde el píxel 0**: opacidad base `0.4 + depth * 0.6` en progreso 0 (lejano
+  atenuado, cercano a 1) en lugar del fade-in desde negro. El kicker deja de etiquetar el tema y
+  dice el hecho: *«cada semana, cien titulares como estos»*, y el cierre aterriza la consecuencia:
+  *«Ninguno te dice qué hacer el lunes.»*
+- La **escena 3** entra como maqueta: el SVG del pipeline nace inclinado (`rotateX` 24° escritorio
+  / 12° móvil) y a −90px de la pantalla, y se endereza y sube al arrancar.
+
+### `TiltCard` (`src/components/motion/tilt-card.tsx`)
+
+Tilt 3D con puntero (rotateX/Y con `useSpring`, glare radial que sigue el cursor) para el panel
+del masthead (±6°) y las tarjetas de blog y biblioteca (±4°). Off total con reduced-motion y con
+puntero coarse. Regla dura documentada en el componente: **en el elemento con tilt no puede vivir
+`transition-all` ni `hover:-translate-y-*`** — una transición CSS pelea con el transform que
+Motion escribe por frame.
+
+### Intro una sola vez — y el fallo de hidratación que casi se cuela
+
+- **Mecánica**: flag en `localStorage` (`kata:intro-vista`). El layout inyecta **un `<style>` con
+  `#scrolly-intro{display:none}` en `<head>`** antes del primer pintado vía `next/script`
+  `beforeInteractive`. Devolver usuarios no ven la intro ni un frame, sin salto de layout (documento
+  a 5321px frente a 8890px). `?intro=1` fuerza el replay. Se marca al saltar la intro o cuando el
+  scroll pasa su final.
+- **El cerebro del fallo**: la primera versión añadía una clase `intro-vista` a `<html>`, y React
+  hidrató con *hydration mismatch* — porque React es dueño del `className` del `<html>` (las
+  variables de fuente). Una `<style>` inyectada es DOM que React nunca reconcilia: cero mismatches.
+- **Segundo susto**: marcar "visto" con IntersectionObserver falla con saltos grandes (un `1px`
+  puede cruzar el viewport sin intersectar jamás). Un listener `scroll` pasivo + chequeo inicial no
+  se puede saltar. El chequeo además es idempotente: con la intro oculta el sentinel no tiene caja y
+  el check pasa al montar, cosa que no molesta porque el flag ya está puesto.
+
+### Verificado (2026-08-11, chromium 1280×720 y móvil 360px)
+
+- Muro presente a scroll 0: titulares entre 0.48 y 0.94 de opacidad, `matrix3d` en el transform.
+- Túnel de verdad: un titular mide 72px a progreso 0.3 y 85px a 0.75 (crece al acercarse a la
+  cámara) y su opacidad pica en su beat.
+- Intro única: 1ª visita ve la intro y marca `kata:intro-vista`; recarga → `display:none` desde el
+  primer pintado (altura 5321px, sin flash); `?intro=1` la devuelve. 0 `hydration mismatch`, 0
+  errores de consola en el ciclo completo.
+- `TiltCard`: hover en el panel del masthead rota ~1.8° (mismo factor por frame) y vuelve a 0 con el
+  spring.
+- Móvil 360px: 0 px de overflow en 5 profundidades de scroll, escena 3 entrando con su tilt 3D.
+- `npm run verify` limpio.

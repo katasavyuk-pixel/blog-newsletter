@@ -1,6 +1,6 @@
 # ESTADO — blog-newsletter
 
-> Última actualización: 2026-08-06, al cerrar la capa cinemática (F1 + F2).
+> Última actualización: 2026-08-11, al cerrar la capa 3D (Pase 3 del scrollytelling).
 > Lo de arriba es lo que toca ahora, en orden. Lo de abajo es contexto.
 
 ## Lo primero, y solo lo puedes hacer tú (1 min, un comando)
@@ -49,7 +49,7 @@ otras dos. Alternativas documentadas en `.env.example`.
 
 **El embudo está cerrado de punta a punta.** Nada de lo que queda abajo bloquea a un lector.
 
-## Ahora, en este orden
+## En qué estoy
 
 **1. Limpiar las filas de prueba** en `subscribers` cuando quieras: la de
 `source = prueba-reply-to` (pending, caduca sola) y las dos confirmadas con alias
@@ -122,6 +122,34 @@ datos" el imán protagonista** — ese sí resuelve un problema concreto de una 
   (usan `{{url_sitio}}`). Conviene igualarlo.
 - ⚠️ `RESEND_FROM` y `RESEND_API_KEY` se modificaron el 4-ago sobre las 23:30, no por el agente.
   Resultó inocuo, pero recuerda qué cambiaste por si rotaste a una cuenta distinta.
+
+## Hecho esta semana
+
+## Hecho esta semana
+
+## Hecho el 11 de agosto — capa 3D, apertura directa, intro de un solo uso
+
+Pase 3 del scrollytelling (docs en `docs/specs/home-scrollytelling.md`). Cambios:
+
+- **Túnel 3D real** en el acto 1: `preserve-3d` + `translateZ` por titular (−200 … −1100, del
+  `noise-layout.ts`) y cámara que recorre el campo; la perspectiva hace el parallax. La escena 3
+  entra como maqueta inclinada que se endereza. Sin dependencias nuevas, todo CSS + Motion.
+- **Apertura directa**: la pared de titulares está visible desde el píxel 0 (antes fade-in desde
+  negro vacío). Kicker «el ruido» → *«cada semana, cien titulares como estos»*; cierre →
+  *«Ninguno te dice qué hacer el lunes.»*. No son cifras nuevas ni clientes, solo la consecuencia
+  lógica de lo ya publicado («De cien ruidos, siete señales»), así que no tocan
+  `QUE_PUEDO_DECIR`.
+- **`TiltCard`** nuevo: tilt 3D con puntero (spring + glare) en el panel del masthead (±6°) y en
+  post y library cards (±4°). Off con reduced-motion y puntero coarse.
+- **Intro una sola vez**: flag `localStorage kata:intro-vista` + `<style>` inyectado en `<head>`
+  antes del pintado (`beforeInteractive`). Los que ya la han visto no ven ni un frame y no hay
+  salto de layout (documento 5321px vs 8890px). `?intro=1` fuerza el replay. Se marca al saltar o
+  al pasar el final. Ojo futuro: la primera versión mutaba una clase en `<html>` y React la
+  detectó como hydration mismatch — la regla está escrita en el spec.
+
+**Verificado** (chromium + móvil): muro a scroll 0 con `matrix3d`, titular que crece de 72→85px
+al acercarse, intro única sin mismatch ni errores, `?intro=1` OK, tilt responde al puntero,
+0 px de overflow móvil, `npm run verify` limpio.
 
 ## Hecho el 6 de agosto — capa cinemática (F1 + F2), en producción
 

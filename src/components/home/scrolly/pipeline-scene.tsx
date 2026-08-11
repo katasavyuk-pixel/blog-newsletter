@@ -320,7 +320,21 @@ export function PipelineScene({ statusLines }: { statusLines: string[] }) {
     [0, 1, 1, 0],
     SCENE_EASE_IO,
   );
-  const diagramY = useSceneRange(progress, [0, 0.1], ["18px", "0px"], SCENE_EASE);
+  // The machine enters as a physical model — a plane tilted back and behind
+  // the screen — and levels out as it powers up. Flat from the first frame
+  // read as a slide; this reads as an object.
+  const diagramTilt = useSceneRange(
+    progress,
+    [0, 0.3],
+    [wide ? 24 : 12, 0],
+    SCENE_EASE,
+  );
+  const diagramZ = useSceneRange(
+    progress,
+    [0, 0.3],
+    [wide ? -90 : -40, 0],
+    SCENE_EASE,
+  );
 
   const crossIn = useSceneRange(
     progress,
@@ -357,13 +371,16 @@ export function PipelineScene({ statusLines }: { statusLines: string[] }) {
           of a cut — the intro used to simply stop. */}
       {/* `pt-20` on small screens keeps the stack clear of the kicker parked at
           `top-24`; there is room to spare once the viewport is wide. */}
-      <div className="section-fade-bottom sticky top-0 flex h-svh flex-col items-center justify-center gap-6 overflow-hidden bg-dark px-6 pt-20 sm:pt-0">
+      <div
+        style={{ perspective: 1400 }}
+        className="section-fade-bottom sticky top-0 flex h-svh flex-col items-center justify-center gap-6 overflow-hidden bg-dark px-6 pt-20 sm:pt-0"
+      >
         <SceneAtmosphere progress={progress} />
         <SceneKicker>{SCENE_COPY.sistema.kicker}</SceneKicker>
 
         <motion.svg
           viewBox={geo.viewBox}
-          style={{ opacity: diagramOpacity, y: diagramY }}
+          style={{ opacity: diagramOpacity, rotateX: diagramTilt, z: diagramZ }}
           className="relative w-full max-w-[min(56rem,92vw)] shrink"
           role="presentation"
         >

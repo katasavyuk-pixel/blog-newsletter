@@ -28,8 +28,12 @@ export const SCENE_TRACK = {
 
 export const SCENE_COPY = {
   ruido: {
-    kicker: "el ruido",
-    closing: "Cada semana, esto.",
+    // No "el ruido" label: the act opens with the wall already on screen, and
+    // the kicker says the fact out loud instead of naming the theme. The
+    // closing lands the consequence, which is the PAS beat the voice rules ask
+    // for — and it tees up act two's «De cien ruidos, siete señales.».
+    kicker: "cada semana, cien titulares como estos",
+    closing: "Ninguno te dice qué hacer el lunes.",
   },
   senal: {
     kicker: "la señal",
