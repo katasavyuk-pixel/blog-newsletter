@@ -4,7 +4,7 @@ import { getResend, FROM, REPLY_TO, isEmailConfigured } from "@/lib/email";
 import type { createAdminClient } from "@/lib/supabase/admin";
 import { siteConfig } from "@/config/site";
 import { renderTemplate, htmlToText, TemplateError } from "@/lib/email-template";
-import { openingBlock, downloadBlock } from "@/lib/email-blocks";
+import { openingBlock, downloadBlock, resourceDeliveryBody } from "@/lib/email-blocks";
 import { getLatestSubmission, type MagnetSubmission } from "@/lib/lead-magnets";
 import { signedDownloadUrl } from "@/lib/signed-links";
 import { generateToken } from "@/lib/tokens";
@@ -162,13 +162,16 @@ export async function sendResourceDelivery(
   if (!isEmailConfigured()) return;
   try {
     const ctx = await buildContext(supabase, sub.email, sub.resource);
-    const download = downloadBlock(ctx.downloadUrl, ctx.downloadLabel);
 
-    // Nothing concrete to hand over → stay silent. `openingBlock` always
-    // returns something (it falls back to the strongest lesson on the site),
-    // so without this an unrelated re-subscribe would trigger a stray email
-    // that promises a delivery and delivers a blog link.
-    if (!download && !ctx.submission) return;
+    // Only what they just asked for. Returns null when that is nothing, and
+    // then we stay silent — see the comment on resourceDeliveryBody for the
+    // shape of the bug this replaced.
+    const html = resourceDeliveryBody({
+      downloadUrl: ctx.downloadUrl,
+      downloadLabel: ctx.downloadLabel,
+      submission: ctx.submission,
+    });
+    if (!html) return;
 
     // The List-Unsubscribe header has to name a token that exists. Rows from
     // before this column was populated have none; mint one rather than send a
@@ -185,9 +188,6 @@ export async function sendResourceDelivery(
 
     const unsubscribeUrl = unsubscribeUrlFor(token);
     const title = "Aquí tienes lo que pediste";
-    const html = [openingBlock(ctx.siteUrl, ctx.submission), download]
-      .filter(Boolean)
-      .join("\n");
 
     await getResend().emails.send({
       from: FROM,

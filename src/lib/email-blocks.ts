@@ -18,7 +18,7 @@ import type { MagnetSubmission } from "@/lib/lead-magnets";
 const P = `margin:0 0 16px;line-height:1.6;color:${c.textMain};font-size:15px`;
 const CELL = `padding:10px 12px;border-bottom:1px solid ${c.border};font-size:14px`;
 
-function button(href: string, label: string): string {
+export function button(href: string, label: string): string {
   return (
     `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px"><tr><td` +
     ` style="background-color:${c.buttonBg};border-radius:999px">` +
@@ -36,7 +36,7 @@ function button(href: string, label: string): string {
  * that arrives as three numbers and nothing else is not kept. The formula is the
  * deliverable; it fits in a spreadsheet.
  */
-function costBreakdown(submission: MagnetSubmission): string | null {
+export function costBreakdown(submission: MagnetSubmission): string | null {
   const cost = readCostPayload(submission.payload);
   if (!cost) return null;
 
@@ -104,4 +104,46 @@ export function downloadBlock(url: string | null, label: string): string {
   return (
     `<p style="${P}">Y aquí tienes la descarga que pediste:</p>` + button(url, label)
   );
+}
+
+/**
+ * Body of the standalone "here is what you asked for" email.
+ *
+ * Separate from `openingBlock` on purpose, and the difference is the whole
+ * point. The first onboarding email opens with *something* by design — whoever
+ * arrives with no history still gets the strongest lesson on the site. A
+ * delivery is the opposite: the reader asked one question a minute ago, and
+ * the answer is the only thing that belongs in it.
+ *
+ * Composing them the other way round is exactly what shipped on 2026-08-21:
+ * someone asked for the GEO prompt and the email led with a cost breakdown
+ * from a calculator visit weeks earlier, because `getLatestSubmission` returns
+ * the latest row for that address regardless of what was just requested. The
+ * download was underneath, and correct, and nobody would have scrolled to it.
+ *
+ * Returns null when there is nothing concrete to hand over. Callers must not
+ * send in that case: an email titled "aquí tienes lo que pediste" that carries
+ * a blog link is worse than the silence it replaces.
+ */
+export function resourceDeliveryBody(args: {
+  downloadUrl: string | null;
+  downloadLabel: string;
+  submission: MagnetSubmission | null;
+}): string | null {
+  if (args.downloadUrl) {
+    return (
+      `<p style="${P}">Tu dirección ya estaba confirmada, así que va directo, sin pasos de más:</p>` +
+      button(args.downloadUrl, args.downloadLabel) +
+      `<p style="${P};color:${c.textMuted};font-size:13px">El enlace vale 30 días. Si se te pasa, ` +
+      `vuelve a pedirlo y te llega otro.</p>`
+    );
+  }
+
+  // No file: the only other thing worth calling a delivery is the reader's own
+  // numbers, which is what the calculator promises in exchange for an address.
+  if (args.submission?.magnetSlug === COST_MAGNET_SLUG) {
+    return costBreakdown(args.submission);
+  }
+
+  return null;
 }
