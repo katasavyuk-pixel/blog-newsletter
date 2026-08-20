@@ -34,3 +34,24 @@ on conflict (slug) do update set
 
 -- Comprobación: debe devolver una fila con published = true.
 -- select slug, published, file_path, download_count from public.resources;
+
+-- ---------------------------------------------------------------------------
+-- Prompt de auditoría GEO para cualquier producto o servicio
+-- Source: lead-magnets/maitreai-geo/
+-- Upload: recurso-maitreai-geo.zip → lead-magnets/maitreai-geo/
+-- ---------------------------------------------------------------------------
+insert into public.resources (slug, title, description, file_path, requires_email, published)
+values (
+  'maitreai-geo',
+  'Prompt de auditoría GEO para tu negocio',
+  'Prompt generalizado para comprobar si una IA puede encontrar, entender y considerar tu producto o servicio, con estados PASS, WARN, FAIL y BLOCKED y sin prometer recomendaciones automáticas.',
+  'maitreai-geo/recurso-maitreai-geo.zip',
+  true,
+  true
+)
+on conflict (slug) do update set
+  title          = excluded.title,
+  description    = excluded.description,
+  file_path      = excluded.file_path,
+  requires_email = excluded.requires_email,
+  published      = excluded.published;

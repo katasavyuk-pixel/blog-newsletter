@@ -95,14 +95,16 @@ export const LIBRARY_ITEMS: LibraryItem[] = [
   },
   {
     id: "stack-geo",
-    title: "Stack GEO: que la IA recomiende tu negocio",
-    blurb:
-      "Que ChatGPT y compañía encuentren y citen tu web: llms.txt, datos estructurados y el porqué de cada pieza. Vídeo + guía replicable.",
+    slug: "maitreai-geo",
     tema: "captacion",
     color: "toffee",
     glyph: "◈",
     format: "Vídeo + guía",
-    evidencia: { tipo: "en-taller", eta: "2026-09", progreso: 80 },
+    evidencia: {
+      tipo: "en-produccion",
+      url: "/blog/maitreai-geo",
+      desde: "agosto de 2026",
+    },
   },
   {
     id: "maquina-bienvenida",
