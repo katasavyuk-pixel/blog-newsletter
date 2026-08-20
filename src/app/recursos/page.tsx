@@ -4,7 +4,6 @@ import { Container } from "@/components/ui/container";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { Card } from "@/components/ui/card";
 import { SubscribeForm } from "@/components/newsletter/subscribe-form";
-import { CostCalculator } from "@/components/mdx/widgets/cost-calculator";
 import { getPublishedResources } from "@/lib/resources";
 import { LIBRARY_ITEMS, libraryStatus } from "@/config/library";
 import { evidenciaLabel } from "@/lib/evidence";
@@ -19,7 +18,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Recursos",
   description:
-    "Calculadora de costes de IA y plantillas descargables. Se usan sin registro; el email solo si quieres que te las mande por escrito.",
+    "Plantillas y prompts descargables que uso en mi negocio: el prompt de auditoría GEO y la plantilla de datos de emails logísticos.",
   alternates: { canonical: "/recursos" },
 };
 
@@ -63,9 +62,19 @@ export default async function ResourcesPage({
             Herramientas que puedes usar hoy
           </h1>
           <p className="mt-3 text-lg leading-relaxed text-muted">
-            Lo que uso para decidir en mi negocio, en formato que puedes abrir y
-            copiar. Se usan enteras sin registrarte. El email solo si quieres
-            que te mande el resultado por escrito.
+            Lo que uso en mi negocio, en formato que puedes abrir y copiar. Te
+            los mando por correo: es una sola lista y te das de baja en un clic.
+          </p>
+          <p className="mt-3 text-sm leading-relaxed text-muted">
+            ¿Buscabas la calculadora de costes de IA? Se usa entera y sin dejar
+            nada, dentro de{" "}
+            <Link
+              href="/blog/cuanto-cuesta-la-ia"
+              className="text-accent-ink hover:underline"
+            >
+              su artículo
+            </Link>
+            .
           </p>
         </header>
       </ScrollReveal>
@@ -104,31 +113,9 @@ export default async function ResourcesPage({
         </Card>
       ) : null}
 
-      <ScrollReveal variant="blur">
-        <section className="mt-14" aria-labelledby="calculadora">
-          <p className="font-mono text-xs uppercase tracking-wider text-accent-ink">
-            Recurso 1 · Calculadora
-          </p>
-          <h2
-            id="calculadora"
-            className="mt-2 font-display text-2xl font-semibold text-fg"
-          >
-            ¿Cuánto te cuesta de verdad usar IA?
-          </h2>
-          <p className="mt-2 max-w-2xl text-muted">
-            Mueve el modelo, el tamaño de las peticiones y el volumen, y mira
-            qué pasa con la factura. Es la misma calculadora del artículo, con
-            los precios públicos de los cuatro modelos que más se usan.
-          </p>
-          <div className="mt-2 max-w-3xl">
-            <CostCalculator captureMode />
-          </div>
-        </section>
-      </ScrollReveal>
-
       {resources.length > 0 ? (
         <ScrollReveal variant="blur">
-          <section className="mt-16" aria-labelledby="descargables">
+          <section className="mt-14" aria-labelledby="descargables">
             <p className="font-mono text-xs uppercase tracking-wider text-accent-ink">
               Descargables
             </p>
@@ -170,6 +157,30 @@ export default async function ResourcesPage({
             </div>
           </section>
         </ScrollReveal>
+      ) : null}
+
+      {/* The calculator used to sit above the downloads and was always on the
+          page, so an empty resource list still rendered something. Now that it
+          lives in its own article, a failed read from Supabase would leave the
+          page every visitor from the video lands on with nothing on it. Say so
+          and give them a person, rather than an empty shelf that reads as "he
+          has nothing". */}
+      {resources.length === 0 ? (
+        <Card className="mt-14 max-w-2xl border-accent-ink/40">
+          <h2 className="font-display text-lg font-semibold text-fg">
+            No puedo cargar los descargables ahora mismo
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            Es un fallo mío, no tuyo. Escríbeme a{" "}
+            <a
+              href={`mailto:${siteConfig.replyEmail}`}
+              className="text-accent-ink underline"
+            >
+              {siteConfig.replyEmail}
+            </a>{" "}
+            diciéndome cuál querías y te lo mando yo mismo, hoy.
+          </p>
+        </Card>
       ) : null}
 
       {enPreparacion.length > 0 ? (

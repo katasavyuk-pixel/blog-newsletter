@@ -86,23 +86,29 @@ trabajo de código. La salida 2 del cierre apunta a `/trabaja-con-nbi` y **no di
 - ✅ **Panel** con datos reales, tras contraseña.
 - ✅ **`maitreai.es/llms.txt` y su `robots.txt`** (2026-08-21), comprobados contra producción.
 
-## Decisión abierta: la calculadora como imán no convence (Kata, 2026-08-05)
+## Decisión cerrada: la calculadora deja de ser el imán (2026-08-21)
 
-Sigue abierta. Dos problemas de **oferta**, no de código:
+Estaba abierta desde el 2026-08-05 con dos problemas de **oferta**, no de código: el email no
+añadía nada (el lector ya vio las cifras gratis, así que pagar con su dirección por verlas
+otra vez es un peaje, no un intercambio) y la pregunta estaba mal (*"¿cuánto cuestan los
+tokens?"* es la pregunta de quien ya escribe código contra una API, no la del emprendedor en
+marcha).
 
-1. **El email no añade nada.** El lector ya vio las tres cifras gratis; lo que compra con su
-   dirección son esas mismas cifras por escrito. No es un intercambio, es un peaje.
-2. **La pregunta está mal.** *"¿Cuánto cuestan los tokens?"* es la pregunta de quien ya
-   escribe código contra una API. La del lector nº1 es *"¿merece la pena automatizar esto?"*,
-   y esa no se responde sin el otro lado de la balanza.
+**Se cerró por la alternativa barata que ya proponía este documento**: la calculadora deja de
+presidir `/recursos` y el imán protagonista pasa a ser el prompt de auditoría GEO, que
+resuelve un problema concreto de una persona concreta.
 
-**Dirección propuesta:** misma calculadora, dos entradas más (horas/semana y coste de esa
-hora) y salida distinta — coste manual vs automatizado al mes, y en cuántas semanas se paga.
-Reutiliza toda la maquinaria de hoy. **Bloqueado por un dato que no se puede inventar**: el
-coste por hora por defecto iría como campo editable con etiqueta explícita de estimación.
+Lo desencadenó Kata siguiendo su propio enlace desde la descripción del vídeo: quien llega
+buscando el prompt aterrizaba en una calculadora de costes de tokens. No se pierde nada — la
+calculadora vive en su artículo (`content/posts/cuanto-cuesta-la-ia.mdx`) **con la captura
+encendida**, así que `lead_magnet_submissions` y el `{{apertura_personalizada}}` del email 1
+siguen funcionando igual. `/recursos` queda con una sola petición de correo y lo descargable
+lo primero.
 
-**Alternativa más barata:** dejar la calculadora como herramienta y que el imán protagonista
-sea el prompt de auditoría GEO, que ya resuelve un problema concreto.
+La dirección más ambiciosa sigue anotada por si alguna vez interesa: misma calculadora, dos
+entradas más (horas/semana y coste de esa hora) y salida distinta — coste manual vs
+automatizado al mes y en cuántas semanas se paga. **Sigue bloqueada por el mismo dato que no
+se puede inventar**: el coste por hora por defecto.
 
 ## Pendientes menores que arrastramos
 
