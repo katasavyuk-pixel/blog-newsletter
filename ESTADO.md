@@ -5,50 +5,43 @@
 
 ## Lo primero, y solo lo puedes hacer tú
 
-**1. ~~Activa Vercel Web Analytics.~~ Hecho el 2026-08-21** con
-`vercel project web-analytics --scope nexoraprocesos-boops-projects` (devuelve
-`enabled: true`). Llevaba desde julio con `<Analytics/>` montado en el layout y la
-recogida apagada, así que **el episodio 1 se lanzó sin medir nada** y ese tráfico no se
-recupera. La recogida empieza desde cero ahora.
+**1. Lee la newsletter y envíala.** `content/newsletters/2026-08-geo-ep1.md`. Todo lo demás de
+esa edición está comprobado y anotado en su propio frontmatter; lo único que falta es que la
+leas, porque sale con tu firma a gente real y es el primer envío de la lista. Los tres pasos
+del envío están escritos ahí. Es lo único con prisa: el vídeo es de esta semana.
 
-Dos límites que conviene tener presentes, del cuadro de precios (docs, 26-jun-2026):
+**2. Reconstruye el ZIP del recurso.** El vídeo menciona las comprobaciones y la tabla, y el
+ZIP no las lleva: solo el prompt y un README. Ya está escrito lo que falta
+(`lead-magnets/maitreai-geo/comprobaciones-geo.md`, 9 comprobaciones + la tabla, sacadas del
+informe real de la auditoría). Dos pasos, en `lead-magnets/maitreai-geo/README.md`: trae el
+prompt al repo y vuelve a comprimir. **Cuando esté subido, dilo y devuelvo al artículo la frase
+que promete las comprobaciones** — se quitó el 2026-08-21 justo porque no era verdad.
 
-- En **Hobby** entran 50.000 eventos/mes gratis — muy por encima del tráfico de hoy — pero
-  la **ventana de consulta es de 1 mes** y **los eventos personalizados no están
-  incluidos**. Es decir, `track("calculadora_usada")`
-  (`src/components/mdx/widgets/cost-calculator.tsx:73`) **no se va a recoger** hasta Pro.
-  No es urgente: el uso de la calculadora no es la métrica de la fase.
-- El desglose por **UTM** en el panel es del add-on *Web Analytics Plus*. No hace falta:
-  la atribución que importa —cuántas altas vienen de YouTube— ya se guarda en
-  `subscribers.source` (`lead_magnet:<slug>:<utm_source>`) y `signup_path`, y sale en
-  `/panel`. Eso no depende del plan de Vercel.
-
-**2. Comprueba la secuencia de bienvenida, que llevaba tres semanas rota.** Los cinco enlaces
-de los tres emails apuntaban a `%7B%7Burl_sitio%7D%7D/...` — arreglado hoy, con un test que
-lo fija. En seco primero, que no envía nada y devuelve el HTML:
-
-```
-read -rs S && echo && curl -s -X POST https://kata.ianexora.com/api/welcome-sequence/test \
-  -H "Authorization: Bearer $S" -H 'Content-Type: application/json' \
-  -d '{"email":"TU_DIRECCION","dryRun":true}' | grep -o 'href="[^"]*"' | sort -u
-```
-
-Todos los `href` tienen que empezar por `https://kata.ianexora.com`. Si sale un solo `%7B`,
-para. Después, el mismo comando sin `dryRun`: llegan los tres con asunto `[PRUEBA]`.
-
-**3. Mergea el PR #2 del Radar** (`radar/2026-08-17`). Pasó su gate el día que se generó y
-lleva cuatro días abierto; la última edición publicada es del 4 de agosto, así que la home ya
-está degradando sola la promesa de cadencia. El merge es tuyo a propósito.
-
-**4. Versiona el ZIP del recurso GEO.** Está en Storage y sirve, pero su fuente no está en el
-repo: no se puede revisar en un diff qué se entrega ni regenerarlo si se borra. Detalle en
-`lead-magnets/maitreai-geo/README.md`.
-
-**5. Define precio y alcance de NBI.** Sigue siendo el bloqueador nº1 de negocio, y no es
-trabajo de código. La salida 2 del cierre apunta a `/trabaja-con-nbi` y **no dice
+**3. Define precio y alcance de NBI.** Sigue siendo el bloqueador nº1 de negocio y no lo
+arregla ningún commit. La salida 2 del cierre apunta a `/trabaja-con-nbi` y **no dice
 "diagnóstico" a propósito**: `EMBUDO.md` dice que hoy no se ofrece.
 
 ## Lo que se arregló el 2026-08-21 (auditoría post-episodio)
+
+Segunda tanda, ya con el vídeo publicado:
+
+- **`/recursos` deja de abrir con la calculadora.** Quien llegaba por el enlace del vídeo
+  aterrizaba en un widget de precios de tokens, encima de lo que venía a buscar. La
+  calculadora vive en su artículo con la captura encendida, así que no se pierde nada.
+- **Una sola petición de correo por página.** El artículo pedía en tres sitios y `/recursos`
+  en tres también (dos tarjetas más un «Avísame»), siendo **la misma lista**. Ahora el
+  formulario del artículo *es* la entrega, y el consentimiento lo dice: *"Es una sola lista"*.
+- **El correo de entrega ya no abre con la calculadora** de una visita de otro día.
+- **El buzón de contacto apunta a `info@ianexora.com`**, que alguien lee. `privacidad@` no lo
+  leía nadie y la política de privacidad lo nombraba como canal de derechos RGPD.
+- **La política de privacidad habla en singular.** Decía "tratamos", "guardamos", "usamos" —
+  el plural de cortesía que `QUE_PUEDO_DECIR.md` prohíbe, justo en la página que declara quién
+  es el responsable del tratamiento.
+- **Radar: mergeada la edición del 17-ago** (PR #2). Las 7 URLs comprobadas una a una contra
+  las páginas reales y los 7 titulares coinciden verbatim. Ojo con el gate en local: compara
+  contra `scratch/radar-candidates.json`, que caduca a los 7 días — en local da falsos
+  positivos de alucinación. El gate bueno es el de CI, que recolecta fresco.
+- **Web Analytics activado** con `vercel project web-analytics`. Llevaba desde julio apagado.
 
 - **El vídeo afirmaba dos despliegues que no existían.** `maitreai.es/llms.txt` daba 404 y su
   `robots.txt` tenía un solo grupo `*`, sin nombrar a ningún rastreador de IA — mientras el
