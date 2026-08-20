@@ -32,6 +32,18 @@ jobs:
 
       - run: npm ci
 
+      # Velite first, and not as a nicety: `#site/content` is generated code.
+      # Without it `tsc` cannot resolve the module, every post and email becomes
+      # `any`, and `noImplicitAny` fails nineteen times across six files. That
+      # is why this workflow had never once been green — it passed locally only
+      # because .velite/ was already sitting there from a previous build.
+      #
+      # It also means the link-integrity test in tests/email-template.test.ts
+      # has the compiled emails to read, which is the whole point of that test:
+      # the bug it guards against lives in Velite's output, not in the markdown.
+      - name: build content (genera #site/content)
+        run: npm run build:content
+
       - name: typecheck + lint + tests
         run: npm run verify
 
