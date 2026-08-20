@@ -168,7 +168,9 @@ export function CostCalculator({
                   <a href="/privacidad" className="text-accent-ink underline">
                     política de privacidad
                   </a>
-                  . Te enviaremos un email para confirmar (doble opt-in).
+                  . Es una sola lista: te mando el desglose y te quedas suscrito.
+                  Te llega un email para confirmar, y bajas en un clic desde
+                  cualquiera de ellos.
                 </>
               }
             />

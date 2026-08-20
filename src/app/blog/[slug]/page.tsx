@@ -135,7 +135,11 @@ export default async function PostPage({
           </header>
 
           {post.youtubeId ? (
-            <YouTubeEmbed id={post.youtubeId} title={post.title} />
+            <YouTubeEmbed
+              id={post.youtubeId}
+              title={post.title}
+              entregaAqui={Boolean(post.recurso)}
+            />
           ) : null}
 
           <div className="mt-10">
@@ -149,7 +153,10 @@ export default async function PostPage({
                 components={{
                   ...widgets,
                   SuscripcionInline: () => (
-                    <SuscripcionInline {...ctaInlineFor(post)} />
+                    <SuscripcionInline
+                      {...ctaInlineFor(post)}
+                      recurso={post.recurso}
+                    />
                   ),
                 }}
               />

@@ -26,6 +26,11 @@ const posts = defineCollection({
       tags: s.array(s.string()).default([]),
       cover: s.image().optional(),
       youtubeId: s.string().max(20).optional(), // companion YouTube video ID, if any
+      // Slug of the `resources` row this article hands over, if any. When set,
+      // the in-body ask becomes the delivery: one form, on the page the reader
+      // is already on, instead of sending them to /recursos to give the same
+      // address to the same list a second time.
+      recurso: s.string().max(80).optional(),
       // Contextual copy for the in-body <SuscripcionInline/>. Optional: without
       // it the component falls back per `formato` (src/config/cta-inline.ts), so
       // an article never shows a generic ask.

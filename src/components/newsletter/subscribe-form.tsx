@@ -170,16 +170,31 @@ export function SubscribeForm({
           className="mt-0.5 accent-[var(--color-accent)]"
         />
         <span>
-          {consentLabel ?? (
-            <>
-              Acepto recibir la newsletter y la{" "}
-              <a href="/privacidad" className={t.link}>
-                política de privacidad
-              </a>
-              . Te enviaremos un email para confirmar tu suscripción (doble
-              opt-in).
-            </>
-          )}
+          {consentLabel ??
+            (resource ? (
+              // Asking for a file and asking for the newsletter are the same
+              // signup — one row in `subscribers`, one list. Saying so here is
+              // both the honest thing and the fix for the confusion it caused:
+              // a reader who gave their address for a download then met more
+              // "suscríbete" boxes and reasonably assumed they were separate.
+              <>
+                Acepto recibir la newsletter y la{" "}
+                <a href="/privacidad" className={t.link}>
+                  política de privacidad
+                </a>
+                . Es una sola lista: te mando el recurso y te quedas suscrito. Te
+                llega un email para confirmar, y puedes darte de baja en un clic
+                desde cualquiera de ellos.
+              </>
+            ) : (
+              <>
+                Acepto recibir la newsletter y la{" "}
+                <a href="/privacidad" className={t.link}>
+                  política de privacidad
+                </a>
+                . Te mando un email para confirmar tu suscripción (doble opt-in).
+              </>
+            ))}
         </span>
       </label>
 

@@ -14,16 +14,36 @@ import type { CtaInline } from "@/config/cta-inline";
  * cannot see its own frontmatter, so the component is bound to the post where
  * the components map is built). One typed field, like everywhere else.
  *
+ * When the post declares a `recurso`, this form *is* the delivery. Before that,
+ * an article with a downloadable attached asked twice: a subscribe box in the
+ * body and a link out to /recursos, which is the same signup into the same
+ * list — so it read as being asked for an address over and over. `signup_path`
+ * still separates the two places, so nothing is lost by merging the ask.
+ *
  * `not-prose` because it sits inside Prose and should not inherit article
  * typography.
  */
-export function SuscripcionInline({ gancho, promesa }: CtaInline) {
+export function SuscripcionInline({
+  gancho,
+  promesa,
+  recurso,
+}: CtaInline & { recurso?: string }) {
   return (
     <aside className="not-prose my-10 rounded-2xl border border-border bg-surface p-6 sm:p-7">
       <p className="font-display text-lg font-semibold text-fg">{gancho}</p>
       <p className="mt-2 text-sm leading-relaxed text-muted">{promesa}</p>
       <div className="mt-4">
-        <SubscribeForm source="post-inline" />
+        <SubscribeForm
+          source="post-inline"
+          resource={recurso}
+          {...(recurso
+            ? {
+                submitLabel: "Enviármelo",
+                doneMessage:
+                  "Hecho. Confirma en tu correo y te llega la descarga en el mismo email.",
+              }
+            : {})}
+        />
       </div>
     </aside>
   );

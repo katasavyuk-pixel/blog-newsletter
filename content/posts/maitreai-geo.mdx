@@ -11,9 +11,10 @@ tags:
   - visibilidad-ia
   - construccion-publica
 youtubeId: 9OB_O0w-8GI
+recurso: maitreai-geo
 cta_inline:
-  gancho: "El episodio 2 responde si esto ha servido de algo"
-  promesa: "Compruebo cada lunes si MaitreAI aparece ya en esa respuesta. Salga o no salga, lo cuento aquí antes que en YouTube."
+  gancho: "El prompt de auditoría, para lo que tú vendas"
+  promesa: "Generalizado: comprueba si una IA puede encontrarte, entenderte y considerarte. Te llega por correo al confirmar, y de paso te quedas en la newsletter — que es donde diré si esto ha servido de algo."
 draft: false
 premium: false
 ---
@@ -51,8 +52,6 @@ Lo que **no** tuve que construir: datos estructurados a nivel de sitio. `maitrea
 Al editar `robots.txt`, hay una trampa real: un bot que encuentra un grupo con su propio nombre ignora el grupo genérico `*` por completo. Si le doy a `GPTBot` un grupo con solo `Allow: /`, ese bot deja de respetar el `Disallow` que protege `/dashboard` y `/api` — rutas con datos reales de clientes. La solución: cada grupo nombrado repite la misma protección, desde una única constante en el código, para que no haya forma de relajar una sin que se note en las demás.
 </Callout>
 
-<SuscripcionInline />
-
 ## El límite honesto — y por qué es el tema del próximo episodio
 
 Esto no cambia nada en el mismo segundo. Un asistente de IA no relee internet cada minuto — indexar contenido nuevo tarda, a veces semanas. Y aunque apareciera mañana mismo, lo que de verdad convence no es el archivo — es que el producto ya funciona, con un cliente real, hoy. El archivo solo se asegura de que la IA se entere.
@@ -63,8 +62,8 @@ Eso es exactamente lo que abre el episodio 2: cómo saber si esto de verdad camb
 
 Voy a comprobar esto cada lunes, con fecha, hasta que se resuelva en el episodio 2. El día que MaitreAI aparezca en esa respuesta (o si no aparece nunca), lo vas a saber por la newsletter antes que por YouTube — un vídeo tarda semanas en editarse, un email tarda diez minutos.
 
-<Callout type="info" title="Cómo lo consigues">
-El prompt completo que usé para generar `llms.txt` y editar `robots.txt` está en [/recursos](/recursos) — generalizado para que lo apliques a lo que tú vendas, sea lo que sea, no solo a MaitreAI. Al suscribirte te llevas también la lista completa de las 9 cosas que verifiqué antes de grabar este episodio (en el vídeo solo cupieron 2). Requiere confirmar tu email (doble opt-in, sin spam).
-</Callout>
+El prompt completo que usé para generar `llms.txt` y editar `robots.txt` no se queda en MaitreAI: está generalizado para que lo apliques a lo que tú vendas, sea lo que sea. Te lo mando aquí mismo.
+
+<SuscripcionInline />
 
 Si tienes un restaurante, una peluquería, una clínica o cualquier negocio local y te falta gente para contestar el teléfono o el WhatsApp: esto es exactamente lo que hace [MaitreAI](https://maitreai.es). No es una promesa — ya funciona.
