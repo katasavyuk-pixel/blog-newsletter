@@ -57,12 +57,26 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const { data: signed } = await supabase.storage
+  const { data: signed, error: signError } = await supabase.storage
     .from("lead-magnets")
     .createSignedUrl(resource.file_path, 300, { download: true });
 
+  // A published row whose file_path points at nothing — the failure
+  // supabase/seeds/resources.sql warns about at the top, and the worst possible
+  // moment for it: the reader has just handed over their address and confirmed
+  // it. A raw 500 JSON body tells them nothing and tells us nothing either.
+  //
+  // Bounce to the page that already knows how to explain itself, and log loudly
+  // enough that the cause is the first thing in the runtime logs.
   if (!signed?.signedUrl) {
-    return NextResponse.json({ error: "signing failed" }, { status: 500 });
+    console.error(
+      `[download] no object at "${resource.file_path}" for slug "${slug}" — ` +
+        `the row is published but Storage has nothing to sign.`,
+      signError,
+    );
+    return NextResponse.redirect(
+      new URL(`/recursos?error=descarga&slug=${encodeURIComponent(slug)}`, request.url),
+    );
   }
 
   await supabase.rpc("increment_download_count", { p_id: resource.id });

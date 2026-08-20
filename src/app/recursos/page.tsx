@@ -8,6 +8,7 @@ import { CostCalculator } from "@/components/mdx/widgets/cost-calculator";
 import { getPublishedResources } from "@/lib/resources";
 import { LIBRARY_ITEMS, libraryStatus } from "@/config/library";
 import { evidenciaLabel } from "@/lib/evidence";
+import { siteConfig } from "@/config/site";
 
 // The resource list comes from Supabase and must reflect the DB on every request.
 // Without this the route prerenders at build time: `getPublishedResources()` bails
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
 export default async function ResourcesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ need_email?: string }>;
+  searchParams: Promise<{ need_email?: string; error?: string; slug?: string }>;
 }) {
   const [resources, sp] = await Promise.all([
     getPublishedResources(),
@@ -38,6 +39,14 @@ export default async function ResourcesPage({
   const blocked = sp.need_email
     ? resources.find((r) => r.slug === sp.need_email)
     : undefined;
+
+  // /api/download also bounces here when the row is published but Storage has
+  // no object behind it. The reader did everything right and still has nothing,
+  // so the one thing this page must not do is act as if they had not asked.
+  const roto =
+    sp.error === "descarga"
+      ? (resources.find((r) => r.slug === sp.slug)?.title ?? "el archivo")
+      : undefined;
 
   // Derived, not hand-written: `assertEvidencia` fails the build when an ETA
   // expires, so this list cannot quietly become a set of stale promises, and it
@@ -60,6 +69,25 @@ export default async function ResourcesPage({
           </p>
         </header>
       </ScrollReveal>
+
+      {roto ? (
+        <Card className="mt-10 max-w-2xl border-accent-ink/40">
+          <h2 className="font-display text-lg font-semibold text-fg">
+            No he podido servirte «{roto}»
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            Tu dirección está confirmada y el enlace era correcto: el fallo está
+            en mi lado, al ir a buscar el archivo. Escríbeme a{" "}
+            <a
+              href={`mailto:${siteConfig.replyEmail}`}
+              className="text-accent-ink underline"
+            >
+              {siteConfig.replyEmail}
+            </a>{" "}
+            y te lo mando yo mismo, hoy.
+          </p>
+        </Card>
+      ) : null}
 
       {blocked ? (
         <Card className="mt-10 max-w-2xl border-accent-ink/40">
