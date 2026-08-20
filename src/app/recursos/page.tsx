@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { Card } from "@/components/ui/card";
@@ -119,6 +120,14 @@ export default async function ResourcesPage({
                     <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">
                       {resource.description}
                     </p>
+                  ) : null}
+                  {resource.slug === "maitreai-geo" ? (
+                    <Link
+                      href="/blog/maitreai-geo"
+                      className="mt-4 inline-block text-sm font-medium text-accent-ink hover:underline"
+                    >
+                      Ver el artículo y el vídeo del episodio →
+                    </Link>
                   ) : null}
                   <div className="mt-5">
                     <SubscribeForm
