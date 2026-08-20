@@ -1,5 +1,21 @@
 # Rediseño "Biblioteca de Sistemas" — kata.ianexora.com
 
+> **PARCIALMENTE SUPERSEDIDA — marcado el 2026-08-21.** Sigue vigente el patrón
+> biblioteca-como-página / home-como-argumento, `JourneyPanel`, `LibraryCard`,
+> `ClosingCta` y `ParticleField`. Ya NO describe el sitio en tres puntos:
+>
+> - La navegación de 4 elementos (`Biblioteca`, `Curso`, `Noticias`, `Sobre mí`) son hoy
+>   6 en `src/config/site.ts`, y `/biblioteca` y `/blog/tag/radar` son redirecciones
+>   permanentes a `/sistemas` y `/radar`.
+> - El copy *"construyo NBI (empresa de IA) en público"* y el eyebrow *"construyendo una
+>   empresa de IA"* están **prohibidos** por `QUE_PUEDO_DECIR.md` hasta que se resuelva la
+>   capitalización. El código ya no los usa; este documento sí.
+> - Los pilares de `library.ts` que enumera son 3; la taxonomía real tiene 5 temas.
+>
+> No se corrige el cuerpo: es el registro de lo que se decidió aquel día. Lo vigente
+> manda desde el código.
+
+
 ## Contexto
 
 El blog está posicionado 100% como "aprende IA sin humo", pero el canal de YouTube (top-of-funnel

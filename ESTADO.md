@@ -1,251 +1,166 @@
 # ESTADO — blog-newsletter
 
-> Última actualización: 2026-08-11, al cerrar la capa 3D (Pase 3 del scrollytelling).
-> Lo de arriba es lo que toca ahora, en orden. Lo de abajo es contexto.
+> Última actualización: **2026-08-21**, tras la auditoría posterior a publicar el episodio 1.
+> Arriba lo que toca ahora, en orden. Abajo, contexto que no conviene volver a averiguar.
 
-## Lo primero, y solo lo puedes hacer tú (1 min, un comando)
+## Lo primero, y solo lo puedes hacer tú
 
-**Chispa no tiene su clave en Vercel**, así que el dock de chat sale en producción
-diciendo «Todavía no estoy conectada». Es lo único que le falta: `LLM_BASE_URL` y
-`LLM_MODEL` **tienen valor por defecto en el propio código**
-(`src/app/api/assistant/route.ts`), así que no hay que subirlas — solo la clave, y
-solo tú puedes, porque un secreto no viaja por el chat y el sandbox no lee
-`.env.local`.
+**1. Activa Vercel Web Analytics.** La API responde `404 Web Analytics not found` para el
+proyecto, aunque `<Analytics/>` lleva montado en el layout desde julio. Si es lo que parece,
+el episodio 1 se ha lanzado sin medir nada: ni cuánta gente llega por `/yt`, ni cuántas
+altas, ni qué artículo capta. Dashboard de Vercel → proyecto `kata-ivanovych-blog` →
+Analytics → Enable. Un clic, y no se puede recuperar el tráfico que no se midió.
 
-```
-vercel env add LLM_API_KEY production --scope nexoraprocesos-boops-projects
-```
-
-Pega la clave de `console.groq.com/keys` cuando la pida. Después, un redeploy
-desde el dashboard (o cualquier push) para que la coja. Para comprobarlo:
+**2. Comprueba la secuencia de bienvenida, que llevaba tres semanas rota.** Los cinco enlaces
+de los tres emails apuntaban a `%7B%7Burl_sitio%7D%7D/...` — arreglado hoy, con un test que
+lo fija. En seco primero, que no envía nada y devuelve el HTML:
 
 ```
-curl -s -X POST https://kata.ianexora.com/api/assistant \
-  -H 'Content-Type: application/json' -d '{"query":"¿Qué es el Radar?"}'
-```
-
-Si responde con texto, está viva. Si devuelve `"unconfigured":true`, aún no.
-
-**Solo si quieres cambiar de proveedor** (Gemini, Cloudflare) hacen falta las
-otras dos. Alternativas documentadas en `.env.example`.
-
-## Ya verificado end-to-end (2026-08-05)
-
-- ✅ **Alta real → confirmación → PDF descargado.** El camino completo del embudo, recorrido en
-  producción con un alias `+e2e` del buzón personal.
-- ✅ **La respuesta llega a `info@ianexora.com`.** Era el último eslabón sin comprobar y el que
-  sostiene la métrica de la fase (*reply rate*). Llevaba dos sesiones abierto.
-- ✅ **Los 3 emails de la secuencia llegan**, con desglose, fórmula y enlace de baja visible. Caen
-  en Promociones, que es el destino normal de cualquier correo con `List-Unsubscribe`; se les añadió
-  parte de texto plano, que era la única señal en nuestra mano. Arrastrar uno a Principal y
-  responder es lo que de verdad lo mueve, y lo entrena por cuenta.
-- ✅ **Panel funcionando** con datos reales.
-- ✅ **Frase del masthead**: elegida la opción A y desplegada.
-- ✅ **Turnstile activo y probado por un humano.** Widget `0x4AAAAAAEHSqgI-UocUPzyT` (Managed,
-  hostname `kata.ianexora.com`). `/api/subscribe` sin token devuelve `400 captcha` (antes: 200). Un
-  alta real desde el navegador pasa el reto y llega el email. **Un navegador automatizado no
-  consigue token ni en modo headed** — es lo buscado, y el corolario es que los flujos de alta ya no
-  se pueden probar con Playwright: a mano.
-
-**El embudo está cerrado de punta a punta.** Nada de lo que queda abajo bloquea a un lector.
-
-## En qué estoy
-
-**1. Limpiar las filas de prueba** en `subscribers` cuando quieras: la de
-`source = prueba-reply-to` (pending, caduca sola) y las dos confirmadas con alias
-`+e2e` y `+turnstile` de tu buzón personal — a esas les siguen llegando el email
-de 48h y el de 96h, que no está mal como prueba de la temporización. Búscalas con
-`select email, source, status from subscribers order by created_at desc;`.
-
-> Las direcciones completas ya no se escriben aquí: **este repo es público** desde
-> que se conectó el deploy automático, así que en estos documentos van descritas,
-> no literales.
-
-**2. Ensayo en seco de la newsletter.** (1 min) Dice a cuánta gente llegaría, sin enviar nada:
-```
-read -rs S && echo && curl -s -X POST https://kata.ianexora.com/api/newsletter/send \
+read -rs S && echo && curl -s -X POST https://kata.ianexora.com/api/welcome-sequence/test \
   -H "Authorization: Bearer $S" -H 'Content-Type: application/json' \
-  -d '{"issue":"2026-08-antes-del-tms","dryRun":true}'
+  -d '{"email":"TU_DIRECCION","dryRun":true}' | grep -o 'href="[^"]*"' | sort -u
 ```
 
-**3. Desbloquear la edición ya escrita.** `content/newsletters/2026-08-antes-del-tms.md`, `draft:
-true`. De los dos motivos originales **ya solo queda uno**:
-- ~~`/recursos` no sirve nada descargable~~ ✅ resuelto: sirve el PDF "25 datos" con descarga firmada.
-- ❌ `content/posts/antes-del-tms-tu-inbox.mdx` sigue en `draft: true` → el enlace daría 404.
-- Cuando lo publiques: pasar la checklist de `QUE_PUEDO_DECIR.md` **el mismo día**, quitar
-  `draft: true` de la edición, y enviar sin `dryRun`.
+Todos los `href` tienen que empezar por `https://kata.ianexora.com`. Si sale un solo `%7B`,
+para. Después, el mismo comando sin `dryRun`: llegan los tres con asunto `[PRUEBA]`.
 
-**4. Definir precio y alcance de NBI.** Sigue siendo el bloqueador nº1 de negocio. Y ahora tiene un
-sitio concreto esperándolo: la salida 2 del cierre apunta a `/trabaja-con-nbi` y **no dice
-"diagnóstico" a propósito**, porque `EMBUDO.md` dice que hoy no se ofrece. El destino vive en
-`siteConfig` para cambiarlo en una línea cuando lo definas. No es trabajo de código.
+**3. Mergea el PR #2 del Radar** (`radar/2026-08-17`). Pasó su gate el día que se generó y
+lleva cuatro días abierto; la última edición publicada es del 4 de agosto, así que la home ya
+está degradando sola la promesa de cadencia. El merge es tuyo a propósito.
+
+**4. Versiona el ZIP del recurso GEO.** Está en Storage y sirve, pero su fuente no está en el
+repo: no se puede revisar en un diff qué se entrega ni regenerarlo si se borra. Detalle en
+`lead-magnets/maitreai-geo/README.md`.
+
+**5. Define precio y alcance de NBI.** Sigue siendo el bloqueador nº1 de negocio, y no es
+trabajo de código. La salida 2 del cierre apunta a `/trabaja-con-nbi` y **no dice
+"diagnóstico" a propósito**: `EMBUDO.md` dice que hoy no se ofrece.
+
+## Lo que se arregló el 2026-08-21 (auditoría post-episodio)
+
+- **El vídeo afirmaba dos despliegues que no existían.** `maitreai.es/llms.txt` daba 404 y su
+  `robots.txt` tenía un solo grupo `*`, sin nombrar a ningún rastreador de IA — mientras el
+  artículo publicado describía ambas piezas como hechas. Construidas y desplegadas en
+  `~/Developer/Ma-tre` (commit `f2f721e`): 15 grupos, cada uno con las 8 mismas exclusiones,
+  verificado contra producción grupo a grupo.
+- **La secuencia de bienvenida enviaba enlaces muertos desde el 29-jul.** Velite
+  percent-codifica `{{url_sitio}}` cuando va dentro de un enlace; ni la sustitución ni el
+  guard de sobrantes casaban con esa forma, así que el email salía impecable y sin un solo
+  botón que funcionara. `tests/email-template.test.ts` lo fija leyendo la salida del
+  compilador, que es donde vive el fallo.
+- **CI llevaba rojo desde que existe** (2026-08-11 y 2026-08-20): corría `tsc` antes que
+  Velite, así que `#site/content` no existía y cascadeaban 19 errores. En local pasaba porque
+  `.velite/` ya estaba en disco. Verde por primera vez hoy.
+- **Un suscriptor ya confirmado que pedía un recurso no recibía nada.** El formulario le
+  decía "te llega" y el código devolvía `ok()` y silencio.
+- **`/api/confirm` no comprobaba su `UPDATE`**, así que un fallo de escritura mandaba la
+  secuencia con un token de baja que no estaba en la base de datos.
+- **El email de confirmación era el único sin texto plano**, y el default de `RESEND_FROM`
+  apuntaba a un dominio que no está verificado ni es nuestro.
+- **`YOUTUBE_CHANNEL_ID`** estaba sin poner, así que el workflow de vídeos llevaba un mes
+  saltándose cada 6 h. Puesta.
+- **Tres artículos GEO casi idénticos.** Los dos que no se publicaron están en
+  `docs/archivo/`, fuera del alcance de Velite.
+
+## Ya verificado end-to-end
+
+- ✅ **Alta real → confirmación → descarga.** Recorrido en producción el 2026-08-05 con un
+  alias `+e2e` del buzón personal. **Conviene repetirlo con el recurso GEO**, que es nuevo.
+- ✅ **Las respuestas llegan a `info@ianexora.com`** (2026-08-05). Es lo que sostiene la
+  métrica de la fase.
+- ✅ **Turnstile activo**, widget Managed sobre `kata.ianexora.com`. `/api/subscribe` sin
+  token devuelve `400 captcha`. Corolario: **los flujos de alta no se pueden probar con
+  Playwright**, ni en modo headed. A mano.
+- ✅ **Panel** con datos reales, tras contraseña.
+- ✅ **`maitreai.es/llms.txt` y su `robots.txt`** (2026-08-21), comprobados contra producción.
 
 ## Decisión abierta: la calculadora como imán no convence (Kata, 2026-08-05)
 
-Planteado al cerrar la sesión, y tiene razón. Dos problemas de **oferta**, no de código:
+Sigue abierta. Dos problemas de **oferta**, no de código:
 
-1. **El email no añade nada.** El lector ya vio las tres cifras gratis en pantalla; lo que compra con
-   su email son esas mismas cifras por escrito más una fórmula de tres líneas. No es un intercambio,
-   es un peaje.
-2. **La pregunta está mal.** *"¿Cuánto cuestan los tokens?"* es la pregunta de quien ya escribe
-   código contra una API. El lector nº1 es un emprendedor en marcha: la suya es **"¿merece la pena
-   automatizar esto?"**, y esa no se responde sin el otro lado de la balanza — lo que cuesta hacerlo
-   a mano hoy.
+1. **El email no añade nada.** El lector ya vio las tres cifras gratis; lo que compra con su
+   dirección son esas mismas cifras por escrito. No es un intercambio, es un peaje.
+2. **La pregunta está mal.** *"¿Cuánto cuestan los tokens?"* es la pregunta de quien ya
+   escribe código contra una API. La del lector nº1 es *"¿merece la pena automatizar esto?"*,
+   y esa no se responde sin el otro lado de la balanza.
 
-**Dirección propuesta (sin empezar):** misma calculadora, dos entradas más (horas/semana en el
-proceso y coste de esa hora) y salida distinta: **coste manual vs automatizado al mes, y en cuántas
-semanas se paga**. Un periodo de retorno por escrito sí es algo que se reenvía a un socio — eso
-justifica el email. Reutiliza toda la maquinaria de hoy: captura, payload recalculado en servidor,
-email 1, panel. Solo cambia el modelo de cálculo y el copy.
+**Dirección propuesta:** misma calculadora, dos entradas más (horas/semana y coste de esa
+hora) y salida distinta — coste manual vs automatizado al mes, y en cuántas semanas se paga.
+Reutiliza toda la maquinaria de hoy. **Bloqueado por un dato que no se puede inventar**: el
+coste por hora por defecto iría como campo editable con etiqueta explícita de estimación.
 
-**Bloqueado por un dato que no se puede inventar:** el coste por hora por defecto. Es el único número
-que no sale de la aritmética, y publicar una estimación sin fuente va contra `VOZ.md`. Iría como
-campo editable con valor de partida y etiqueta explícita de estimación.
-
-**Alternativa más barata:** dejar la calculadora como herramienta de la página y hacer del **PDF "25
-datos" el imán protagonista** — ese sí resuelve un problema concreto de una persona concreta.
-
-## Bloqueado por
-
-**Nada externo.** Todo lo de arriba depende de ti. El único frente ajeno es firmar los DPAs.
+**Alternativa más barata:** dejar la calculadora como herramienta y que el imán protagonista
+sea el prompt de auditoría GEO, que ya resuelve un problema concreto.
 
 ## Pendientes menores que arrastramos
 
-- **DPAs sin firmar.**
-- CNAME `autodiscover`/`autoconfig`/`mail` y SRV `_autodiscover._tcp` en Namecheap (solo afecta al
-  autoconfig de clientes de correo, no a recibir).
-- La `publishable key` de Supabase en Vercel es inválida (inocuo: todo va server-side, y
-  `src/lib/resources.ts` ya lee con el cliente admin justo por esto).
-- **Ningún post usa `updated`.** La señal se muestra en el artículo, va al JSON-LD y al sitemap, y
-  está vacía hasta que edites algo y lo feches. Está en `docs/geo-checklist.md`.
-- **Las ediciones de `content/newsletters/` llevan el dominio a fuego.** Las de `content/emails/` no
-  (usan `{{url_sitio}}`). Conviene igualarlo.
-- ⚠️ `RESEND_FROM` y `RESEND_API_KEY` se modificaron el 4-ago sobre las 23:30, no por el agente.
-  Resultó inocuo, pero recuerda qué cambiaste por si rotaste a una cuenta distinta.
+- **DPAs sin firmar.** Es el único frente que depende de un tercero.
+- **`siteConfig.contactEmail` (`privacidad@ianexora.com`) sigue sin confirmarse** como buzón
+  monitorizado. Pesa más de lo que parece: la política de privacidad lo nombra como canal de
+  derechos RGPD, así que un alias que nadie lee es un compromiso publicado y no cumplido.
+- **`content/posts/antes-del-tms-tu-inbox.mdx` sigue en `draft: true`**, y por eso la edición
+  `2026-08-antes-del-tms` no se puede enviar: su enlace daría 404.
+- **Las ediciones de `content/newsletters/` llevan el dominio a fuego** y no pasan por
+  `renderTemplate` — `sendIssue` inyecta el HTML crudo. Es coherente, pero significa que un
+  cambio de dominio hay que buscarlo a mano.
+- **Ningún post usa `updated`.** La señal se muestra, va al JSON-LD y al sitemap, y está vacía.
+- CNAME `autodiscover`/`autoconfig`/`mail` y SRV `_autodiscover._tcp` en Namecheap (solo
+  afecta al autoconfig de clientes de correo, no a recibir).
+- La `publishable key` de Supabase en Vercel es inválida (inocuo: todo va server-side).
+- **Filas de prueba en `subscribers`**: `source = prueba-reply-to` y dos alias `+e2e` /
+  `+turnstile`. Este repo es **público**, así que aquí van descritas, nunca literales.
 
-## Hecho esta semana
+## Deuda conocida que NO se ha tocado, y por qué
 
-## Hecho esta semana
-
-## Hecho el 11 de agosto — capa 3D, apertura directa, intro de un solo uso
-
-Pase 3 del scrollytelling (docs en `docs/specs/home-scrollytelling.md`). Cambios:
-
-- **Túnel 3D real** en el acto 1: `preserve-3d` + `translateZ` por titular (−200 … −1100, del
-  `noise-layout.ts`) y cámara que recorre el campo; la perspectiva hace el parallax. La escena 3
-  entra como maqueta inclinada que se endereza. Sin dependencias nuevas, todo CSS + Motion.
-- **Apertura directa**: la pared de titulares está visible desde el píxel 0 (antes fade-in desde
-  negro vacío). Kicker «el ruido» → *«cada semana, cien titulares como estos»*; cierre →
-  *«Ninguno te dice qué hacer el lunes.»*. No son cifras nuevas ni clientes, solo la consecuencia
-  lógica de lo ya publicado («De cien ruidos, siete señales»), así que no tocan
-  `QUE_PUEDO_DECIR`.
-- **`TiltCard`** nuevo: tilt 3D con puntero (spring + glare) en el panel del masthead (±6°) y en
-  post y library cards (±4°). Off con reduced-motion y puntero coarse.
-- **Intro una sola vez**: flag `localStorage kata:intro-vista` + `<style>` inyectado en `<head>`
-  antes del pintado (`beforeInteractive`). Los que ya la han visto no ven ni un frame y no hay
-  salto de layout (documento 5321px vs 8890px). `?intro=1` fuerza el replay. Se marca al saltar o
-  al pasar el final. Ojo futuro: la primera versión mutaba una clase en `<html>` y React la
-  detectó como hydration mismatch — la regla está escrita en el spec.
-
-**Verificado** (chromium + móvil): muro a scroll 0 con `matrix3d`, titular que crece de 72→85px
-al acercarse, intro única sin mismatch ni errores, `?intro=1` OK, tilt responde al puntero,
-0 px de overflow móvil, `npm run verify` limpio.
-
-## Hecho el 6 de agosto — capa cinemática (F1 + F2), en producción
-
-Cuatro commits pusheados. **Sí es un rediseño visual**, al contrario que la sesión
-del embudo: la home ahora abre con una intro de tres actos.
-
-- **Wizard de entrada, 4 pasos** (antes 5). Se le quitó el paso de email: pedía
-  una dirección antes de haber dado nada, que es el mismo reflejo de landing por
-  el que se quitó el formulario del masthead. El porqué está escrito en
-  `src/config/intent.ts` para que no vuelva a crecer.
-- **Chispa asistente** — dock de chat en todas las páginas, anclado al contenido
-  del sitio. Funciona en local; en producción está muda hasta que subas las envs.
-- **Intro scrollytelling en la home**: ruido → señal → sistema. Añade **6,3
-  pantallas de scroll** antes del `h1` en escritorio (3,9 en móvil). Hay botón de
-  saltar pegado abajo durante todo el recorrido. Con `prefers-reduced-motion` la
-  intro **no existe** (documento de 10959px → 5321px).
-- Las 4 secciones de la home que no revelaban nada ya lo hacen (`ScrollReveal`
-  gana variante `blur`), **y las 7 páginas que no tenían movimiento ninguno
-  tampoco están planas ya**: el rediseño solo había tocado la portada, así que el
-  sitio animaba delante y se moría al primer clic.
-
-**Tres cosas que estaban mal y no se veían mirando:**
-
-1. **Motion compilaba las animaciones de scroll a un `ViewTimeline` anclado al
-   elemento animado**, y todo vive dentro de un `sticky`: la escena animaba con
-   los valores equivocados (al 50% de la escena la animación iba por el 20,6% y
-   luego retrocedía). Detalle y regla en `docs/specs/home-scrollytelling.md`.
-2. `animate-pulse` en el mismo elemento que una opacidad de motion la pisa: una
-   animación CSS gana a un estilo inline.
-3. **Chispa decía «nuestro sitio»** — el plural que `QUE_PUEDO_DECIR.md` prohíbe,
-   generado de nuevo en cada respuesta. Regla añadida al prompt.
-
-**Decisiones abiertas de esta sesión:**
-
-- ¿6,3 pantallas de intro son demasiadas? Se recorta cambiando tres alturas en
-  `src/components/home/scrolly/*-scene.tsx`.
-- **Dos intros encadenadas**: cierras el wizard y caes en la escena 1. Nadie ha
-  decidido aún si sobra una.
-
-## Sin commitear
-
-`editorial/` · `lead-magnets/` · **`content/posts/geo-blog.mdx`**
-
-Ese último apareció a mitad de la sesión del embudo y no lo escribió el agente. La build pasa con él
-dentro, pero **ojo**: `velite --strict` compila todos los posts, así que un error de schema ahí
-rompería el deploy. Revísalo antes de commitear otra cosa.
-
-*(Los dos ficheros que quedaron sin commitear anoche — `confirm-opt-in.tsx` y `resources.ts` — ya
-están dentro: eran prerrequisitos del embudo.)*
-
-## Hecho en la sesión del 5 de agosto, tarde (25 commits, todos pusheados)
-
-Máquina de captación, 5 fases, en producción. **No fue un rediseño**: no se tocó ni un token visual.
-
-- **`/recursos` dejó de ser una promesa.** Calculadora con captura (uso libre sin registro) + el PDF
-  "25 datos" + "En el taller" derivado de `LIBRARY_ITEMS`. El artículo que aloja la calculadora
-  renderiza **idéntico byte a byte** — verificado diffeando el HTML servido.
-- **Secuencia de bienvenida 0h / 48h / 96h**, copy en `content/emails/*.md` editable sin tocar
-  código. El email 1 entrega el desglose **recalculado en servidor**.
-- **CTA inline en los 9 artículos** + `CierreEstandar` con 3 salidas fijas. Antes 6 de 9 artículos
-  no tenían ningún campo de email en la página.
-- **GEO parcial**: `TechArticle`/`Article`, `BreadcrumbList`, `DefinedTerm`, `WebSite`, `lastmod`
-  real, `scripts/geo/audit-ssr.mjs`, `docs/geo-checklist.md`. `robots.ts`/`llms.txt`/`Person` NO.
-- **`/panel`** con 6 tablas tras contraseña.
-
-**Cuatro cosas que estaban rotas y nadie sabía:**
-
-1. **El botón de descarga de los emails nunca funcionó.** Dependía de una cookie `httpOnly` que no
-   viaja desde un cliente de correo. Ahora va firmado con HMAC.
-2. **El email de bienvenida incumplía RFC 8058** — sin `List-Unsubscribe` ni enlace de baja. Era el
-   único de los cuatro, y el primero que recibe cualquiera.
-3. **El email del día 8 decía "montamos sistemas de IA"** — plural de cortesía que
-   `QUE_PUEDO_DECIR.md` prohíbe, programado para llegarle a todo el mundo.
-4. **El `lastmod` del sitemap decía "modificado ahora"** en 9 rutas, en cada build.
-
-Detalle completo en `CLAUDE.md`, sección "Máquina de captación (2026-08-05, segunda sesión)".
+- **`/api/confirm` y `/api/unsubscribe` mutan estado por `GET`.** Los escáneres corporativos
+  de enlaces (Safe Links, Proofpoint) siguen los enlaces de un correo automáticamente:
+  pueden autoconfirmar un alta y autodar de baja al escanear el pie. Arreglarlo bien pide una
+  página intersticial con POST y toca el opt-in entero. Es una sesión propia.
+- **`sendIssue` no pagina ni ordena.** PostgREST corta en `max_rows` (1000 por defecto) **sin
+  devolver error**: pasado ese umbral la edición llegaría a los primeros 1000, se registraría
+  como enviada y el resto la perdería. Latente con la lista actual; el día que se acerque a
+  mil, esto primero.
+- **Un fallo total de envío quema el `issue_id`.** El claim se inserta antes de enviar y no se
+  revierte, así que reintentar choca con la clave primaria y hay que borrar la fila a mano.
+- **CLAUDE.md dice que el boletín tiene "breaker por cuota".** No existe: ante un 429 el
+  bucle recorre la lista entera acumulando fallos.
 
 ## No tocar
 
-- **El redeploy de este proyecto se hace con push a `main`.** `vercel redeploy` cogió un despliegue
-  antiguo y dejó producción atrasada unos minutos el 5-ago; `vercel ls --prod` **no viene ordenado
-  por fecha**. Y `vercel deploy --prod` subiría los ficheros sin trackear, incluido un `.mdx` que
-  Velite recogería.
-- **Las migraciones aplicadas** en Supabase EU `kata-ivanovych-blog` (cuenta **separada** de la de
-  NBI, y **no accesible desde el MCP** — desde una sesión no se puede verificar el esquema). Se crea
-  una nueva, nunca se edita.
+- **El redeploy se hace con push a `main`.** `vercel redeploy` cogió un despliegue antiguo y
+  dejó producción atrasada el 5-ago; `vercel ls --prod` **no viene ordenado por fecha**. Y
+  `vercel deploy --prod` subiría los ficheros sin trackear.
+- **Las migraciones** viven en Supabase EU `kata-ivanovych-blog`, cuenta **separada** de la de
+  NBI y **no accesible desde el MCP**: desde una sesión no se puede verificar el esquema ni
+  contar filas. Se crea una nueva, nunca se edita.
 - **`service_role` solo en servidor**, runtime Node. Jamás `NEXT_PUBLIC` ni en cliente.
 - **Gating server-side** de `draft`/`premium`: route + `generateStaticParams` + RSS/sitemap.
 - **Sin hex en JSX.** Todo por design tokens de `@theme`.
 - **`draft: true` por defecto en las newsletters**: una edición se apunta a salir, nunca al revés.
-- **`build:content` lleva `--strict`.** No quitarlo: sin él un typo borra un post del sitio en
-  silencio.
+- **`build:content` lleva `--strict`.** Sin él, un typo borra un post del sitio en silencio.
+- **CI corre `build:content` antes que `verify`.** No es cosmético: sin Velite no hay
+  `#site/content` y el typecheck falla entero.
+- **`PRIVATE_PATHS` en `src/app/robots.ts` es una constante única y cada grupo nombrado la
+  repite.** Un bot que encuentra un grupo con su nombre ignora el `*` completo; dar
+  `Allow: /` a secas abriría todo lo que la lista protege.
+- **`/panel` no se nombra en `robots.txt`.** Es público: listarlo anuncia la ruta, y el único
+  motivo de que el panel no esté en `/admin` es que `/admin` es lo que se escanea.
+- **El borrado RGPD necesita dos `delete`**: `lead_magnet_submissions` no tiene FK a
+  `subscribers`, así que no cascadea.
 - **Fase 3 (auth, Stripe, premium) no se construye aún.**
-- **`robots.ts`, `llms.txt` y el `Person` con `sameAs` NO se construyen**: contenido en cámara del
-  EP1, y el 404 de `/llms.txt` es la toma del "antes". El resto del GEO ya está hecho.
-- **El borrado RGPD necesita dos `delete`**: `lead_magnet_submissions` no tiene FK a `subscribers`,
-  así que no cascadea. La baja ya lo hace; una petición de supresión a mano, también.
-- La voz y qué se puede decir viven en `~/Developer/Marca-Personal` (skill `marca-kata`). **Sí son
-  legibles** desde este repo, al contrario de lo que decía una nota vieja.
+- La voz y qué se puede decir viven en `~/Developer/Marca-Personal` (skill `marca-kata`), y
+  **sí son legibles** desde este repo.
+
+## Decisión que conviene tomar pronto
+
+**`llms.txt` y el nodo `Person` con `sameAs` en este sitio.** Se dejaron sin construir a
+propósito porque eran el contenido en cámara del episodio 1 y el 404 era la toma del "antes".
+**Ese episodio ya se grabó, y pivotó a MaitreAI**, así que la premisa está muerta: hoy es una
+ausencia sin motivo. `robots.ts` ya entró (commit `e182014`). Contra: `docs/geo-checklist.md`
+dice "no invertir en `llms.txt`" citando a Ahrefs, y esa razón sigue siendo buena. Decidir y
+escribirlo, en vez de dejarlo como está por inercia.
+
+## Historial
+
+Está en `git log`, que es donde no puede quedarse desfasado. Los mensajes de commit de este
+repo llevan el porqué, no solo el qué. Las sesiones grandes tienen su sección en `CLAUDE.md`.

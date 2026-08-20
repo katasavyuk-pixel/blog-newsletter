@@ -6,8 +6,13 @@
  * hardcoded in components.
  *
  * Positioning (redesign 2026-07-22, see docs/superpowers/specs/): building
- * NBI (an AI company) in public; reader #1 is a working entrepreneur; the
+ * NBI — my own business — in public; reader #1 is a working entrepreneur; the
  * promise is replicable systems proven in a real business.
+ *
+ * That used to read "NBI (an AI company)", sixteen lines above the comment
+ * that forbids exactly that wording. QUE_PUEDO_DECIR.md rules out claiming a
+ * legal personality that does not exist yet, and a rule contradicted inside
+ * its own file is a rule that will be broken by whoever reads the top first.
  */
 
 export type SocialLink = { label: string; href: string };
@@ -29,7 +34,14 @@ export const siteConfig = {
     "Construyo mi negocio de soluciones de IA en público. Blog y newsletter para emprendedores en marcha: sistemas replicables, plantillas y formación interactiva probados en un negocio real.",
   /** Primary content language. */
   locale: "es",
-  /** Contact inbox for the privacy policy / data requests. TODO: confirma que es un buzón real (alias en ianexora.com). */
+  /**
+   * Contact inbox for the privacy policy / data requests.
+   *
+   * Still unconfirmed as a monitored mailbox. That matters more than a TODO
+   * suggests: the privacy policy names this address as the channel for GDPR
+   * rights requests, so an alias nobody reads is a published commitment that
+   * is not being met.
+   */
   contactEmail: "privacidad@ianexora.com",
   /**
    * Public address for "just reply and tell me". Same mailbox as RESEND_REPLY_TO,
@@ -39,10 +51,9 @@ export const siteConfig = {
    * and routing "tell me about your process" there mixes a legal channel with a
    * conversational one.
    *
-   * NOTE: it is still unverified that this alias reaches a mailbox anyone reads
-   * (ESTADO.md, task 1). Reply rate is the metric for this phase, so if it does
-   * not land, this link and the sequence's "responde a este email" are both
-   * decorative.
+   * Verified end to end on 2026-08-05: Kata replied to a sequence email and it
+   * arrived. Reply rate is the metric for this phase, so this link and the
+   * sequence's "responde a este email" both rest on it.
    */
   replyEmail: "info@ianexora.com",
   /** §1 AUDIENCIA — reader #1: entrepreneurs already running something. */
@@ -98,9 +109,11 @@ export type SiteConfig = typeof siteConfig;
  * six interactive lessons, free, no account — and nothing else on the site is
  * hard to copy. Recursos moves up to second now that it carries a working
  * calculator and a real download; it used to sit fifth pointing at an empty
- * state. Sistemas drops to fourth: two of its five items are still "en el
- * taller", which makes it a shelf with half the slots empty — a poor first
- * impression, and it will earn the position back when those ship.
+ * state. Sistemas drops to fourth: one of its five items is still "en el
+ * taller", so the shelf is no longer half empty and the reason for the demotion
+ * is nearly spent — it earns the position back when that last one ships.
+ * (Said "two of its five" until 2026-08-21, by which point stack-geo had
+ * shipped and the sentence was arguing for a layout on a fact that had changed.)
  *
  * Radar stays in the nav. Demoting it to the footer was considered and
  * rejected: it is the only thing on the site that demonstrably runs on its own,

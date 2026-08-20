@@ -55,3 +55,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Salida de Graphify: 2 MB de grafo regenerable, y `vercel deploy --prod`
+# sube lo que no esté ignorado.
+/graphify-out

@@ -1,0 +1,167 @@
+<!--
+ARCHIVADO el 2026-08-21. No es contenido: está fuera de content/posts/ a propósito.
+
+Los tres artículos GEO eran variantes del mismo texto — misma tesis ("le pregunté a
+una IA y no salí"), mismo tema y formato, tags solapados y las mismas citas. El que
+se publicó es content/posts/maitreai-geo.mdx, que además es el del vídeo.
+
+Vivir en content/posts/ con draft:true no era gratis: `velite --strict` los compila
+igual, `youtubeId: PENDIENTE` pasa el schema (9 caracteres) y habría renderizado un
+iframe roto en cuanto alguien quitara el draft, y `vercel deploy --prod` sube lo que
+no está en git — geo-blog.mdx ni siquiera estaba commiteado.
+
+Se guardan y no se borran porque tienen párrafos reutilizables. Para volver a
+publicar uno hay que releerlo entero: da por hechas cosas que no lo eran.
+-->
+
+---
+title: Le pregunté a una IA quién hace lo que yo hago. No salí.
+description: "Le pregunté a una IA quién puede montarme un agente para mi negocio. Me dio tres nombres y ninguno era el mío — y mi web lleva meses publicada. Esto es lo que hice para arreglarlo en directo, y el resultado real."
+kicker: Construcción pública
+dek: "Un tercio de la gente ya le pregunta a una IA antes de buscar en Google. Si no estás en la respuesta, no es que salgas peor — no existes. Esto es lo que arreglé, y lo que un archivo de texto no puede prometer."
+date: 2026-08-05
+tema: captacion
+formato: sistema
+tags:
+  - geo
+  - visibilidad-ia
+  - construccion-publica
+  - recomendacion-ia
+draft: true
+premium: false
+youtubeId: PENDIENTE
+---
+
+<Callout type="warn" title="Borrador — pendiente del vídeo">
+Este post se publica (`draft: false`) el mismo día que sale el vídeo. Antes de publicar: sustituir
+`youtubeId: PENDIENTE` por el ID real, confirmar que `kata.ianexora.com/llms.txt` y `/robots.txt`
+responden **200** de verdad (no solo en local), y que el `.zip` con el prompt está subido a
+`/recursos` con el slug `geo-blog`. Ver `Youtube:RedesSociales/episodios/01-geo-blog/checklist.md`
+y `recurso-blog/publicar-en-blog.md` en el repo de vídeo para los pasos exactos.
+</Callout>
+
+Le pregunté a una IA quién puede montarme un agente para mi negocio. Me dio tres nombres. Ninguno
+era el mío. Y mi web lleva meses publicada, funciona, sale en Google — la puedes abrir ahora mismo.
+
+El vídeo de este episodio enseña por qué pasa esto y lo arregla en directo, sobre mi propia web.
+Lo que no cabía en el montaje va aquí: cómo funciona por dentro, con qué evidencia, y el aviso
+técnico que casi nadie da cuando explica esto.
+
+## El problema no es que busquen mal — es que ya no comparan
+
+Hace un par de años, un cliente potencial escribía cuatro palabras en Google, le salían diez
+enlaces y decidía él: entraba en varios, comparaba, elegía. Ahora pregunta, y no recibe diez
+opciones — recibe dos o tres, con la seguridad de quien te las recomienda un amigo. Y ya no
+compara: se fía. Si no estás en esas dos o tres, no es que salgas el sexto de la lista — no
+existes para esa persona, ese día, con ese dinero.
+
+Según el [2026 AI Brand Visibility Report de Similarweb](https://www.similarweb.com/blog/marketing/geo/gen-ai-stats/),
+un 35% de la gente ya usa una IA en la fase de descubrimiento, frente a un 13,6% que usa búsqueda
+tradicional en ese mismo momento. [Gartner predijo](https://www.gartner.com/en/newsroom/press-releases/2024-02-19-gartner-predicts-search-engine-volume-will-drop-25-percent-by-2026-due-to-ai-chatbots-and-other-virtual-agents)
+que la búsqueda tradicional caería un 25% este mismo año por los chatbots.
+
+<Callout type="info" title="Un matiz honesto">
+Esto no significa que Google esté muerto — en volumen bruto sigue moviendo muchísimo más tráfico
+que cualquier IA. El punto no es "ya nadie busca", es hacia dónde va la tendencia, y que
+prepararse hoy cuesta una tarde.
+</Callout>
+
+Esto tiene nombre técnico: **GEO** — Generative Engine Optimization. Es el SEO de siempre, pero
+para que te cite una IA en vez de salir en diez enlaces azules. Y está prácticamente vacío: casi
+nadie lo ha hecho todavía.
+
+## Por qué una IA no te "ve" aunque tu web funcione perfectamente
+
+Este es el porqué que no entra en un vídeo de quince minutos sin aburrir, pero que sostiene todo
+lo demás.
+
+Cuando entras en una web, ves un diseño, un menú, unos colores, y en dos segundos sabes a qué se
+dedica. Una IA no ve nada de eso: ve código pensado para pintar cosas bonitas en una pantalla, y
+de ahí tiene que **adivinar** quién eres. Cuando le preguntas a un asistente por una
+recomendación, lo que hace por debajo es buscar, leerse unas cuantas páginas y contarte lo que ha
+entendido. Si de tu página no entiende nada, no es que te ponga el último — no te puede ni
+nombrar, porque no estás entre los sitios de los que sacó la respuesta.
+
+El paper académico que mejor mide esto es
+[Aggarwal et al., "GEO: Generative Engine Optimization" (KDD 2024)](https://arxiv.org/abs/2311.09735):
+introduce un benchmark (GEO-bench) y demuestra mejoras de hasta un 40% en visibilidad dentro de
+respuestas generadas por LLM aplicando optimizaciones específicas de dominio — la misma idea de
+fondo que este episodio aplica con tres cambios concretos, no con una teoría abstracta.
+
+## Las tres piezas, y por qué cada una importa
+
+Todo esto se hizo con un agente de código, en directo, sobre `kata.ianexora.com` — que partía de
+cero de verdad: sin `llms.txt`, sin `robots.txt`, sin ficha de sitio, verificado el mismo día de
+grabar.
+
+### 1. `llms.txt` — la carta en la puerta
+
+Un archivo de texto plano en la raíz del sitio (`tudominio.com/llms.txt`): quién eres, a qué te
+dedicas, cuáles son tus páginas importantes. Nada de código, solo texto pensado para que lo lea
+una máquina en vez de tener que deducirlo del HTML.
+
+Aviso honesto: **no es un estándar oficial.** Ningún motor de búsqueda importante ha confirmado
+que lo use para responder — Google dice explícitamente que no lo necesita para AI Overviews.
+Lo que sí lo leen son agentes de código como Claude Code cuando trabajan con la documentación de
+un proyecto, y escribirlo cuesta cinco minutos. Es de las pocas jugadas donde el riesgo es
+literalmente cero.
+
+### 2. Datos estructurados (JSON-LD) — la ficha, no la adivinanza
+
+En vez de que la máquina tenga que deducir quién eres leyéndose la web entera, se lo dices tú, en
+un formato sin ambigüedad: `Person`, `WebSite`, con nombre, descripción, autor. Es la diferencia
+entre una lata sin etiqueta y una que dice "atún en aceite de oliva, 200g" — no hay que adivinar
+nada, está escrito.
+
+Cada artículo de este blog ya tenía su propia ficha (`BlogPosting`) desde hace meses. Lo que
+faltaba era la ficha del sitio como entidad completa — el `Person` que soy yo y el `WebSite` que
+es esta web. El cambio sigue exactamente el mismo patrón de escritura que ya usan los artículos,
+a propósito: una web con dos formas distintas de hacer lo mismo es una web que en seis meses no
+hay quien mantenga, y de paso confunde justo a la máquina que se supone que tiene que entender
+mejor las cosas.
+
+### 3. `robots.txt` — el cartel de la puerta, y el detalle que rompe cosas si no lo sabes
+
+`robots.txt` le dice a los rastreadores qué pueden mirar. Con la IA esto se ha complicado: ya no
+hay un solo robot, hay uno por motor (`GPTBot`/`OAI-SearchBot` de OpenAI, `ClaudeBot` de
+Anthropic, `PerplexityBot`, `Google-Extended`, `CCBot`...). Para que te cite un motor, tienes que
+dejarle pasar explícitamente.
+
+<Callout type="tip" title="El detalle técnico que casi nadie explica">
+Sin `robots.txt`, esos rastreadores entran igual — no es que bloquee a nadie por defecto, es que
+no había ninguna instrucción. Pero hay una regla que sí puede salir cara: **cuando nombras a un
+robot concreto, ese robot deja de leer las reglas generales.** Solo obedece las suyas. Si tienes
+un `Disallow: /api/` en la regla general (rutas con tokens de un solo uso, como confirmar un
+alta o descargar un recurso) y le añades un grupo a un bot de IA con solo `Allow: /`, sin repetir
+la prohibición, **le acabas de abrir esas rutas — solo a él.** Arreglando una cosa, rompes otra.
+</Callout>
+
+En el vídeo, el agente hizo esto por su cuenta sin que se lo pidiera explícitamente: repitió el
+`Disallow: "/api/"` en cada grupo de bot, no solo en el general. Es exactamente el tipo de
+decisión que diferencia hacerlo con criterio de copiar y pegar una plantilla de internet.
+
+## Lo que esto no puede prometerte
+
+Los tres archivos ya existen, son correctos (validados con
+[el validador oficial de schema.org](https://validator.schema.org)) y no rompen nada de lo que ya
+funcionaba. Eso es un hecho verificable hoy.
+
+Lo que no puedo demostrar todavía es si una IA ya me recomienda. Los motores en vivo pueden
+tardar días o semanas en recoger contenido nuevo; los que dependen de reentrenar el modelo,
+meses. Y aunque mañana funcionara, esto no es lo que hace que alguien te contrate — solo hace
+que la IA se entere de que existes y pueda nombrarte. Es entrar en la lista. Ganar el cliente
+sigue dependiendo de que lo que ofreces sea bueno. Pero si no estás en la lista, no puedes ni
+jugar.
+
+Por eso voy a comprobar cada semana si esto cambia, con fecha, y lo cuento por newsletter antes
+que por YouTube — un vídeo tarda semanas en montarse, un correo tarda diez minutos.
+
+<Callout type="info" title="Cómo lo consigues">
+El prompt exacto que ves funcionar en el vídeo, más las comprobaciones que hice antes de grabar
+(con cómo comprobé cada una, no solo el número), está en [/recursos](/recursos) — gratis, requiere
+confirmar tu email (doble opt-in, sin spam) para que también te avise cuando cambie el resultado,
+o cuando no cambie nunca.
+</Callout>
+
+Si lo aplicas a tu propio sitio, cuéntame qué encontraste — es exactamente el tipo de evidencia
+real que quiero seguir mostrando en este canal.

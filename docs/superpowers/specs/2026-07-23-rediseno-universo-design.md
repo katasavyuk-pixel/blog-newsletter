@@ -1,5 +1,17 @@
 # Rediseño "EL UNIVERSO" — kata.ianexora.com
 
+> **SUPERSEDIDA — retirada el 2026-07-26, marcado el 2026-08-21.** No describe nada que
+> exista. `src/components/universe/`, `src/components/nova/` y los tokens "Cosmic layer"
+> se eliminaron por completo tras el feedback de Kata ("no parecía blog profesional").
+>
+> Se conserva por dos motivos: es el registro de un rediseño que se cayó, y sus gotchas
+> sobrevivieron a su retirada (`setPointerCapture` en pointerdown se traga los clicks de
+> los hijos; rAF no dispara en pestañas ocultas; el lint prohíbe `ref.current=` en render
+> y `setState` directo en effects).
+>
+> **No implementes nada de este documento.**
+
+
 > Spec validada en brainstorming con Kata el 2026-07-23 (concepto, arquitectura §1, entrada+NOVA §2,
 > visual/voz/fases §3 — cada sección aprobada explícitamente). Sustituye el enfoque de home del
 > rediseño "Biblioteca de Sistemas" (2026-07-22); el posicionamiento estratégico de aquella spec

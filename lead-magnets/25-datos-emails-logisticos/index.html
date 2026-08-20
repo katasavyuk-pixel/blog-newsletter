@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>25 datos que tu equipo no debería copiar manualmente desde emails logísticos</title>
+    <meta
+      name="description"
+      content="Checklist de 25 campos y errores frecuentes en emails logísticos, filtro de prioridad de 3 preguntas y el flujo de inbox a dato validado. Para responsables de tráfico y operaciones."
+    />
+    <meta name="author" content="Kata Ivanovych" />
+    <meta name="robots" content="noindex" />
+    <style>
+      /* ------------------------------------------------------------------
+         Tokens. Derivados de src/app/globals.css (paleta cine negro/rojo).
+         El rojo --accent es SUPERFICIE (4.14:1): nunca texto pequeño.
+         Para texto rojo sobre oscuro va --accent-ink (5.74:1, AA).
+         El cuerpo del documento es claro a propósito: esto se imprime.
+         ------------------------------------------------------------------ */
+      :root {
+        --bg: #0b0608;
+        --fg: #f6efec;
+        --muted: #c2a7ac;
+        --accent: #e11423;
+        --accent-ink: #ff3b4e;
+        --accent-deep: #a30f1a;
+        --paper: #ffffff;
+        --ink: #14090c;
+        --ink-soft: #4a3a3e;
+        --rule: #ddd0d2;
+        --wash: #faf5f5;
+
+        --page-w: 210mm;
+        --page-h: 297mm;
+        --pad: 18mm;
+      }
+
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: #2a2224;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: var(--ink);
+        line-height: 1.45;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .page {
+        position: relative;
+        width: var(--page-w);
+        min-height: var(--page-h);
+        padding: var(--pad);
+        margin: 8mm auto;
+        background: var(--paper);
+        box-shadow: 0 2mm 8mm rgba(0, 0, 0, 0.45);
+        page-break-after: always;
+        break-after: page;
+        overflow: hidden;
+      }
+
+      .page:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+
+      /* ---------- Portada ---------- */
+      .cover {
+        background: var(--bg);
+        color: var(--fg);
+      }
+
+      .eyebrow {
+        font-size: 8.5pt;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .cover .rule-accent {
+        width: 26mm;
+        height: 1.4mm;
+        background: var(--accent);
+        margin: 6mm 0 9mm;
+      }
+
+      h1 {
+        font-size: 27pt;
+        line-height: 1.14;
+        font-weight: 700;
+        letter-spacing: -0.015em;
+        margin: 0 0 7mm;
+      }
+
+      .cover .deck {
+        font-size: 12pt;
+        font-style: italic;
+        color: var(--muted);
+        margin: 0 0 8mm;
+        max-width: 155mm;
+      }
+
+      .cover hr {
+        border: 0;
+        border-top: 0.3mm solid #3a2c2f;
+        margin: 0 0 7mm;
+      }
+
+      .cover p {
+        font-size: 10.5pt;
+        margin: 0 0 4mm;
+        max-width: 158mm;
+      }
+
+      .cover .note {
+        border: 0.3mm solid #3a2c2f;
+        border-left: 1.2mm solid var(--accent);
+        padding: 5mm 6mm;
+        margin-top: 8mm;
+        background: #140b0e;
+      }
+
+      .cover .note h4 {
+        font-size: 9pt;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent-ink);
+        margin: 0 0 2.5mm;
+      }
+
+      .cover .note p {
+        font-size: 10pt;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .cover .sign {
+        position: absolute;
+        left: var(--pad);
+        bottom: var(--pad);
+        font-size: 9.5pt;
+        color: var(--muted);
+      }
+
+      .cover .sign strong {
+        color: var(--fg);
+      }
+
+      /* ---------- Páginas de contenido ---------- */
+      .head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        border-bottom: 0.3mm solid var(--rule);
+        padding-bottom: 3mm;
+        margin-bottom: 8mm;
+      }
+
+      .head .tag {
+        font-size: 8pt;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--accent-deep);
+      }
+
+      .head .who {
+        font-size: 8pt;
+        letter-spacing: 0.08em;
+        color: var(--ink-soft);
+      }
+
+      h2 {
+        font-size: 18pt;
+        line-height: 1.2;
+        margin: 0 0 4mm;
+        letter-spacing: -0.01em;
+      }
+
+      .lede {
+        font-size: 10.5pt;
+        color: var(--ink-soft);
+        margin: 0 0 7mm;
+        max-width: 160mm;
+      }
+
+      h3 {
+        font-size: 9pt;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent-deep);
+        margin: 7mm 0 4mm;
+        padding-bottom: 1.5mm;
+        border-bottom: 0.3mm solid var(--rule);
+      }
+
+      h3:first-of-type {
+        margin-top: 0;
+      }
+
+      /* ---------- Checklist ---------- */
+      ol.check {
+        list-style: none;
+        counter-reset: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      ol.check li {
+        display: grid;
+        grid-template-columns: 7mm 6mm 1fr;
+        column-gap: 2.5mm;
+        margin-bottom: 3.6mm;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .box {
+        width: 4mm;
+        height: 4mm;
+        border: 0.4mm solid var(--ink-soft);
+        margin-top: 1.1mm;
+      }
+
+      .num {
+        font-size: 10pt;
+        font-weight: 700;
+        color: var(--accent-deep);
+        text-align: right;
+      }
+
+      .field {
+        font-size: 10pt;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .err {
+        font-size: 9.5pt;
+        color: var(--ink-soft);
+        margin: 0.6mm 0 0;
+      }
+
+      .err b {
+        color: var(--ink);
+        font-weight: 700;
+      }
+
+      /* ---------- Filtro ---------- */
+      .q {
+        border-left: 1.2mm solid var(--accent);
+        padding: 0 0 0 5mm;
+        margin: 0 0 6mm;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .q .qn {
+        font-size: 8pt;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--accent-deep);
+        margin: 0 0 1.5mm;
+      }
+
+      .q p.ask {
+        font-size: 12pt;
+        font-weight: 700;
+        margin: 0 0 2mm;
+      }
+
+      .q p {
+        font-size: 9.5pt;
+        color: var(--ink-soft);
+        margin: 0 0 1.5mm;
+      }
+
+      table.grid {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 3mm;
+        font-size: 9.5pt;
+      }
+
+      table.grid th,
+      table.grid td {
+        border: 0.3mm solid var(--rule);
+        padding: 2.5mm 3mm;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      table.grid th {
+        background: var(--wash);
+        font-size: 8.5pt;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent-deep);
+      }
+
+      table.grid td:first-child {
+        font-weight: 700;
+        width: 52mm;
+      }
+
+      /* ---------- Flujo ---------- */
+      ol.flow {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        counter-reset: step;
+      }
+
+      ol.flow li {
+        position: relative;
+        padding: 0 0 6mm 14mm;
+        border-left: 0.4mm solid var(--rule);
+        margin-left: 5mm;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      ol.flow li:last-child {
+        border-left-color: transparent;
+        padding-bottom: 0;
+      }
+
+      ol.flow li::before {
+        counter-increment: step;
+        content: counter(step);
+        position: absolute;
+        left: -5mm;
+        top: -1mm;
+        width: 10mm;
+        height: 10mm;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #fff;
+        font-size: 11pt;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      ol.flow h4 {
+        font-size: 10.5pt;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin: 0 0 1.5mm;
+      }
+
+      ol.flow p {
+        font-size: 9.5pt;
+        color: var(--ink-soft);
+        margin: 0 0 1.5mm;
+      }
+
+      .callout {
+        border: 0.3mm solid var(--rule);
+        border-left: 1.2mm solid var(--ink);
+        background: var(--wash);
+        padding: 4.5mm 5mm;
+        margin-top: 6mm;
+      }
+
+      .callout h4 {
+        font-size: 8.5pt;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin: 0 0 2mm;
+      }
+
+      .callout p {
+        font-size: 9.5pt;
+        margin: 0;
+        color: var(--ink-soft);
+      }
+
+      /* ---------- CTA ---------- */
+      .cta-steps {
+        margin: 0 0 7mm;
+        padding: 0 0 0 5mm;
+      }
+
+      .cta-steps li {
+        font-size: 10pt;
+        margin-bottom: 3mm;
+      }
+
+      .cta-box {
+        background: var(--accent);
+        color: #fff;
+        padding: 7mm;
+        margin-top: 2mm;
+      }
+
+      .cta-box h4 {
+        font-size: 13pt;
+        margin: 0 0 3mm;
+      }
+
+      .cta-box p {
+        font-size: 10.5pt;
+        margin: 0 0 2mm;
+      }
+
+      .cta-box .addr {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 12pt;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6mm;
+        margin-top: 6mm;
+      }
+
+      .two h4 {
+        font-size: 8.5pt;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent-deep);
+        margin: 0 0 2mm;
+        padding-bottom: 1.5mm;
+        border-bottom: 0.3mm solid var(--rule);
+      }
+
+      .two ul {
+        margin: 0;
+        padding-left: 4.5mm;
+      }
+
+      .two li {
+        font-size: 9.5pt;
+        color: var(--ink-soft);
+        margin-bottom: 1.8mm;
+      }
+
+      .foot {
+        position: absolute;
+        left: var(--pad);
+        right: var(--pad);
+        bottom: 10mm;
+        display: flex;
+        justify-content: space-between;
+        border-top: 0.3mm solid var(--rule);
+        padding-top: 2.5mm;
+        font-size: 8pt;
+        color: var(--ink-soft);
+      }
+
+      @media print {
+        html {
+          background: #fff;
+        }
+        .page {
+          margin: 0;
+          box-shadow: none;
+        }
+        .cover,
+        .cta-box,
+        .num,
+        h3,
+        .head .tag {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- =================== 1. PORTADA =================== -->
+    <section class="page cover">
+      <p class="eyebrow">Recurso gratuito · Logística y transporte</p>
+      <div class="rule-accent"></div>
+
+      <h1>25 datos que tu equipo no debería copiar manualmente desde emails logísticos</h1>
+
+      <p class="deck">
+        Checklist de campos y errores frecuentes para responsables de tráfico y operaciones de
+        empresas de transporte.
+      </p>
+
+      <hr />
+
+      <p>Esto no es un manifiesto sobre la inteligencia artificial. Es una lista.</p>
+
+      <p>
+        Si gestionas tráfico, ya sabes de dónde sale el trabajo: del correo. Ofertas,
+        confirmaciones, cambios de hora, incidencias y adjuntos con tres versiones del mismo
+        albarán. Alguien de tu equipo abre cada uno, lo lee y teclea lo mismo otra vez en el TMS.
+      </p>
+
+      <p>
+        El problema no es que sea aburrido. El problema es que cada copia manual es un sitio donde
+        se pierde un dato, y los datos que se pierden en el correo se pagan después: esperas que no
+        se facturan, camiones sin cita, reclamaciones sin prueba.
+      </p>
+
+      <p>
+        Aquí tienes 25 campos que casi siempre viajan en un email logístico y el error que suele
+        acompañarlos. No están para automatizarlos todos mañana. Están para que sepas cuáles duelen
+        de verdad en tu operación.
+      </p>
+
+      <p>
+        <strong>Cómo usarlo:</strong> coge los diez últimos correos de un cliente real y marca las
+        casillas. Luego pasa cada campo marcado por el filtro de prioridad de la página 5.
+      </p>
+
+      <div class="note">
+        <h4>Lo que esta guía no hace</h4>
+        <p>
+          No te dice qué herramienta comprar y no te promete un porcentaje de acierto. Ese
+          porcentaje depende de tus correos, no de un folleto.
+        </p>
+      </div>
+
+      <p class="sign">
+        <strong>Kata Ivanovych</strong> — kata.ianexora.com<br />
+        Construyo NBI en público: sistemas replicables probados en un negocio real.
+      </p>
+    </section>
+
+    <!-- =================== 2. CHECKLIST A + B =================== -->
+    <section class="page">
+      <div class="head">
+        <span class="tag">Checklist · 25 campos</span>
+        <span class="who">Kata Ivanovych · kata.ianexora.com</span>
+      </div>
+
+      <h2>Los 25 campos, uno a uno</h2>
+      <p class="lede">
+        Marca la casilla si ese dato lo teclea hoy una persona a mano. El error que va debajo es el
+        que aparece una y otra vez cuando se revisa un buzón real.
+      </p>
+
+      <h3>A · Identificación y partes</h3>
+      <ol class="check">
+        <li>
+          <span class="num">1</span><span class="box"></span>
+          <div>
+            <p class="field">Referencia del cliente o número de pedido</p>
+            <p class="err">
+              <b>Error:</b> el correo trae dos referencias —la del cliente y la interna— y se guarda
+              la que después no busca nadie.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">2</span><span class="box"></span>
+          <div>
+            <p class="field">Número de expediente propio</p>
+            <p class="err">
+              <b>Error:</b> se abre expediente nuevo con cada correo del mismo hilo y el mismo envío
+              acaba duplicado.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">3</span><span class="box"></span>
+          <div>
+            <p class="field">Cargador o remitente (razón social exacta)</p>
+            <p class="err">
+              <b>Error:</b> se copia el nombre comercial que firma el email en vez de la razón social
+              que tiene que ir en la factura.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">4</span><span class="box"></span>
+          <div>
+            <p class="field">Consignatario o destinatario final</p>
+            <p class="err">
+              <b>Error:</b> se confunde al destinatario real con el intermediario que reenvía el
+              correo.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">5</span><span class="box"></span>
+          <div>
+            <p class="field">Contacto en carga y en descarga (nombre y teléfono)</p>
+            <p class="err">
+              <b>Error:</b> se guarda solo el email de quien escribe. El conductor llega al muelle y
+              no tiene a quién llamar.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">6</span><span class="box"></span>
+          <div>
+            <p class="field">CIF/NIF y datos de facturación</p>
+            <p class="err">
+              <b>Error:</b> se dan por buenos los del expediente antiguo. Han cambiado y la factura
+              vuelve rechazada semanas después.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <h3>B · Fechas, horas y ventanas</h3>
+      <ol class="check">
+        <li>
+          <span class="num">7</span><span class="box"></span>
+          <div>
+            <p class="field">Fecha de carga</p>
+            <p class="err">
+              <b>Error:</b> el correo dice «el martes». Tres reenvíos después ya nadie sabe qué
+              martes era.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">8</span><span class="box"></span>
+          <div>
+            <p class="field">Ventana horaria de carga (desde – hasta)</p>
+            <p class="err">
+              <b>Error:</b> se anota «por la mañana» y el almacén cierra a las 13:00.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">9</span><span class="box"></span>
+          <div>
+            <p class="field">Fecha y ventana de entrega</p>
+            <p class="err">
+              <b>Error:</b> se copia la fecha del asunto, que es de la versión anterior del pedido y
+              nunca se actualizó.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">10</span><span class="box"></span>
+          <div>
+            <p class="field">Cita previa o booking obligatorio</p>
+            <p class="err">
+              <b>Error:</b> no se registra que el destino exige cita. El camión se planta allí sin
+              slot y espera media jornada.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">11</span><span class="box"></span>
+          <div>
+            <p class="field">Zona horaria y calendario local</p>
+            <p class="err">
+              <b>Error:</b> la hora del correo se aplica tal cual a una carga en Reino Unido o en
+              Canarias, o se planifica sobre un festivo local.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="foot"><span>25 datos · emails logísticos</span><span>2</span></div>
+    </section>
+
+    <!-- =================== 3. CHECKLIST C + D =================== -->
+    <section class="page">
+      <div class="head">
+        <span class="tag">Checklist · 25 campos</span>
+        <span class="who">Kata Ivanovych · kata.ianexora.com</span>
+      </div>
+
+      <h3>C · Carga, unidades y medidas</h3>
+      <ol class="check">
+        <li>
+          <span class="num">12</span><span class="box"></span>
+          <div>
+            <p class="field">Número de bultos o palés</p>
+            <p class="err">
+              <b>Error:</b> el cuerpo del correo dice «12 palés» y el albarán adjunto dice 12
+              europalés más 2 medios palés.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">13</span><span class="box"></span>
+          <div>
+            <p class="field">Tipo de palé o mercancía sin paletizar</p>
+            <p class="err">
+              <b>Error:</b> no se anota el tipo y luego no cuadran los metros de carga con lo que
+              cabe en el remolque.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">14</span><span class="box"></span>
+          <div>
+            <p class="field">Peso bruto total</p>
+            <p class="err">
+              <b>Error:</b> se copia el peso neto del PDF adjunto. El bruto va por encima y el
+              conjunto sale sobre tara.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">15</span><span class="box"></span>
+          <div>
+            <p class="field">Metros lineales o volumen</p>
+            <p class="err">
+              <b>Error:</b> se calcula de cabeza en lugar de sacarlo de las medidas del correo. No
+              cabe, y se descubre en el muelle.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">16</span><span class="box"></span>
+          <div>
+            <p class="field">Medidas por bulto y apilabilidad</p>
+            <p class="err">
+              <b>Error:</b> el «no apilable» está escrito en una frase suelta del cuerpo del correo y
+              no llega a nadie.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">17</span><span class="box"></span>
+          <div>
+            <p class="field">Requisitos especiales: ADR, temperatura, medios de descarga</p>
+            <p class="err">
+              <b>Error:</b> el ADR o la temperatura aparecen dentro de un adjunto y nadie los lee
+              hasta que el vehículo ya está asignado.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <h3>D · Dinero y condiciones</h3>
+      <ol class="check">
+        <li>
+          <span class="num">18</span><span class="box"></span>
+          <div>
+            <p class="field">Precio acordado y moneda</p>
+            <p class="err">
+              <b>Error:</b> se anota el precio de la oferta inicial, no el del correo de
+              confirmación, que es el que vale.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">19</span><span class="box"></span>
+          <div>
+            <p class="field">Qué incluye el precio: peajes, espera, descarga, tasas</p>
+            <p class="err">
+              <b>Error:</b> el «todo incluido» del email no llega nunca al sistema y se discute
+              cuando ya está facturado.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">20</span><span class="box"></span>
+          <div>
+            <p class="field">Tiempo de espera libre y coste de la hora extra</p>
+            <p class="err">
+              <b>Error:</b> no se registra. Cuando se factura la espera, no hay nada acordado por
+              escrito a lo que agarrarse.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">21</span><span class="box"></span>
+          <div>
+            <p class="field">Forma de pago, plazo e incoterm</p>
+            <p class="err">
+              <b>Error:</b> se asume el estándar de ese cliente cuando en ese correo concreto había
+              una excepción pactada.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="foot"><span>25 datos · emails logísticos</span><span>3</span></div>
+    </section>
+
+    <!-- =================== 4. CHECKLIST E + RECUENTO =================== -->
+    <section class="page">
+      <div class="head">
+        <span class="tag">Checklist · 25 campos</span>
+        <span class="who">Kata Ivanovych · kata.ianexora.com</span>
+      </div>
+
+      <h3>E · Documentación y trazabilidad</h3>
+      <ol class="check">
+        <li>
+          <span class="num">22</span><span class="box"></span>
+          <div>
+            <p class="field">Documentos exigidos en la entrega (CMR, albarán sellado, POD)</p>
+            <p class="err">
+              <b>Error:</b> se anota «POD» a secas cuando el cliente exige albarán sellado y firmado,
+              y el cobro se retrasa por eso.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">23</span><span class="box"></span>
+          <div>
+            <p class="field">Instrucciones especiales en texto libre</p>
+            <p class="err">
+              <b>Error:</b> se copia el campo estructurado y se pierde la frase que importaba: «el
+              acceso es por la puerta 4».
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">24</span><span class="box"></span>
+          <div>
+            <p class="field">Adjuntos y su versión</p>
+            <p class="err">
+              <b>Error:</b> se trabaja con el primer PDF del hilo cuando hay un «v2» tres correos más
+              abajo que cambia las medidas.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num">25</span><span class="box"></span>
+          <div>
+            <p class="field">Origen del dato: quién lo dijo, en qué correo y cuándo</p>
+            <p class="err">
+              <b>Error:</b> el dato entra en el TMS sin rastro del correo. En la reclamación no se
+              puede demostrar lo que se pactó.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout">
+        <h4>Haz el recuento antes de pasar de página</h4>
+        <p>
+          Cuenta las casillas marcadas. Ese número, multiplicado por los envíos que gestionáis a la
+          semana, es la cantidad de veces que alguien de tu equipo copia un dato a mano cada semana.
+          No es una estimación de nadie: sale de tu propio buzón. Si el número te sorprende, el
+          siguiente paso no es comprar nada, es ordenar por prioridad.
+        </p>
+      </div>
+
+      <div class="two">
+        <div>
+          <h4>Señales de que un campo duele</h4>
+          <ul>
+            <li>Aparece en casi todos los correos del cliente.</li>
+            <li>Ha provocado al menos una incidencia este mes.</li>
+            <li>Cambia de sitio y de formato según quién escriba.</li>
+            <li>Alguien lo verifica dos veces «por si acaso».</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Señales de que no urge</h4>
+          <ul>
+            <li>Solo aparece en pedidos excepcionales.</li>
+            <li>Si sale mal, se arregla con una llamada.</li>
+            <li>Viene siempre en el mismo formato del mismo remitente.</li>
+            <li>Ya está resuelto con una plantilla o un portal.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="foot"><span>25 datos · emails logísticos</span><span>4</span></div>
+    </section>
+
+    <!-- =================== 5. FILTRO DE PRIORIDAD =================== -->
+    <section class="page">
+      <div class="head">
+        <span class="tag">Filtro de prioridad</span>
+        <span class="who">Kata Ivanovych · kata.ianexora.com</span>
+      </div>
+
+      <h2>El filtro de prioridad: tres preguntas</h2>
+      <p class="lede">
+        Tener 25 campos marcados no dice por dónde empezar. Pasa cada uno por estas tres preguntas,
+        en este orden, y el orden real aparece solo.
+      </p>
+
+      <div class="q">
+        <p class="qn">Pregunta 1 · Volumen</p>
+        <p class="ask">¿Cuántas veces por semana teclea alguien este dato?</p>
+        <p>
+          Cuéntalo, no lo estimes: coge una semana de correos y cuenta. Un campo que se teclea cinco
+          veces por semana no justifica montar nada, por muy molesto que sea.
+        </p>
+      </div>
+
+      <div class="q">
+        <p class="qn">Pregunta 2 · Coste del error</p>
+        <p class="ask">Cuando este dato sale mal, ¿cuesta una llamada o cuesta dinero?</p>
+        <p>
+          Una hora de espera que no se factura, un camión sin cita o una entrega rechazada cuestan
+          dinero. Un nombre de contacto mal copiado cuesta una llamada. No son la misma categoría y
+          no se tratan igual.
+        </p>
+      </div>
+
+      <div class="q">
+        <p class="qn">Pregunta 3 · Variabilidad</p>
+        <p class="ask">¿Está siempre en el mismo sitio del correo o cambia según quién escriba?</p>
+        <p>
+          Poca variabilidad significa fácil de extraer y fácil de revisar. Mucha variabilidad es
+          justo donde tu equipo pierde más tiempo, pero también donde vas a necesitar más revisión
+          humana durante las primeras semanas. Merece la pena; solo no te pilla por sorpresa.
+        </p>
+      </div>
+
+      <table class="grid">
+        <thead>
+          <tr>
+            <th>Combinación</th>
+            <th>Qué hacer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Volumen alto + coste alto</td>
+            <td>Empieza aquí. Es el único cuadrante que se paga solo.</td>
+          </tr>
+          <tr>
+            <td>Volumen alto + coste bajo</td>
+            <td>Automatiza con revisión ligera. Ahorra tiempo, no evita desastres.</td>
+          </tr>
+          <tr>
+            <td>Volumen bajo + coste alto</td>
+            <td>No lo automatices: escríbelo en el procedimiento y que lo mire una persona.</td>
+          </tr>
+          <tr>
+            <td>Volumen bajo + coste bajo</td>
+            <td>Déjalo como está. Que se pueda automatizar no significa que compense.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <h4>La regla incómoda</h4>
+        <p>
+          Si un campo no pasa las tres preguntas con claridad, no está listo. Guárdalo y vuelve a él
+          cuando lo esté. Casi todos los proyectos de extracción que se atascan empezaron por el
+          campo más vistoso en lugar de por el más caro.
+        </p>
+      </div>
+
+      <div class="foot"><span>25 datos · emails logísticos</span><span>5</span></div>
+    </section>
+
+    <!-- =================== 6. EL FLUJO =================== -->
+    <section class="page">
+      <div class="head">
+        <span class="tag">El flujo</span>
+        <span class="who">Kata Ivanovych · kata.ianexora.com</span>
+      </div>
+
+      <h2>De la bandeja de entrada al dato validado</h2>
+      <p class="lede">
+        Esto no es «una IA que lee correos». Son cuatro pasos, y el tercero es el que decide si
+        funciona o si acabas con otro sistema que nadie usa.
+      </p>
+
+      <ol class="flow">
+        <li>
+          <h4>Inbox</h4>
+          <p>
+            El correo entra tal cual. Tu cliente no cambia de forma de trabajar: sigue escribiendo
+            emails con adjuntos, como siempre. El sistema identifica remitente, hilo y qué versión
+            de cada documento es la buena.
+          </p>
+          <p><b>Qué mirar:</b> que no haya que pedirle nada al cliente para que esto funcione.</p>
+        </li>
+        <li>
+          <h4>Extracción</h4>
+          <p>
+            Por cada campo de la lista, el sistema propone un valor. Tiene que traer siempre tres
+            cosas: el valor, la frase exacta del correo de donde sale y cuánta confianza tiene en
+            ella.
+          </p>
+          <p>
+            <b>Qué mirar:</b> un valor sin su cita es un dato que no puedes defender en una
+            reclamación. Si la herramienta no te enseña de dónde lo ha sacado, no lo aceptes.
+          </p>
+        </li>
+        <li>
+          <h4>Revisión humana</h4>
+          <p>
+            Aquí se cae la mayoría de proyectos. La persona no revisa todo: revisa lo que el sistema
+            marca como dudoso, con el correo al lado y el campo resaltado. Confirmar es un clic;
+            corregir, dos.
+          </p>
+          <p>
+            <b>Qué mirar:</b> si revisar cuesta más que teclear, el sistema está mal montado. Eso se
+            arregla, no se compensa insistiendo.
+          </p>
+        </li>
+        <li>
+          <h4>Dato validado</h4>
+          <p>
+            El campo entra en el TMS con su trazabilidad: de qué correo salió, de qué frase, quién lo
+            confirmó y cuándo. Eso es lo que convierte «lo pusimos según el email» en algo que se
+            puede demostrar.
+          </p>
+          <p>
+            <b>Qué mirar:</b> cada corrección que hace tu equipo es una muestra. No para que «la IA
+            aprenda sola», sino para que tú veas qué campos fallan y por qué.
+          </p>
+        </li>
+      </ol>
+
+      <div class="callout">
+        <h4>Lo que esto no es</h4>
+        <p>
+          No es sustituir a tu equipo. Es cambiar teclear por revisar. Si alguien te lo vende como
+          reducción de plantilla, te está vendiendo otra cosa. Y antes de tocar nada conviene medir
+          cuánto se tarda hoy: sin ese número no vas a saber si ha servido.
+        </p>
+      </div>
+
+      <div class="foot"><span>25 datos · emails logísticos</span><span>6</span></div>
+    </section>
+
+    <!-- =================== 7. CTA =================== -->
+    <section class="page">
+      <div class="head">
+        <span class="tag">Siguiente paso</span>
+        <span class="who">Kata Ivanovych · kata.ianexora.com</span>
+      </div>
+
+      <h2>Trae 10 emails anonimizados y te devuelvo una revisión</h2>
+      <p class="lede">
+        La lista sirve para pensar. Con tus correos delante se ve de verdad qué campos tienes, cuáles
+        te faltan y cuál es el que más te está costando.
+      </p>
+
+      <ol class="cta-steps">
+        <li>
+          <b>Elige 10 emails reales de una semana normal.</b> No los raros ni los que salieron mal:
+          los de siempre. Con sus adjuntos, si los llevan.
+        </li>
+        <li>
+          <b>Anonimízalos antes de mandarlos.</b> Quita nombres de personas, teléfonos, direcciones
+          de email, CIF y los precios si te incomodan. Para esto lo que importa es la estructura: qué
+          campos aparecen, dónde y en qué formato. Si no puedes anonimizarlos por tu cuenta,
+          escríbeme antes de enviar nada.
+        </li>
+        <li>
+          <b>Mándalos con el asunto «10 emails».</b> Añade en dos líneas cuántos envíos gestionáis a
+          la semana y qué campo te duele más.
+        </li>
+      </ol>
+
+      <div class="two">
+        <div>
+          <h4>Qué recibes</h4>
+          <ul>
+            <li>Qué campos aparecen en tus correos y con qué frecuencia.</li>
+            <li>Cuáles de estos 25 te faltan hoy.</li>
+            <li>Cuáles automatizaría primero, según el filtro de las tres preguntas.</li>
+            <li>Cuáles no automatizaría todavía, y por qué.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Qué no recibes</h4>
+          <ul>
+            <li>Una propuesta comercial que no has pedido.</li>
+            <li>Tu email en ninguna lista de nada.</li>
+            <li>Un porcentaje de acierto inventado.</li>
+            <li>Tus correos usados para otra cosa: se revisan y se borran.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cta-box">
+        <h4>Escríbeme</h4>
+        <p class="addr">k.savyuk@ianexora.com</p>
+        <p>
+          Asunto: <b>10 emails</b> · Sin coste y sin compromiso. Si de la revisión sale que no te
+          compensa montar nada, te lo diré igual: es la respuesta más barata que te puedo dar.
+        </p>
+      </div>
+
+      <div class="foot">
+        <span>Kata Ivanovych · kata.ianexora.com</span><span>7</span>
+      </div>
+    </section>
+  </body>
+</html>
