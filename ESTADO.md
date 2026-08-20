@@ -5,11 +5,23 @@
 
 ## Lo primero, y solo lo puedes hacer tú
 
-**1. Activa Vercel Web Analytics.** La API responde `404 Web Analytics not found` para el
-proyecto, aunque `<Analytics/>` lleva montado en el layout desde julio. Si es lo que parece,
-el episodio 1 se ha lanzado sin medir nada: ni cuánta gente llega por `/yt`, ni cuántas
-altas, ni qué artículo capta. Dashboard de Vercel → proyecto `kata-ivanovych-blog` →
-Analytics → Enable. Un clic, y no se puede recuperar el tráfico que no se midió.
+**1. ~~Activa Vercel Web Analytics.~~ Hecho el 2026-08-21** con
+`vercel project web-analytics --scope nexoraprocesos-boops-projects` (devuelve
+`enabled: true`). Llevaba desde julio con `<Analytics/>` montado en el layout y la
+recogida apagada, así que **el episodio 1 se lanzó sin medir nada** y ese tráfico no se
+recupera. La recogida empieza desde cero ahora.
+
+Dos límites que conviene tener presentes, del cuadro de precios (docs, 26-jun-2026):
+
+- En **Hobby** entran 50.000 eventos/mes gratis — muy por encima del tráfico de hoy — pero
+  la **ventana de consulta es de 1 mes** y **los eventos personalizados no están
+  incluidos**. Es decir, `track("calculadora_usada")`
+  (`src/components/mdx/widgets/cost-calculator.tsx:73`) **no se va a recoger** hasta Pro.
+  No es urgente: el uso de la calculadora no es la métrica de la fase.
+- El desglose por **UTM** en el panel es del add-on *Web Analytics Plus*. No hace falta:
+  la atribución que importa —cuántas altas vienen de YouTube— ya se guarda en
+  `subscribers.source` (`lead_magnet:<slug>:<utm_source>`) y `signup_path`, y sale en
+  `/panel`. Eso no depende del plan de Vercel.
 
 **2. Comprueba la secuencia de bienvenida, que llevaba tres semanas rota.** Los cinco enlaces
 de los tres emails apuntaban a `%7B%7Burl_sitio%7D%7D/...` — arreglado hoy, con un test que
