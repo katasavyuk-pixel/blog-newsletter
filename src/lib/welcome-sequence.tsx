@@ -7,6 +7,7 @@ import { renderTemplate, htmlToText, TemplateError } from "@/lib/email-template"
 import { openingBlock, downloadBlock } from "@/lib/email-blocks";
 import { getLatestSubmission, type MagnetSubmission } from "@/lib/lead-magnets";
 import { signedDownloadUrl } from "@/lib/signed-links";
+import { generateToken } from "@/lib/tokens";
 
 type AdminClient = ReturnType<typeof createAdminClient>;
 
@@ -127,6 +128,90 @@ function messageFor(
       "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
     },
   };
+}
+
+/**
+ * Hand a resource to somebody who confirmed their address a long time ago.
+ *
+ * /api/subscribe short-circuits on an already-confirmed address so it does not
+ * resend an opt-in — correct, and anti-enumeration depends on the response
+ * staying generic. But the short-circuit was the end of the road: a reader who
+ * subscribed in July, watched the GEO episode in August and asked for the
+ * prompt got a form that said "Confirma en tu correo y te llega" and then
+ * nothing at all, forever. The comment there pointed at /api/confirm as the
+ * delivery path; /api/confirm is never reached for that reader, and
+ * `scheduleWelcomeSequence` would refuse anyway because their rows already
+ * exist in `scheduled_emails`.
+ *
+ * So this is the missing path, and it is deliberately small: the block they
+ * asked for, a shell, and an honest unsubscribe header. No sequence, no
+ * re-enrolment, nothing that treats a long-standing subscriber as new.
+ *
+ * Best-effort like everything else on this route — a delivery must never be the
+ * reason a request fails, and the HTTP response never changes shape.
+ */
+export async function sendResourceDelivery(
+  supabase: AdminClient,
+  sub: {
+    id: string;
+    email: string;
+    unsubscribeToken: string | null;
+    resource?: string;
+  },
+): Promise<void> {
+  if (!isEmailConfigured()) return;
+  try {
+    const ctx = await buildContext(supabase, sub.email, sub.resource);
+    const download = downloadBlock(ctx.downloadUrl, ctx.downloadLabel);
+
+    // Nothing concrete to hand over → stay silent. `openingBlock` always
+    // returns something (it falls back to the strongest lesson on the site),
+    // so without this an unrelated re-subscribe would trigger a stray email
+    // that promises a delivery and delivers a blog link.
+    if (!download && !ctx.submission) return;
+
+    // The List-Unsubscribe header has to name a token that exists. Rows from
+    // before this column was populated have none; mint one rather than send a
+    // header that updates zero rows.
+    let token = sub.unsubscribeToken;
+    if (!token) {
+      token = generateToken();
+      const { error } = await supabase
+        .from("subscribers")
+        .update({ unsubscribe_token: token })
+        .eq("id", sub.id);
+      if (error) return;
+    }
+
+    const unsubscribeUrl = unsubscribeUrlFor(token);
+    const title = "Aquí tienes lo que pediste";
+    const html = [openingBlock(ctx.siteUrl, ctx.submission), download]
+      .filter(Boolean)
+      .join("\n");
+
+    await getResend().emails.send({
+      from: FROM,
+      to: sub.email,
+      replyTo: REPLY_TO,
+      subject: title,
+      react: NewsletterEmail({
+        brand: siteConfig.name,
+        preview: "Lo que pediste, sin volver a darte de alta.",
+        title,
+        unsubscribeUrl,
+        children: <div dangerouslySetInnerHTML={{ __html: html }} />,
+      }),
+      text: [title, "", htmlToText(html), `Cancelar suscripción: ${unsubscribeUrl}`].join(
+        "\n",
+      ),
+      headers: {
+        "List-Unsubscribe": `<${unsubscribeUrl}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
+    });
+  } catch (err) {
+    console.error("[resource-delivery] send failed:", err);
+  }
 }
 
 /**

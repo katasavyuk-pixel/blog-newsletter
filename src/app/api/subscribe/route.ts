@@ -5,9 +5,10 @@ import { generateToken, hashToken } from "@/lib/tokens";
 import { getResend, FROM, REPLY_TO, isEmailConfigured } from "@/lib/email";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { rateLimit } from "@/lib/ratelimit";
-import { ConfirmOptInEmail } from "@/emails/confirm-opt-in";
+import { ConfirmOptInEmail, confirmOptInText } from "@/emails/confirm-opt-in";
 import { siteConfig } from "@/config/site";
 import { recordSubmission } from "@/lib/lead-magnets";
+import { sendResourceDelivery } from "@/lib/welcome-sequence";
 
 export const runtime = "nodejs";
 
@@ -90,15 +91,30 @@ export async function POST(request: NextRequest) {
 
   const { data: existing } = await supabase
     .from("subscribers")
-    .select("status")
+    .select("id, status, unsubscribe_token")
     .eq("email", body.email)
     .maybeSingle();
 
-  // Already confirmed → don't resend; respond generically (anti-enumeration).
-  // The submission above is still recorded: someone who consented months ago and
-  // now asks for a breakdown has asked for something, and the delivery path for
-  // that case is the immediate onboarding email (see /api/confirm).
-  if (existing?.status === "confirmed") return ok();
+  // Already confirmed → don't resend the opt-in; respond generically
+  // (anti-enumeration). But don't go quiet either.
+  //
+  // This used to be a bare `return ok()`, with a comment pointing at
+  // /api/confirm as the delivery path. That path is never reached for someone
+  // already confirmed, so a reader who subscribed in July and asked for a
+  // resource in August was told "Confirma en tu correo y te llega" and then
+  // received nothing, ever. `sendResourceDelivery` is that missing path; the
+  // response shape does not change, so nothing leaks.
+  if (existing?.status === "confirmed") {
+    if (magnet) {
+      await sendResourceDelivery(supabase, {
+        id: existing.id as string,
+        email: body.email,
+        unsubscribeToken: (existing.unsubscribe_token as string | null) ?? null,
+        resource: body.resource,
+      });
+    }
+    return ok();
+  }
 
   const token = generateToken();
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
@@ -148,6 +164,12 @@ export async function POST(request: NextRequest) {
       replyTo: REPLY_TO,
       subject: `Confirma tu suscripción a ${siteConfig.name}`,
       react: ConfirmOptInEmail({ confirmUrl, brand: siteConfig.name }),
+      // The one email in the system that was still HTML-only. That is a
+      // bulk-mail signal — this message was landing in spam — and a client that
+      // blocks HTML saw a blank page with no way to complete the opt-in. Every
+      // other send here has carried a text part since 0d03ffe; this one was
+      // missed, and it is the message the whole funnel rests on.
+      text: confirmOptInText(confirmUrl, siteConfig.name),
     });
     if (error) {
       console.error("[subscribe] resend error:", error);

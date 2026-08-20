@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   }
 
   const unsubscribeToken = generateToken();
-  await supabase
+  const { error: confirmError } = await supabase
     .from("subscribers")
     .update({
       status: "confirmed",
@@ -44,6 +44,20 @@ export async function GET(request: NextRequest) {
       unsubscribe_token: unsubscribeToken,
     })
     .eq("id", sub.id);
+
+  // Checked, because continuing past a failed write is worse than stopping.
+  //
+  // The update carries the unsubscribe token. If it does not land, the three
+  // sequence emails below still go out — each one advertising a
+  // List-Unsubscribe token that is in nobody's database. One-click unsubscribe
+  // then updates zero rows and reports success, and /baja tells the reader they
+  // will get no more email while the sequence keeps arriving. That is an RFC
+  // 8058 breach with no signal anywhere, produced by a `.update()` whose result
+  // nobody read.
+  if (confirmError) {
+    console.error("[confirm] update failed:", confirmError);
+    return NextResponse.redirect(new URL("/gracias?error=guardado", request.url));
+  }
 
   // Soft, session-less marker so a just-confirmed visitor can download lead magnets
   // (free-with-email gating; real access control for paid content arrives in Fase 3).

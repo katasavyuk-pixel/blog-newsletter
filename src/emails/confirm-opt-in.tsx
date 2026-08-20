@@ -87,4 +87,37 @@ export function ConfirmOptInEmail({
   );
 }
 
+/**
+ * Plain-text alternative for the same message.
+ *
+ * Every other email in the system derives its text part from the rendered HTML,
+ * so the two cannot drift. This one is written out because it has no
+ * personalised blocks to derive — and because it lives in the same file as the
+ * JSX, three inches away, so a change to one that forgets the other is visible
+ * in the diff.
+ *
+ * It matters more here than anywhere else: an HTML-only email is a bulk-mail
+ * signal, this was landing in spam, and it is the one message the entire funnel
+ * depends on. A client that blocks HTML was being shown a blank page with no
+ * way to complete the opt-in.
+ */
+export function confirmOptInText(confirmUrl: string, brand: string): string {
+  return [
+    `Confirma tu suscripción a ${brand}`,
+    "",
+    `Has solicitado suscribirte a la newsletter de ${brand} desde ${siteConfig.domain}.`,
+    "Antes de enviarte nada, necesito comprobar que esta dirección de correo es tuya.",
+    "",
+    "Abre esta dirección para confirmar tu email y completar el alta:",
+    confirmUrl,
+    "",
+    "El enlace caduca en 24 horas.",
+    "",
+    "¿No has sido tú? Ignora este email: sin esa confirmación no quedarás",
+    "suscrito y tu dirección no recibirá ningún envío.",
+    "",
+    `${brand} · ${siteConfig.url}`,
+  ].join("\n");
+}
+
 export default ConfirmOptInEmail;

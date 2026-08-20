@@ -16,7 +16,37 @@ export class TemplateError extends Error {}
 
 export type TemplateVars = Record<string, string>;
 
-const PLACEHOLDER = /\{\{\s*([a-z_]+)\s*\}\}/g;
+/**
+ * Anything left between braces after substitution, not just a well-formed name.
+ *
+ * It used to be `/\{\{\s*([a-z_]+)\s*\}\}/g`, which only caught a placeholder
+ * that still looked like one. That is too narrow to be a guard: the whole point
+ * is to refuse to send a body whose braces did not resolve, whatever is inside.
+ */
+const PLACEHOLDER = /\{\{[\s\S]*?\}\}/g;
+
+/**
+ * Undo the percent-encoding Velite applies to a placeholder inside a link.
+ *
+ * `s.markdown()` treats the destination of `[Empezar]({{url_sitio}}/empieza-aqui)`
+ * as a URL and encodes the braces, so the compiled HTML carries
+ * `href="%7B%7Burl_sitio%7D%7D/empieza-aqui"`. Nothing downstream matched that:
+ * the substitution regex looked for literal braces and found none, and — worse —
+ * neither did the leftover guard, so the email rendered "cleanly" and went out
+ * with every CTA pointing at a path that does not exist.
+ *
+ * It shipped that way from 2026-07-29 until 2026-08-21. Two of the three welcome
+ * emails no longer contained a single literal `{{` by the time it was found,
+ * which is why nothing looked wrong: an email with dead buttons and an email with
+ * working ones are byte-identical to the eye.
+ *
+ * Normalising here rather than at each call site keeps it to one place, and means
+ * the guard above sees the placeholder again — a `{{typo}}` inside a link now
+ * throws like it always should have.
+ */
+function decodeEncodedBraces(html: string): string {
+  return html.replace(/%7B%7B/gi, "{{").replace(/%7D%7D/gi, "}}");
+}
 
 /**
  * Replace every `{{name}}` in `html`, or throw.
@@ -28,21 +58,26 @@ const PLACEHOLDER = /\{\{\s*([a-z_]+)\s*\}\}/g;
  * renders as nothing at all instead of a stray gap.
  */
 export function renderTemplate(html: string, vars: TemplateVars): string {
-  let out = html;
+  let out = decodeEncodedBraces(html);
 
   for (const [name, value] of Object.entries(vars)) {
     const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    // A replacer function, not the value directly: in a replacement string `$&`
+    // and ``$` `` are special, and these values are generated HTML that already
+    // contains prices like `$0.05`. Harmless today, a corrupted email the day a
+    // value happens to contain `$&`.
+    const insert = () => value;
     out = out.replace(
       new RegExp(`<p>\\s*\\{\\{\\s*${escaped}\\s*\\}\\}\\s*</p>`, "g"),
-      value,
+      insert,
     );
     out = out.replace(
       new RegExp(`\\{\\{\\s*${escaped}\\s*\\}\\}`, "g"),
-      value,
+      insert,
     );
   }
 
-  const leftover = [...out.matchAll(PLACEHOLDER)].map((m) => m[1]);
+  const leftover = [...out.matchAll(PLACEHOLDER)].map((m) => m[0]);
   if (leftover.length > 0) {
     throw new TemplateError(
       `Placeholder sin resolver: ${[...new Set(leftover)].join(", ")}. ` +
