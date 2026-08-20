@@ -214,14 +214,15 @@ export default async function ResourcesPage({
                 </li>
               ))}
             </ul>
-            <div className="mt-6">
-              <p className="text-sm text-muted">
-                Te aviso cuando cualquiera de estos esté publicado.
-              </p>
-              <div className="mt-3 max-w-md">
-                <SubscribeForm source="recursos-aviso" submitLabel="Avísame" />
-              </div>
-            </div>
+            {/* This used to carry a third form ("Avísame"), which is the same
+                signup into the same list as the two cards above it — a page
+                asking for one address three times is what made the funnel read
+                as email-hungry. Anyone who took either resource is already
+                subscribed, so the sentence does the job the form was doing. */}
+            <p className="mt-6 text-sm text-muted">
+              Cuando alguno esté publicado lo cuento en la newsletter. Si te has
+              llevado cualquiera de los recursos de arriba, ya estás en ella.
+            </p>
           </section>
         </ScrollReveal>
       ) : null}
