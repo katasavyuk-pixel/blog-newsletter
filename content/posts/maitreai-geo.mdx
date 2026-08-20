@@ -11,6 +11,9 @@ tags:
   - visibilidad-ia
   - construccion-publica
 youtubeId: 9OB_O0w-8GI
+cta_inline:
+  gancho: "El episodio 2 responde si esto ha servido de algo"
+  promesa: "Compruebo cada lunes si MaitreAI aparece ya en esa respuesta. Salga o no salga, lo cuento aquí antes que en YouTube."
 draft: false
 premium: false
 ---
@@ -47,6 +50,8 @@ Lo que **no** tuve que construir: datos estructurados a nivel de sitio. `maitrea
 <Callout type="tip" title="El detalle que casi se me escapa">
 Al editar `robots.txt`, hay una trampa real: un bot que encuentra un grupo con su propio nombre ignora el grupo genérico `*` por completo. Si le doy a `GPTBot` un grupo con solo `Allow: /`, ese bot deja de respetar el `Disallow` que protege `/dashboard` y `/api` — rutas con datos reales de clientes. La solución: cada grupo nombrado repite la misma protección, desde una única constante en el código, para que no haya forma de relajar una sin que se note en las demás.
 </Callout>
+
+<SuscripcionInline />
 
 ## El límite honesto — y por qué es el tema del próximo episodio
 
