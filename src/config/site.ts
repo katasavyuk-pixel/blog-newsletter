@@ -35,14 +35,21 @@ export const siteConfig = {
   /** Primary content language. */
   locale: "es",
   /**
-   * Contact inbox for the privacy policy / data requests.
+   * Contact inbox: the privacy policy, /trabaja-con-nbi and /api/contact.
    *
-   * Still unconfirmed as a monitored mailbox. That matters more than a TODO
-   * suggests: the privacy policy names this address as the channel for GDPR
-   * rights requests, so an alias nobody reads is a published commitment that
-   * is not being met.
+   * Was `privacidad@ianexora.com` until 2026-08-21, when Kata confirmed nobody
+   * reads it. That is not a cosmetic detail — the privacy policy names this
+   * address as the channel for exercising GDPR rights, so an unread alias was
+   * a published commitment that was not being met, and /trabaja-con-nbi was
+   * inviting people to write into a void.
+   *
+   * Same mailbox as `replyEmail` now, on purpose. The two were kept separate so
+   * a legal channel would not mix with a conversational one, which is the right
+   * shape — but only once the legal one is actually monitored. A shared inbox
+   * somebody reads beats a dedicated one nobody opens. Split them again when
+   * there is a privacy alias with a person behind it.
    */
-  contactEmail: "privacidad@ianexora.com",
+  contactEmail: "info@ianexora.com",
   /**
    * Public address for "just reply and tell me". Same mailbox as RESEND_REPLY_TO,
    * which is a server env and therefore unusable in a mailto: link.

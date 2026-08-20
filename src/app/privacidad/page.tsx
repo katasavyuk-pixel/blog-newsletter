@@ -27,20 +27,20 @@ export default function PrivacyPage() {
             <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
           </p>
 
-          <h2>Qué datos tratamos y con qué fin</h2>
+          <h2>Qué datos trato y con qué fin</h2>
           <p>
-            Si te suscribes a la newsletter, tratamos tu <strong>correo electrónico</strong>{" "}
+            Si te suscribes a la newsletter, trato tu <strong>correo electrónico</strong>{" "}
             con la única finalidad de enviarte contenidos y recursos sobre
-            inteligencia artificial. Para acreditar tu consentimiento guardamos
+            inteligencia artificial. Para acreditar tu consentimiento guardo
             también la <strong>fecha</strong>, la <strong>dirección IP</strong> y el{" "}
             <strong>origen</strong> de la suscripción, incluida la{" "}
-            <strong>página desde la que te suscribiste</strong>. No pedimos más
+            <strong>página desde la que te suscribiste</strong>. No pido más
             datos de los necesarios.
           </p>
           <p>
             Si usas una de las herramientas del sitio (por ejemplo, la
-            calculadora de costes de IA) y pides que te enviemos el resultado,
-            guardamos junto a tu correo <strong>los parámetros que
+            calculadora de costes de IA) y pides que te envíe el resultado,
+            guardo junto a tu correo <strong>los parámetros que
             introdujiste y el cálculo resultante</strong>, con la única finalidad
             de poder enviártelo por escrito. Usar la herramienta no requiere dar
             ningún dato: solo se guarda si pides el envío.
@@ -49,8 +49,8 @@ export default function PrivacyPage() {
           <h2>Base legal</h2>
           <p>
             El tratamiento se basa en tu <strong>consentimiento</strong> (art. 6.1.a
-            RGPD), que prestas marcando la casilla del formulario. Usamos{" "}
-            <strong>doble opt-in</strong>: solo te enviamos la newsletter después de
+            RGPD), que prestas marcando la casilla del formulario. Uso{" "}
+            <strong>doble opt-in</strong>: solo te envío la newsletter después de
             que confirmes tu suscripción desde un email.
           </p>
 
