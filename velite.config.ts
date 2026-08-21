@@ -62,19 +62,35 @@ const posts = defineCollection({
  * An issue is a file so it is versioned, reviewable in a PR and diffable —
  * the same contract as a post. `issue` is the idempotency key: the broadcast
  * refuses to send one twice.
+ *
+ * Two flags, two different checkpoints:
+ * - `draft` (default true) — editorial: ready to send, or not yet.
+ * - `sent` (default false) — historical: the broadcast actually went out. It is
+ *   flipped by hand in the same session as the send, and it is what gates the
+ *   public web archive (/newsletter): subscribers are promised the edition
+ *   "antes que nadie", so an approved-but-unsent issue must not be readable on
+ *   the open web. Same file-as-contract pattern as `draft`, pointing the other
+ *   way.
  */
 const newsletters = defineCollection({
   name: "NewsletterIssue",
   pattern: "newsletters/**/*.md",
-  schema: s.object({
-    issue: s.string().max(60), // stable id, never reuse
-    subject: s.string().max(120),
-    preheader: s.string().max(200),
-    title: s.string().max(120),
-    date: s.isodate(),
-    draft: s.boolean().default(true), // opt IN to sending, never out
-    html: s.markdown(),
-  }),
+  schema: s
+    .object({
+      issue: s.string().max(60), // stable id, never reuse
+      subject: s.string().max(120),
+      preheader: s.string().max(200),
+      title: s.string().max(120),
+      date: s.isodate(),
+      draft: s.boolean().default(true), // opt IN to sending, never out
+      sent: s.boolean().default(false), // flipped after the real broadcast
+      path: s.path(),
+      html: s.markdown(),
+    })
+    .transform((data) => {
+      const slug = data.path.replace(/^newsletters\//, "");
+      return { ...data, slug, permalink: `/newsletter/${slug}` };
+    }),
 });
 
 /**

@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { SubscribeForm } from "@/components/newsletter/subscribe-form";
 import { LIBRARY_ITEMS, libraryStatus } from "@/config/library";
+import { sentIssues } from "@/lib/newsletter-archive";
 import { siteConfig } from "@/config/site";
 
 /**
@@ -81,6 +83,21 @@ export function ClosingCta() {
                   ▸ los suscriptores lo reciben antes que nadie, con la
                   plantilla
                 </p>
+                {/* The archive is the checkable version of this promise: what
+                    the list already received, readable without giving an
+                    email. Hidden until an edition has actually been sent —
+                    linking to an empty archive from a capture block sells
+                    nothing. */}
+                {sentIssues.length > 0 ? (
+                  <p className="mt-3 font-mono text-xs">
+                    <Link
+                      href="/newsletter"
+                      className="text-coral-soft/80 transition-colors hover:text-on-accent"
+                    >
+                      ▸ ver las ediciones ya enviadas →
+                    </Link>
+                  </p>
+                ) : null}
               </div>
 
               <div className="rounded-2xl border border-dark-border-2 bg-dark p-7 shadow-card sm:p-8">
