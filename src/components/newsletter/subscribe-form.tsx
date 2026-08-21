@@ -114,7 +114,9 @@ export function SubscribeForm({
         return;
       }
       const data = (await res.json().catch(() => ({}))) as { preview?: boolean };
-      recordNewsletterLead({ email, source: resource ? `lead_magnet:${resource}` : source });
+      if (!data.preview) {
+        recordNewsletterLead({ email, source: resource ? `lead_magnet:${resource}` : source });
+      }
       setState(data.preview ? "preview" : "done");
     } catch {
       setState("error");
