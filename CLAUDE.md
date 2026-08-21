@@ -236,8 +236,16 @@ así que darle `Allow: /` a secas abriría todo lo que la lista protege.
 ## Infra (no volver a averiguarla)
 
 - **Supabase**: proyecto EU dedicado `kata-ivanovych-blog`, ref `udluclqhfzdgvqpoezoo`,
-  **cuenta separada de la de NBI y no accesible desde el MCP** — desde una sesión **no se puede
-  verificar el esquema ni contar filas**: o lo confirma Kata, o se diseña para degradar.
+  cuenta **separada** de la de NBI. **No está en el MCP** (que solo ve `Maître-prod` y `NbiOps`),
+  y aunque lo estuviera su grupo Storage no sube ficheros: solo `list_storage_buckets` y la
+  config. **Pero el CLI sí funciona**, autenticado y con el proyecto enlazado — corregido el
+  2026-08-21, esto decía que desde aquí no se podía verificar el esquema y era falso:
+  - `supabase db query "select …" --linked` — leer y escribir. **Sin `--linked` va a la base
+    local** y falla con «relation does not exist».
+  - `supabase storage ls|cp|mv ss:///<bucket>/<ruta> --experimental`. `cp` **no sobrescribe**
+    (409) y `rm` **no borra** por ruta de objeto (devuelve `"deleted": []` sin tocar nada):
+    para sustituir un fichero, `mv` el viejo a un lado y luego `cp`. Comprobar siempre bajándolo
+    de vuelta y comparando el sha256.
 - **Vercel**: team `nexoraprocesos-boops-projects`, proyecto `kata-ivanovych-blog`
   (`prj_1Cx7OZXAthH1N64qhhmpDOiVjTM7`). Dominio por A-record a `76.76.21.21`.
   **Cada push a `main` despliega.** Si falta `.vercel/project.json`, `vercel deploy` CREA un
@@ -252,4 +260,6 @@ así que darle `Allow: /` a secas abriría todo lo que la lista protege.
   `DOWNLOAD_LINK_SECRET`, `NEWSLETTER_SEND_SECRET`, `ADMIN_PANEL_SECRET`,
   `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `LLM_API_KEY`. Todas puestas.
   Las dos con `SECRET` en el nombre **las crea Kata a mano**, porque las usa desde un terminal y
-  Vercel guarda como *Sensitive* lo que crea el agente.
+  Vercel guarda como *Sensitive* lo que crea el agente. **`vercel env pull` devuelve la cadena
+  literal `[SENSITIVE]`** para todas ellas, así que desde una sesión no hay forma de enviar el
+  boletín ni de leer el `service_role`: eso es de Kata y punto.
