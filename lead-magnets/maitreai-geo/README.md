@@ -26,9 +26,29 @@ zip -q -r ../recurso-maitreai-geo.zip . -x '.*'
 El `.zip` resultante está en `.gitignore`: es un artefacto derivado y la fuente ya está
 versionada. El `-x '.*'` evita colar `.DS_Store`.
 
-Súbelo al bucket `lead-magnets` **sobrescribiendo** `maitreai-geo/recurso-maitreai-geo.zip`. No
-hay que tocar la base de datos: la fila apunta a esa ruta y el enlace se firma en cada descarga,
-así que el siguiente que pulse se lleva el ZIP nuevo.
+Y súbelo. El CLI **sí** puede, al contrario de lo que decía una nota vieja: está autenticado y
+el proyecto enlazado.
+
+```bash
+# `cp` no sobrescribe (devuelve 409) y `rm` no borra por ruta de objeto — devuelve
+# "deleted": [] sin tocar nada. `mv` sí funciona, así que se aparta el viejo primero.
+supabase storage mv ss:///lead-magnets/maitreai-geo/recurso-maitreai-geo.zip \
+                   ss:///lead-magnets/maitreai-geo/_old-AAAA-MM-DD.zip --experimental
+supabase storage cp recurso-maitreai-geo.zip \
+                   ss:///lead-magnets/maitreai-geo/recurso-maitreai-geo.zip --experimental
+```
+
+Comprueba siempre bajándolo de vuelta y comparando el sha256 con el local — la respuesta de
+`cp` dice que subió algo, no que subiera lo que crees.
+
+No hay que tocar la base de datos para cambiar el fichero: la fila apunta a esa ruta y el enlace
+se firma en cada descarga, así que el siguiente que pulse se lleva el ZIP nuevo. Sí hay que
+tocarla si cambia la **descripción**, y entonces se cambia también `supabase/seeds/resources.sql`
+para que el repo no mienta:
+
+```bash
+supabase db query "update public.resources set description = '…' where slug = 'maitreai-geo';" --linked
+```
 
 ## Historia, por si vuelve a pasar
 

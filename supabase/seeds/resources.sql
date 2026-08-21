@@ -44,7 +44,7 @@ insert into public.resources (slug, title, description, file_path, requires_emai
 values (
   'maitreai-geo',
   'Prompt de auditoría GEO para tu negocio',
-  'Prompt generalizado para comprobar si una IA puede encontrar, entender y considerar tu producto o servicio, con estados PASS, WARN, FAIL y BLOCKED y sin prometer recomendaciones automáticas.',
+  'El prompt de auditoría generalizado (PASS, WARN, FAIL, BLOCKED) más las 9 comprobaciones que hago antes de dar un sitio por listo para una IA, cada una con su comando y con lo que salió en mi caso.',
   'maitreai-geo/recurso-maitreai-geo.zip',
   true,
   true
