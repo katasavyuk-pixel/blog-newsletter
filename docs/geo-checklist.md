@@ -44,10 +44,15 @@
 - **No meter texto explicativo dentro de un widget cliente.** El widget puede
   hidratar; el párrafo que lo explica tiene que venir del servidor. Comprobable
   con el script de abajo.
-- **No invertir en `llms.txt`.** Ahrefs analizó 137.210 dominios y el 97% de esos
-  ficheros no recibió ni una petición en mayo de 2026. (Dato de terceros, sin
-  verificar por nosotros — vale como orden de magnitud para decidir no gastar
-  tiempo, no como afirmación publicable.)
+- ~~**No invertir en `llms.txt`.**~~ **Decidido el 2026-08-21: sí publicarlo**
+  (`src/app/llms.txt/route.ts`). El "no invertir" de Ahrefs (97% de 137.210
+  ficheros sin ni una petición en mayo-2026, dato de terceros) sigue siendo
+  bueno — y por eso el coste se mantuvo en **una ruta estática** y nada más:
+  Google lo ignora, los crawlers de OpenAI y Microsoft lo leen, y un
+  experimento asimétrico con coste cero se toma. El sitio además enseña
+  `llms.txt` en `/blog/maitreai-geo`; no tenerlo aquí era una ausencia sin
+  motivo una vez el episodio 1 (que usaba el 404 como toma del "antes") se
+  grabó y pivotó a MaitreAI.
 
 ## Comprobación técnica
 
@@ -68,9 +73,11 @@ curl -s https://kata.ianexora.com/blog/que-es-un-token \
 | Pieza | Dónde |
 |---|---|
 | `TechArticle` (lección/sistema) o `Article` | `src/lib/jsonld.ts` → `articleJsonLd()` |
-| `BreadcrumbList` | artículo y glosario |
+| `BreadcrumbList` | artículo, glosario y archivo de newsletter |
 | `DefinedTerm` + `DefinedTermSet` | `/glosario/[id]` |
-| Escapado `<` → `<` centralizado | `<JsonLd>`, `src/components/ui/json-ld.tsx` |
+| Nodo `Person` con `sameAs` | `src/lib/jsonld.ts` → `personJsonLd()`, emitido en la home (2026-08-21) |
+| `llms.txt` | `src/app/llms.txt/route.ts` (2026-08-21) |
+| Escapado `<` → `\u003c` centralizado | `<JsonLd>`, `src/components/ui/json-ld.tsx` |
 | Fecha de publicación y de actualización visibles | `PostMeta` |
 | Bio de autoría al pie de cada artículo | `AuthorBio` |
 | `lastmod` real en el sitemap | `src/app/sitemap.ts` |
@@ -78,12 +85,10 @@ curl -s https://kata.ianexora.com/blog/que-es-un-token \
 
 ## Deliberadamente sin construir
 
-`robots.ts`, `llms.txt` y el nodo `Person` con `sameAs` en `/sobre-mi`.
+`SearchAction` (no hay buscador) y `FAQPage` (no hay bloque real de preguntas
+frecuentes — ver arriba).
 
-Son el contenido **en cámara** del episodio 1 (memoria `guion-episodio-1-geo`): el
-404 de `/llms.txt` es la toma del "antes". No adelantarlo.
-
-Consecuencia útil de eso: **al no existir `robots.txt`, no hay ningún crawler
-bloqueado** — ni GPTBot, ni OAI-SearchBot, ni PerplexityBot, ni ClaudeBot, ni
-Google-Extended. El requisito "verificar que no se bloquea a los crawlers de IA"
-se cumple hoy sin escribir nada; el script lo comprueba y lo dice.
+El nodo `Person` y `llms.txt` estuvieron aquí hasta el 2026-08-21: eran el
+contenido en cámara del episodio 1, cuyo 404 de `/llms.txt` servía de toma del
+"antes". Ese episodio se grabó y pivotó a MaitreAI, la premisa murió, y ambos
+se publicaron (robots.ts había entrado antes, commit `e182014`).

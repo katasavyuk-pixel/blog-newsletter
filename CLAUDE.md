@@ -65,15 +65,17 @@ antes de escribir código de framework.
 
 ```
 content/posts/*.mdx            artículos (Velite)
-content/newsletters/*.md       ediciones del boletín (draft: true por defecto)
+content/newsletters/*.md       ediciones del boletín (draft: true por defecto; sent: true
+                               las publica en el archivo web /newsletter, tras el envío real)
 content/emails/*.md            copy de la secuencia de bienvenida
 content/_templates/radar.mdx   plantilla del Radar (fuera del pattern de Velite)
-src/app/                       rutas + route handlers; robots.ts, sitemap.ts, feed.xml
+src/app/                       rutas + route handlers; robots.ts, sitemap.ts, feed.xml,
+                               llms.txt, /newsletter (archivo web del boletín)
 src/components/                ui · layout · home · blog · content · mdx/widgets · assistant · wizard
 src/config/                    site · taxonomy · library · course · cierre · cta-inline · intent · scrolly
 src/lib/                       evidence · posts · radar · cost-model · lead-magnets · signed-links
-                               email · email-template · email-blocks · newsletter · welcome-sequence
-                               jsonld · funnel · panel-auth · glossary · supabase/*
+                                email · email-template · email-blocks · newsletter · newsletter-archive
+                                welcome-sequence · jsonld · funnel · panel-auth · glossary · supabase/*
 scripts/radar/                 collect · verify-edition · youtube
 scripts/geo/audit-ssr.mjs      ¿el texto sustantivo está en el HTML servido?
 supabase/migrations/           0001-0005, aplicadas a mano en el SQL editor
@@ -151,20 +153,25 @@ es código generado y sin él el typecheck falla entero.
   defecto); sin clave responde un mensaje honesto, nunca un 500.
 - **`IntentWizard`**: **opt-in**. Sus dos únicas puertas son `?wizard=1` y el chip del dock de
   Chispa. **No pide email a propósito**; el porqué está en `src/config/intent.ts`.
-- **Intro scrollytelling** (`src/components/home/scrolly/`): tres escenas pinned. Con
-  reduced-motion **no se atenúa: no se monta**. Los titulares de hype se pintan solo tras
-  hidratar, para no dar a un crawler de IA dos docenas de frases que atribuir mal.
+- **Intro scrollytelling** (`src/components/home/scrolly/`): tres escenas pinned, **después
+  del masthead** (desde 2026-08-21 — el H1 abre la página; el cine demuestra el argumento,
+  no lo retrasa). Con reduced-motion **no se atenúa: no se monta**. Los titulares de hype se
+  pintan solo tras hidratar, para no dar a un crawler de IA dos docenas de frases que atribuir
+  mal.
+- **Archivo web de la newsletter** (`/newsletter`): las ediciones con `sent: true` en el
+  frontmatter (volteado a mano tras el envío real), SSG con la misma HTML que recibieron los
+  suscriptores. El gate vive en `src/lib/newsletter-archive.ts`, lib separada de
+  `newsletter.tsx` para no arrastrar Resend/Supabase a la página. Un issue aprobado sin
+  enviar da 404 — la promesa "antes que nadie" se cumple por construcción.
 
 ## GEO
 
 **Hay**: `robots.ts` con un grupo por rastreador de IA, `TechArticle`/`Article` por `formato`,
-`BreadcrumbList`, `DefinedTerm` en el glosario, `WebSite` en la home, `lastmod` real,
+`BreadcrumbList`, `DefinedTerm` en el glosario, `WebSite` + nodo `Person` con `sameAs` en la
+home, `llms.txt` estático (`src/app/llms.txt/route.ts`, spec v2), `lastmod` real,
 `AuthorBio`, `scripts/geo/audit-ssr.mjs` y `docs/geo-checklist.md`.
 
-**No hay**: `llms.txt` ni el nodo `Person` con `sameAs`. Se dejaron fuera porque eran el
-contenido en cámara del episodio 1 — **ese episodio ya se grabó y pivotó a MaitreAI**, así que
-la premisa está muerta y la decisión está pendiente de retomar (ver `ESTADO.md`).
-Tampoco `SearchAction` (no hay buscador) ni `FAQPage`: `faqJsonLd()` existe sin llamadores,
+**No hay**: `SearchAction` (no hay buscador) ni `FAQPage`: `faqJsonLd()` existe sin llamadores,
 esperando el primer `## Preguntas frecuentes` real. Los `<Quiz>` son ejercicios, no FAQ.
 
 **Regla dura de `robots.ts`**: `PRIVATE_PATHS` es una constante única y **cada grupo nombrado la

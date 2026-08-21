@@ -1,6 +1,7 @@
 # ESTADO — blog-newsletter
 
-> Última actualización: **2026-08-21**, tras la auditoría posterior a publicar el episodio 1.
+> Última actualización: **2026-08-21 (tarde)**, tras la auditoría completa y la
+> tanda de mejoras que la siguió.
 > Arriba lo que toca ahora, en orden. Abajo, contexto que no conviene volver a averiguar.
 
 ## Lo primero, y solo lo puedes hacer tú
@@ -9,6 +10,8 @@
 esa edición está comprobado y anotado en su propio frontmatter; lo único que falta es que la
 leas, porque sale con tu firma a gente real y es el primer envío de la lista. Los tres pasos
 del envío están escritos ahí. Es lo único con prisa: el vídeo es de esta semana.
+**Después de enviar, pon `sent: true` en el frontmatter** (instrucción también en el propio
+fichero): es lo que publica la edición en el archivo web `/newsletter`.
 
 **2. Reconstruye el ZIP del recurso.** El vídeo menciona las comprobaciones y la tabla, y el
 ZIP no las lleva: solo el prompt y un README. Ya está escrito lo que falta
@@ -20,6 +23,34 @@ que promete las comprobaciones** — se quitó el 2026-08-21 justo porque no era
 **3. Define precio y alcance de NBI.** Sigue siendo el bloqueador nº1 de negocio y no lo
 arregla ningún commit. La salida 2 del cierre apunta a `/trabaja-con-nbi` y **no dice
 "diagnóstico" a propósito**: `EMBUDO.md` dice que hoy no se ofrece.
+
+## La tanda de la tarde del 2026-08-21 (auditoría completa)
+
+Auditoría del sitio entero + investigación de mejores prácticas (SEO/GEO 2026, tráfico,
+monetización de listas pequeñas). Ejecutado y verificado en build real:
+
+- **La home abre con el masthead, no con el cine.** La intro scrollytelling sepultaba el H1
+  seis pantallas más abajo; ahora la promesa es lo primero que ve un visitante y lo primero
+  que lee un crawler, y la intro queda detrás como interludio que *demuestra* el argumento
+  ("ruido → señal → sistema"). El skip link salta hacia `#start-here` (el contenido
+  siguiente), ya no hacia atrás. El intro-gate de visitas repetidas sigue igual.
+- **`/llms.txt` publicado** (`src/app/llms.txt/route.ts`, estático, spec v2 de llmstxt.org).
+  Cierra la decisión que estaba abierta: el contra de Ahrefs era no *invertir*, y esto es
+  una ruta estática — coste cero, Google lo ignora, OpenAI/Microsoft lo leen. Decisión
+  escrita en `docs/geo-checklist.md`.
+- **Nodo `Person` con `sameAs`** (`personJsonLd()`), emitido en la home junto al `WebSite`.
+  Sin `jobTitle` a propósito: el vocabulario aprobado describe la actividad, no un cargo en
+  una entidad legal, y QUE_PUEDO_DECIR prohíbe resolver casos nuevos por analogía.
+- **Archivo web de la newsletter: `/newsletter`.** Índice + página por edición (SSG, la misma
+  que recibieron los suscriptores, renderizada en `Prose`), con Article + Breadcrumb
+  JSON-LD, sitemap, link en footer y en el ClosingCta (solo cuando hay ediciones). El gate
+  es `sent:` en el frontmatter (default false, volteado a mano tras el envío real) — un
+  issue aprobado sin enviar da 404, verificado. Lib separada
+  (`src/lib/newsletter-archive.ts`) para no arrastrar Resend/Supabase a la página.
+- **Spec de monetización**: `docs/specs/monetizacion.md`. Secuencia cerrada (servicio →
+  producto único → patrocinios → premium), cada paso con su señal de activación, y todo
+  gated por la capitalización. No construye nada — es el plan que respuestas "¿y cobrar
+  cuándo?" sin improvisar.
 
 ## Lo que se arregló el 2026-08-21 (auditoría post-episodio)
 
@@ -113,7 +144,10 @@ se puede inventar**: el coste por hora por defecto.
   `2026-08-antes-del-tms` no se puede enviar: su enlace daría 404.
 - **Las ediciones de `content/newsletters/` llevan el dominio a fuego** y no pasan por
   `renderTemplate` — `sendIssue` inyecta el HTML crudo. Es coherente, pero significa que un
-  cambio de dominio hay que buscarlo a mano.
+  cambio de dominio hay que buscarlo a mano. **Pesa más desde que existe el archivo web**
+  (`/newsletter` renderiza ese mismo HTML): además los enlaces internos de las ediciones
+  llegan a la web con los UTMs de email, lo cual se dejó así a propósito para distinguir
+  lectura web de clic real de email.
 - **Ningún post usa `updated`.** La señal se muestra, va al JSON-LD y al sitemap, y está vacía.
 - CNAME `autodiscover`/`autoconfig`/`mail` y SRV `_autodiscover._tcp` en Namecheap (solo
   afecta al autoconfig de clientes de correo, no a recibir).
@@ -162,14 +196,12 @@ se puede inventar**: el coste por hora por defecto.
 - La voz y qué se puede decir viven en `~/Developer/Marca-Personal` (skill `marca-kata`), y
   **sí son legibles** desde este repo.
 
-## Decisión que conviene tomar pronto
+## Decisión cerrada: `llms.txt` y nodo `Person` (2026-08-21, tarde)
 
-**`llms.txt` y el nodo `Person` con `sameAs` en este sitio.** Se dejaron sin construir a
-propósito porque eran el contenido en cámara del episodio 1 y el 404 era la toma del "antes".
-**Ese episodio ya se grabó, y pivotó a MaitreAI**, así que la premisa está muerta: hoy es una
-ausencia sin motivo. `robots.ts` ya entró (commit `e182014`). Contra: `docs/geo-checklist.md`
-dice "no invertir en `llms.txt`" citando a Ahrefs, y esa razón sigue siendo buena. Decidir y
-escribirlo, en vez de dejarlo como está por inercia.
+Resuelta la misma tarde que se abrió: **publicados ambos.** El contra de Ahrefs ("no
+invertir") se respeta manteniendo el coste en una ruta estática; el nodo `Person` salió sin
+`jobTitle` por compliance. El detalle está en la tanda de arriba y en
+`docs/geo-checklist.md`. `robots.ts` ya había entrado (commit `e182014`).
 
 ## Historial
 
