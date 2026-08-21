@@ -59,3 +59,6 @@ next-env.d.ts
 # Salida de Graphify: 2 MB de grafo regenerable, y `vercel deploy --prod`
 # sube lo que no esté ignorado.
 /graphify-out
+
+# Artefacto derivado: la fuente está en lead-magnets/*/zip/
+lead-magnets/**/*.zip
