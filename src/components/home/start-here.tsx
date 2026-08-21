@@ -50,7 +50,9 @@ export function StartHere() {
   if (routes.length === 0) return null;
 
   return (
-    <section className="bg-bg">
+    // `id` is where the scrolly intro's skip link lands; the scroll margin
+    // keeps the sticky header off the eyebrow when the page jumps here.
+    <section id="start-here" className="scroll-mt-20 bg-bg">
       <Container size="wide" className="py-16 sm:py-24">
         <Eyebrow>Empieza aquí</Eyebrow>
         <h2 className="mt-3 headline text-3xl text-fg sm:text-4xl">

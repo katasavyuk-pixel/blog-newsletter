@@ -24,8 +24,12 @@ function markSeen() {
 }
 
 /**
- * The three-act intro to the homepage: noise → signal → system, handing over to
- * the masthead.
+ * The three-act interlude after the masthead: noise → signal → system.
+ *
+ * It follows the promise instead of preceding it (reordered 2026-08-21 — see
+ * src/app/page.tsx): the masthead says what the visitor gets, this proves the
+ * "no ruido, señal" half of that claim in pictures, and StartHere picks up the
+ * reader right after.
  *
  * Under `prefers-reduced-motion` it does not render at all. Not dimmed, not
  * frozen — gone, because the calm scrollable page underneath is the better
@@ -34,9 +38,9 @@ function markSeen() {
  * opacity animations through, so half the choreography would survive.
  *
  * The scenes are `aria-hidden`: they restate, in pictures, an argument the page
- * makes in words further down. A screen reader lands straight on the masthead.
+ * makes in words around them. A screen reader lands straight on the masthead.
  * The skip link is deliberately outside that wrapper, because a sighted keyboard
- * user gets no such shortcut and five screens is a long way to the first heading.
+ * user gets no such shortcut and five screens is a long way to the next heading.
  */
 export function ScrollyIntro({ statusLines }: { statusLines: string[] }) {
   const reduced = useReducedMotion();
@@ -80,10 +84,12 @@ export function ScrollyIntro({ statusLines }: { statusLines: string[] }) {
       {/* Sticky rather than fixed, and last in the flow, so it rides along for
           the whole intro and leaves with it — no scroll listener, and no invisible
           hit target left behind once it has faded. The negative margin keeps it
-          from adding height of its own. */}
+          from adding height of its own. Target is the section below the intro,
+          never the masthead above it: skipping means getting past the cinema,
+          not going back over content already read. */}
       <div className="pointer-events-none sticky bottom-6 z-[45] -mt-20 flex h-12 items-end px-5">
         <a
-          href="#masthead"
+          href="#start-here"
           onClick={markSeen}
           className="pointer-events-auto rounded-full border border-dark-border-2 bg-dark-input/80 px-4 py-2 font-mono text-xs text-on-dark-muted backdrop-blur transition-colors hover:border-accent/60 hover:text-on-dark"
         >

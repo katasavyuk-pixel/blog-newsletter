@@ -1,23 +1,23 @@
 /**
  * Structured data builders.
  *
- * Centralised for one reason above the others: the `<` → `<` escape. An
+ * Centralised for one reason above the others: the `<` → `\u003c` escape. An
  * unescaped `<` inside a JSON-LD script tag is an XSS vector, the article page
  * did that escape at the call site, and the next page to emit JSON-LD would have
  * had to remember. `jsonLdScript()` does it once, so nothing can skip it.
  *
  * Deliberately NOT here, and not anywhere yet:
  *
- * - **A `Person` node with `sameAs`.** That is the on-camera content of episode 1
- *   — the whole point is to show the site without it and then add it. `author`
- *   stays the minimal inline Person it already was, so nothing regresses if the
- *   episode slips.
  * - **`WebSite` + `SearchAction`.** There is no search on this site. Declaring a
  *   search endpoint that does not exist is a lie a machine can check.
  * - **`FAQPage` on any current page.** `faqJsonLd` exists and has no callers: no
  *   article has a real question-and-answer block. The `<Quiz>` widgets are
  *   exercises, not FAQs, and marking them up as FAQs would be structured spam on
  *   a site whose argument is that its claims are checkable.
+ *
+ * The `Person` node with `sameAs` used to be listed here as withheld episode-1
+ * material; that episode was recorded (and pivoted to MaitreAI), so the
+ * withholding reason expired and the node shipped on 2026-08-21.
  */
 
 import { siteConfig } from "@/config/site";
@@ -35,6 +35,11 @@ export function jsonLdScript(data: Json | Json[]): string {
  * TechArticle is the honest type for a piece whose body is a runnable
  * explanation with code and interactive widgets; a radar edition or a note is
  * not that.
+ *
+ * Also used by the newsletter archive pages — an edition on the open web is an
+ * article. Issues don't declare a word count, so `wordCount` is optional and
+ * omitted rather than zeroed: a 0 in machine-readable data asserts something
+ * false, and the field is simply absent instead.
  */
 export function articleJsonLd(post: {
   title: string;
@@ -44,7 +49,7 @@ export function articleJsonLd(post: {
   formato: string;
   tags: string[];
   permalink: string;
-  metadata: { wordCount: number };
+  metadata: { wordCount?: number };
 }): Json {
   const url = `${siteConfig.url}${post.permalink}`;
   const technical = post.formato === "leccion" || post.formato === "sistema";
@@ -57,7 +62,9 @@ export function articleJsonLd(post: {
     datePublished: post.date,
     dateModified: post.updated ?? post.date,
     inLanguage: "es-ES",
-    wordCount: post.metadata.wordCount,
+    ...(post.metadata.wordCount
+      ? { wordCount: post.metadata.wordCount }
+      : {}),
     ...(post.tags.length > 0 ? { keywords: post.tags.join(", ") } : {}),
     author: { "@type": "Person", name: siteConfig.author.name },
     publisher: { "@type": "Person", name: siteConfig.author.name },
@@ -70,9 +77,8 @@ export function articleJsonLd(post: {
  * The site itself.
  *
  * Name, url, description, language — and nothing else. No `SearchAction`,
- * because there is no search. No `Person` node either: that one, with `sameAs`
- * to the socials, is episode-1 material and adding a stub here would spend the
- * reveal for no gain.
+ * because there is no search. The publisher's identity lives in the Person
+ * node below, which the home emits alongside this one.
  */
 export function websiteJsonLd(): Json {
   return {
@@ -82,6 +88,36 @@ export function websiteJsonLd(): Json {
     url: siteConfig.url,
     description: siteConfig.description,
     inLanguage: "es-ES",
+  };
+}
+
+/**
+ * The author as a resolvable entity: one node, on the home, tying the site to
+ * the social profiles via `sameAs`.
+ *
+ * This is the cheapest entity-clarity lever in GEO: an answer engine that can
+ * resolve "Kata Ivanovych" across LinkedIn/X/GitHub stops guessing whether the
+ * name on an article is a person, a brand or a typo. It reads `siteConfig.social`
+ * — the same list the footer renders — so a profile added there appears here
+ * without a second edit, and the two can never disagree.
+ *
+ * No `jobTitle` on purpose: the approved vocabulary describes the activity
+ * ("construyo NBI, mi negocio…"), never a role inside a legal entity, and
+ * `QUE_PUEDO_DECIR.md` forbids resolving a new case by analogy. The bio —
+ * already compliance-checked copy — carries the whole identity.
+ */
+export function personJsonLd(): Json {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": `${siteConfig.url}/#person`,
+    name: siteConfig.author.name,
+    url: siteConfig.url,
+    description: siteConfig.author.bio,
+    knowsLanguage: "es",
+    ...(siteConfig.social.length > 0
+      ? { sameAs: siteConfig.social.map((link) => link.href) }
+      : {}),
   };
 }
 

@@ -19,8 +19,10 @@ import { JourneyPanel } from "@/components/home/journey-panel";
  * signature from the video identity, and it is doing its job.
  */
 export function Masthead({ subscriberCount }: { subscriberCount: number | null }) {
-  // `id` is where the scrollytelling intro's skip link lands; the scroll margin
-  // keeps the sticky header off the eyebrow when the page jumps here.
+  // No anchor needed since the 2026-08-21 reorder: the masthead leads the page
+  // (the scrolly intro below it skips *forward* to #start-here), so nothing
+  // jumps up here anymore. The scroll margin stays for the sticky header when
+  // a browser back-navigation lands mid-page.
   return (
     <GlowSection id="masthead" fadeBottom className="scroll-mt-20">
       <Container

@@ -70,12 +70,13 @@ export default function RootLayout({
         {/*
           Intro gate, before paint: a returning visitor gets a stylesheet in
           <head> that lifts the scrolly intro out of the flow before the first
-          frame — no flash of six empty screens, no layout jump after
-          hydration. It has to be a raw <style>, not a class flip on <html>:
-          React owns `html`'s className (the font variables) and a pre-hydration
-          mutation of it is a hydration mismatch. Reading a cookie server-side
-          would do the same job but break the home's ISR, and `?intro` stays as
-          the deliberate replay.
+          frame — no layout jump after hydration, and no six screens of cinema
+          between the masthead and the content on a page they already know. It
+          has to be a raw <style>, not a class flip on <html>: React owns
+          `html`'s className (the font variables) and a pre-hydration mutation
+          of it is a hydration mismatch. Reading a cookie server-side would do
+          the same job but break the home's ISR, and `?intro` stays as the
+          deliberate replay.
         */}
         <Script
           id="intro-gate"
