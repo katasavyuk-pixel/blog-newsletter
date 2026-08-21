@@ -30,9 +30,10 @@
       artículo, va al JSON-LD `dateModified` y al `lastmod` del sitemap. Hoy
       **ningún post lo usa**, así que la señal existe y está vacía. Ponerlo cuando
       se revisa; no tocarlo por un typo.
-- [ ] **Si el artículo lleva un bloque real de preguntas**, marcarlo: existe
-      `faqJsonLd()` en `src/lib/jsonld.ts` sin usar, esperando el primer
-      `## Preguntas frecuentes` de verdad.
+- [ ] **Si el artículo lleva un bloque real de preguntas**, marcarlo: `faqJsonLd()` ya tiene
+      su primer llamador (el FAQ de `/newsletter`, 2026-08-21 — preguntas reales, mismo
+      texto en la página y en el schema). El patrón a repetir: solo marcar lo que un
+      lector puede leer en la propia página.
 
 ## Lo que NO se hace
 
@@ -85,8 +86,7 @@ curl -s https://kata.ianexora.com/blog/que-es-un-token \
 
 ## Deliberadamente sin construir
 
-`SearchAction` (no hay buscador) y `FAQPage` (no hay bloque real de preguntas
-frecuentes — ver arriba).
+`SearchAction` (no hay buscador).
 
 El nodo `Person` y `llms.txt` estuvieron aquí hasta el 2026-08-21: eran el
 contenido en cámara del episodio 1, cuyo 404 de `/llms.txt` servía de toma del

@@ -171,8 +171,9 @@ es código generado y sin él el typecheck falla entero.
 home, `llms.txt` estático (`src/app/llms.txt/route.ts`, spec v2), `lastmod` real,
 `AuthorBio`, `scripts/geo/audit-ssr.mjs` y `docs/geo-checklist.md`.
 
-**No hay**: `SearchAction` (no hay buscador) ni `FAQPage`: `faqJsonLd()` existe sin llamadores,
-esperando el primer `## Preguntas frecuentes` real. Los `<Quiz>` son ejercicios, no FAQ.
+**No hay**: `SearchAction` (no hay buscador). `faqJsonLd()` ya tiene su primer llamador
+real: el FAQ visible de `/newsletter` (preguntas reales — cadencia, precio, baja — con el
+mismo texto en página y schema). Los `<Quiz>` siguen sin ser FAQ.
 
 **Regla dura de `robots.ts`**: `PRIVATE_PATHS` es una constante única y **cada grupo nombrado la
 repite**. Un bot que encuentra un grupo con su nombre ignora el `*` completo (RFC 9309 §2.2.1),

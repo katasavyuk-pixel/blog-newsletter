@@ -1,5 +1,6 @@
 import { allPosts } from "@/lib/posts";
 import { glossary } from "@/lib/glossary";
+import { sentIssues } from "@/lib/newsletter-archive";
 
 export type SiteEntry = {
   title: string;
@@ -10,9 +11,13 @@ export type SiteEntry = {
 
 /**
  * Inventory of every public thing Chispa can route you to — posts, glossary
- * terms, and the main sections. The LLM sees this as the only content it may
- * truthfully reference: answers keep pointing at real routes or say they don't
- * have the content (the anti-hallucination contract stops "he inventado algo").
+ * terms, sent newsletter editions, and the main sections. The LLM sees this as
+ * the only content it may truthfully reference: answers keep pointing at real
+ * routes or say they don't have the content (the anti-hallucination contract
+ * stops "he inventado algo").
+ *
+ * Newsletter editions come from the same `sent` gate the archive renders with,
+ * so Chispa can never point at an edition that has not been broadcast.
  */
 export function getAssistantIndex(): SiteEntry[] {
   const posts = allPosts.map((p) => ({
@@ -27,6 +32,13 @@ export function getAssistantIndex(): SiteEntry[] {
     route: g.relatedSlug ? `/blog/${g.relatedSlug}` : "/glosario",
     dek: g.def,
     tipo: "glosario",
+  }));
+
+  const editions = sentIssues.map((issue) => ({
+    title: `Newsletter: ${issue.title}`,
+    route: issue.permalink,
+    dek: issue.preheader,
+    tipo: "newsletter",
   }));
 
   const sections: SiteEntry[] = [
@@ -46,6 +58,12 @@ export function getAssistantIndex(): SiteEntry[] {
       title: "Radar",
       route: "/radar",
       dek: "Semanal de IA, tecnología, empresas y geopolítica, verificado.",
+      tipo: "seccion",
+    },
+    {
+      title: "Newsletter (archivo web)",
+      route: "/newsletter",
+      dek: "Las ediciones enviadas, en versión web. Suscribirse es la única forma de leerlas antes que nadie.",
       tipo: "seccion",
     },
     {
@@ -74,5 +92,5 @@ export function getAssistantIndex(): SiteEntry[] {
     },
   ];
 
-  return [...posts, ...terms, ...sections];
+  return [...posts, ...terms, ...editions, ...sections];
 }
