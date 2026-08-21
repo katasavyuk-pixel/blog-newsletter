@@ -100,8 +100,12 @@ export default function PrivacyPage() {
 
           <h2>Analítica</h2>
           <p>
-            Usamos analítica web respetuosa con la privacidad, sin cookies ni
-            seguimiento individual, por lo que no requiere banner de consentimiento.
+            Usamos analítica web respetuosa con la privacidad. Vercel Analytics funciona sin cookies
+            para métricas agregadas. Además, si aceptas la medición opcional en el aviso, el colector
+            propio de NBI registra visitas, campañas y conversiones de newsletter. El email se envía
+            al colector para transformarlo allí en un hash no reversible; no se guarda en el navegador
+            ni se comparte con Meta o una plataforma publicitaria. Puedes rechazar esta medición sin
+            perder ninguna función del sitio.
           </p>
         </Prose>
       </div>

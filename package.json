@@ -19,6 +19,7 @@
     "#site/content": "./.velite/index.js"
   },
   "dependencies": {
+    "@nexorabi/ads-os-tracking": "file:vendor/nexorabi-ads-os-tracking-0.1.0.tgz",
     "@radix-ui/react-popover": "^1.1.17",
     "@react-email/components": "^1.0.12",
     "@supabase/ssr": "^0.12.0",

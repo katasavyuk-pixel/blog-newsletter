@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { DownloadButton } from "@/components/resources/download-button";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = { title: "Gracias", robots: { index: false } };
@@ -67,9 +68,10 @@ export default async function GraciasPage({
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           {sp.descarga ? (
-            <Button href={`/api/download?slug=${encodeURIComponent(sp.descarga)}`}>
-              Descargar tu recurso
-            </Button>
+            <DownloadButton
+              href={`/api/download?slug=${encodeURIComponent(sp.descarga)}`}
+              slug={sp.descarga}
+            />
           ) : null}
           <Button href="/blog" variant={sp.descarga ? "secondary" : "primary"}>
             Leer el blog

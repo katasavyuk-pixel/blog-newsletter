@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { TurnstileWidget } from "./turnstile-widget";
+import { recordNewsletterLead } from "@/lib/ads-os";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
@@ -113,6 +114,7 @@ export function SubscribeForm({
         return;
       }
       const data = (await res.json().catch(() => ({}))) as { preview?: boolean };
+      recordNewsletterLead({ email, source: resource ? `lead_magnet:${resource}` : source });
       setState(data.preview ? "preview" : "done");
     } catch {
       setState("error");

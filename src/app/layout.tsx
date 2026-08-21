@@ -10,6 +10,7 @@ import { ParticleField } from "@/components/effects/particle-field";
 import { IntentWizard } from "@/components/wizard/intent-wizard";
 import { AssistantDock } from "@/components/assistant/assistant-dock";
 import { siteConfig } from "@/config/site";
+import { AdsTracking } from "@/components/analytics/ads-tracking";
 
 // UI / cuerpo / titulares — Inter, la misma que el vídeo (brandCine.ts).
 // Antes era Montserrat; se unificó el 2026-07-29 para que blog y YouTube usen
@@ -83,14 +84,16 @@ export default function RootLayout({
             __html: `try{if(!new URLSearchParams(window.location.search).has("intro")&&window.localStorage.getItem("kata:intro-vista")){var s=document.createElement("style");s.textContent="#scrolly-intro{display:none}";document.head.appendChild(s)}}catch(e){}`,
           }}
         />
-        <MotionProvider>
-          <ParticleField />
-          <IntentWizard />
-          <AssistantDock />
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </MotionProvider>
+        <AdsTracking>
+          <MotionProvider>
+            <ParticleField />
+            <IntentWizard />
+            <AssistantDock />
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </MotionProvider>
+        </AdsTracking>
         {/* Cookieless, no-PII page analytics (Vercel is already a listed subprocessor). */}
         <Analytics />
       </body>
